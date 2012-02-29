@@ -55,6 +55,11 @@ Page {
             anchors.right: parent.right
             anchors.top: projectsButton.bottom
             anchors.bottom: parent.bottom
+
+            onClicked: {
+                var component = Qt.createComponent("VideoGallery.qml")
+                pageStack.push(component);
+            }
         }
     }
 
