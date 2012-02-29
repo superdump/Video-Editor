@@ -13,6 +13,15 @@ Page {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
 
+        Rectangle {
+            id: previewBackground
+
+            anchors.fill: parent
+
+            // This is the RGB hex value for the color key in omapxvsink
+            color: "#080810"
+        }
+
         Text {
             id: previewText
             text: qsTr("Video preview")
@@ -20,6 +29,7 @@ Page {
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
             font.pixelSize: 32
+            color: "white"
         }
     }
 
@@ -82,7 +92,7 @@ Page {
         anchors.right: parent.right
 
         Rectangle {
-            id: background
+            id: timelineBackground
             anchors.fill: parent
             color: "grey"
         }
