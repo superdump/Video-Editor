@@ -97,7 +97,7 @@ Page {
             font.pixelSize: 32
             color: "white"
 
-            x: -flickable.visibleArea.xPosition * flickable.width
+            x: -flickable.visibleArea.xPosition * flickable.contentWidth
         }
 
         Flickable {
