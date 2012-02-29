@@ -97,7 +97,7 @@ Page {
             font.pixelSize: 32
             color: "white"
 
-            x: -flickable.visibleArea.xPosition * flickable.contentWidth
+            x: parent.width / 2 - flickable.contentWidth * flickable.visibleArea.xPosition / (1.0 - flickable.visibleArea.widthRatio)
         }
 
         Flickable {
@@ -107,6 +107,8 @@ Page {
 
             contentWidth: testText.width
             contentHeight: testText.height
+
+            boundsBehavior: Flickable.StopAtBounds
         }
     }
 }
