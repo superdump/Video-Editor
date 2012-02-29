@@ -3,13 +3,17 @@ import com.nokia.meego 1.0
 
 PageStackWindow {
     id: appWindow
+    showStatusBar: false
+    showToolBar: false
 
     initialPage: mainPage
 
     MainPage {
+        orientationLock: PageOrientation.LockLandscape
         id: mainPage
     }
 
+    /*
     ToolBarLayout {
         id: commonTools
         visible: true
@@ -27,4 +31,5 @@ PageStackWindow {
             MenuItem { text: qsTr("Sample menu item") }
         }
     }
+    */
 }
