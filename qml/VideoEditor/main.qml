@@ -6,10 +6,10 @@ PageStackWindow {
     showStatusBar: false
     showToolBar: false
 
-    initialPage: mainPage
+    initialPage: timeline
 
-    MainPage {
+    Timeline {
         orientationLock: PageOrientation.LockLandscape
-        id: mainPage
+        id: timeline
     }
 }

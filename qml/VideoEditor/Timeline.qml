@@ -2,7 +2,7 @@ import QtQuick 1.1
 import com.nokia.meego 1.0
 
 Page {
-    id: editor
+    id: timeline
     width: 854
     height: 480
 
@@ -35,7 +35,7 @@ Page {
 
     Item {
         id: leftButtons
-        anchors.bottom: timeline.top
+        anchors.bottom: timelineBar.top
         anchors.right: preview.left
         anchors.top: parent.top
         anchors.left: parent.left
@@ -65,7 +65,7 @@ Page {
 
     Item {
         id: rightButtons
-        anchors.bottom: timeline.top
+        anchors.bottom: timelineBar.top
         anchors.left: preview.right
         anchors.right: parent.right
         anchors.top: parent.top
@@ -89,7 +89,7 @@ Page {
     }
 
     Item {
-        id: timeline
+        id: timelineBar
 
         anchors.top: preview.bottom
         anchors.bottom: parent.bottom
