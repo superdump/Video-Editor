@@ -47,6 +47,20 @@ Page {
             margins: 10
         }
 
+        text: "Add"
+        onClicked: {
+            console.log("Selected: " + listView.currentItem)
+            pageStack.pop(this)
+        }
+    }
+
+    Button {
+        anchors {
+            bottom: parent.bottom
+            right: parent.right
+            margins: 10
+        }
+
         text: "Cancel"
         onClicked: {
             pageStack.pop(this)
