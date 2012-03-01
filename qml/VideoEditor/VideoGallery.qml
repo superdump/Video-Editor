@@ -18,6 +18,7 @@ Page {
         }
 
         model: DocumentGalleryModel {
+            id: docGalModel
             rootType: DocumentGallery.Video
             properties: [ "url" ]
             autoUpdate: true
@@ -49,7 +50,8 @@ Page {
 
         text: "Add"
         onClicked: {
-            console.log("Selected: " + listView.currentItem)
+            console.log("Selected: " + docGalModel.get(listView.currentIndex).url  + "  " + listView.currentItem)
+            timelineListModel.append({"uri":docGalModel.get(listView.currentIndex).url})
             pageStack.pop(this)
         }
     }

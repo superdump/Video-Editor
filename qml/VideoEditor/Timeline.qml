@@ -102,17 +102,27 @@ Page {
             color: "grey"
         }
 
-        Text {
-            id: testText
+        ListView {
+            id: list
+            model: timelineListModel
 
-            anchors.verticalCenter: parent.verticalCenter
+            width: parent.width
+            height: parent.height
 
-            text: qsTr("Flickable, pinchable timeline -     a     b     c     d     e     f     g     h     i     j     k     l     m     n     o     p     q     r     s     t     u     v     w     x     y     z     1     2     3     4     5     6     7     8     9     0")
-            font.bold: true
-            font.pixelSize: 32
-            color: "white"
+            orientation: ListView.Horizontal
 
-            x: parent.width / 2 - flickable.contentWidth * flickable.visibleArea.xPosition / (1.0 - flickable.visibleArea.widthRatio)
+            boundsBehavior: Flickable.StopAtBounds
+
+            delegate: Column {
+                anchors.verticalCenter: parent.verticalCenter
+                Text {
+                    text: "URI: " + uri
+                    font.pointSize: 26
+                    color: "white"
+                }
+            }
+
+            // x: parent.width / 2 - flickable.contentWidth * flickable.visibleArea.xPosition / (1.0 - flickable.visibleArea.widthRatio)
         }
 
         Rectangle {
@@ -126,17 +136,6 @@ Page {
             height: parent.height
 
             color: "red"
-        }
-
-        Flickable {
-            id: flickable
-
-            anchors.fill: parent
-
-            contentWidth: testText.width
-            contentHeight: testText.height
-
-            boundsBehavior: Flickable.StopAtBounds
         }
     }
 }

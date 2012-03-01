@@ -12,4 +12,8 @@ PageStackWindow {
         orientationLock: PageOrientation.LockLandscape
         id: timeline
     }
+
+    TimelineList {
+        id: timelineListModel
+    }
 }
