@@ -1,10 +1,16 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
+import VideoEditor 1.0
 
 Page {
     id: timeline
     width: 854
     height: 480
+
+    VideoEditor {
+        id: videoeditor
+    }
+
 
     Item {
         id: preview
@@ -104,7 +110,7 @@ Page {
 
         ListView {
             id: list
-            model: timelineListModel
+            model: videoeditor
 
             width: parent.width
             height: parent.height
@@ -116,7 +122,7 @@ Page {
             delegate: Column {
                 anchors.verticalCenter: parent.verticalCenter
                 Text {
-                    text: "URI: " + uri
+                    text: "URI: " + url
                     font.pointSize: 26
                     color: "white"
                 }

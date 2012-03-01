@@ -51,7 +51,7 @@ Page {
         text: "Add"
         onClicked: {
             console.log("Selected: " + docGalModel.get(listView.currentIndex).url  + "  " + listView.currentItem)
-            timelineListModel.append({"uri":docGalModel.get(listView.currentIndex).url})
+            videoeditor.append(docGalModel.get(listView.currentIndex).url)
             pageStack.pop(this)
         }
     }
