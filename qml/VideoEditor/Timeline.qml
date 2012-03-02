@@ -54,22 +54,22 @@ Page {
         Button {
             id: projectsButton
             text: "Projects"
-            anchors.topMargin: 10
-            anchors.leftMargin: 10
-            anchors.rightMargin: 10
-            anchors.bottomMargin: 10
+            anchors.topMargin: 16
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            anchors.bottomMargin: 16
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            height: parent.height / 2.0 - 15
+            height: parent.height / 2.0 - 24
         }
         Button {
             id: addMediaButton
             text: "Add Media"
-            anchors.topMargin: 10
-            anchors.leftMargin: 10
-            anchors.rightMargin: 10
-            anchors.bottomMargin: 10
+            anchors.topMargin: 16
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            anchors.bottomMargin: 16
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: projectsButton.bottom
@@ -92,22 +92,22 @@ Page {
         Button {
             id: playButton
             text: "Play"
-            anchors.topMargin: 10
-            anchors.leftMargin: 10
-            anchors.rightMargin: 10
-            anchors.bottomMargin: 10
+            anchors.topMargin: 16
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            anchors.bottomMargin: 16
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            height: parent.height / 2.0 - 15
+            height: parent.height / 2.0 - 24
         }
         Button {
             id: cameraButton
             text: "Camera"
-            anchors.topMargin: 10
-            anchors.leftMargin: 10
-            anchors.rightMargin: 10
-            anchors.bottomMargin: 10
+            anchors.topMargin: 16
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            anchors.bottomMargin: 16
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: playButton.bottom
