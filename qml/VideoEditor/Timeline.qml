@@ -11,6 +11,11 @@ Page {
         id: videoeditor
     }
 
+    Rectangle {
+        anchors.fill: parent
+        color: "black"
+    }
+
 
     Item {
         id: preview
