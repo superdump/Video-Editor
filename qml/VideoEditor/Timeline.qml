@@ -90,8 +90,8 @@ Page {
         anchors.top: parent.top
 
         Button {
-            id: playButton
-            text: "Play"
+            id: renderButton
+            text: "Render"
             anchors.topMargin: 16
             anchors.leftMargin: 16
             anchors.rightMargin: 16
@@ -100,6 +100,10 @@ Page {
             anchors.right: parent.right
             anchors.top: parent.top
             height: parent.height / 2.0 - 24
+
+            onClicked: {
+                videoeditor.render()
+            }
         }
         Button {
             id: cameraButton

@@ -21,6 +21,9 @@ public:
 
     Q_INVOKABLE bool append(const QString &value, int role=Qt::EditRole);
 
+    //videoeditor API
+    Q_INVOKABLE void render();
+
 signals:
 
 public slots:
