@@ -14,7 +14,8 @@ PageStackWindow {
         id: timeline
     }
 
-
-
-
+    VideoGallery {
+        orientationLock: PageOrientation.LockLandscape
+        id: gallery
+    }
 }
