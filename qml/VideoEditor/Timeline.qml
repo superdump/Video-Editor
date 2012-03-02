@@ -35,7 +35,7 @@ Page {
 
         Text {
             id: previewText
-            text: qsTr("Video preview")
+            text: qsTr("Video preview\n(Tap to play)")
             font.bold: true
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
@@ -90,8 +90,8 @@ Page {
         anchors.top: parent.top
 
         Button {
-            id: renderButton
-            text: "Render"
+            id: exportButton
+            text: "Export"
             anchors.topMargin: 16
             anchors.leftMargin: 16
             anchors.rightMargin: 16
@@ -114,7 +114,7 @@ Page {
             anchors.bottomMargin: 16
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.top: playButton.bottom
+            anchors.top: exportButton.bottom
             anchors.bottom: parent.bottom
         }
     }
