@@ -2,12 +2,16 @@
 #define QDECLARATIVEVIDEOEDITOR_H
 
 #include <QAbstractListModel>
+extern "C" {
+#include <ges/ges.h>
+}
 
 class QDeclarativeVideoEditor : public QAbstractListModel
 {
     Q_OBJECT
 public:
     explicit QDeclarativeVideoEditor(QObject *parent = 0);
+    virtual ~QDeclarativeVideoEditor();
 
     //QAbstractListModel
     int rowCount(const QModelIndex &parent=QModelIndex()) const;
@@ -23,7 +27,10 @@ public slots:
 
 
 protected:
-    QList<QString> m_list;
+    GESTimeline *m_timeline;
+    GESTimelineLayer *m_timelineLayer;
+
+    int m_size;
 
     Q_DISABLE_COPY(QDeclarativeVideoEditor)
 };

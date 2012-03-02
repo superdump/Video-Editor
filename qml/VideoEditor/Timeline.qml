@@ -156,7 +156,7 @@ Page {
                         height: parent.height - 16
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.verticalCenter: parent.verticalCenter
-                        text: url
+                        text: uri
                         font.pointSize: 20
                         color: "black"
                         wrapMode: Text.WrapAnywhere
