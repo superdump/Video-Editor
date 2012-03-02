@@ -46,22 +46,30 @@ Page {
 
     Item {
         id: leftButtons
-        anchors.bottom: timelineBar.top
-        anchors.right: preview.left
         anchors.top: parent.top
         anchors.left: parent.left
+        anchors.right: preview.left
+        anchors.bottom: timelineBar.top
 
         Button {
             id: projectsButton
             text: "Projects"
+            anchors.topMargin: 10
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
+            anchors.bottomMargin: 10
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            height: parent.height / 2.0
+            height: parent.height / 2.0 - 15
         }
         Button {
             id: addMediaButton
             text: "Add Media"
+            anchors.topMargin: 10
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
+            anchors.bottomMargin: 10
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: projectsButton.bottom
@@ -84,14 +92,22 @@ Page {
         Button {
             id: playButton
             text: "Play"
+            anchors.topMargin: 10
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
+            anchors.bottomMargin: 10
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            height: parent.height / 2.0
+            height: parent.height / 2.0 - 15
         }
         Button {
             id: cameraButton
             text: "Camera"
+            anchors.topMargin: 10
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
+            anchors.bottomMargin: 10
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: playButton.bottom
