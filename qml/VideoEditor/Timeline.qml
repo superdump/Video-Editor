@@ -133,8 +133,13 @@ Page {
             id: list
             model: videoeditor
 
-            width: parent.width
-            height: parent.height
+            width: parent.width - 32
+            height: parent.height - 32
+            anchors.margins: 16
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            highlightRangeMode: ListView.ApplyRange
+            spacing: 16
 
             orientation: ListView.Horizontal
 
@@ -142,10 +147,23 @@ Page {
 
             delegate: Column {
                 anchors.verticalCenter: parent.verticalCenter
-                Text {
-                    text: "URI: " + url
-                    font.pointSize: 26
-                    color: "white"
+                Rectangle {
+                    color: "light grey"
+                    width: list.width / 3
+                    height: list.height
+                    Text {
+                        width: parent.width - 16
+                        height: parent.height - 16
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: url
+                        font.pointSize: 20
+                        color: "black"
+                        wrapMode: Text.WrapAnywhere
+                        maximumLineCount: 4
+                        elide: Text.ElideRight
+                        horizontalAlignment: Text.AlignHCenter
+                    }
                 }
             }
 
