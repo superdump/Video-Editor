@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <QDateTime>
 
+#define RENDERING_FAILED "Rendering failed"
+
 QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     QAbstractListModel(parent), m_size(0)
 {
@@ -76,7 +78,8 @@ bool QDeclarativeVideoEditor::append(const QString &value, int role)
 
 QString createFileNameFromCurrentTimestamp() {
     QDateTime current = QDateTime::currentDateTime();
-    return current.toString();
+
+    return QString((int) (current.toMSecsSinceEpoch()/1000));
 }
 
 GstEncodingProfile *createEncodingProfile() {
@@ -106,33 +109,48 @@ void QDeclarativeVideoEditor::render()
     qDebug() << "Render preparations started";
 
     if (!ges_timeline_pipeline_add_timeline (pipeline, (GESTimeline*) gst_object_ref (m_timeline))) {
-        //TODO error out
+        emit error(RENDERING_FAILED, "Failed to add timeline to pipeline");
+        gst_object_unref (pipeline);
         return;
     }
+
 
     QString output_uri = "file:///home/user/MyDocs/VideoEditor - " + createFileNameFromCurrentTimestamp() + ".mp4";
     GstEncodingProfile *profile = createEncodingProfile();
     if (!ges_timeline_pipeline_set_render_settings (pipeline, output_uri.toUtf8().data(), profile)) {
-        //TODO error out
+        emit error(RENDERING_FAILED, "Failed setting rendering options");
+        gst_object_unref (pipeline);
+        gst_encoding_profile_unref(profile);
         return;
     }
     gst_encoding_profile_unref (profile);
 
     if (!ges_timeline_pipeline_set_mode (pipeline, TIMELINE_MODE_SMART_RENDER)) {
-        //TODO error out
+        emit error(RENDERING_FAILED, "Failed to set rendering mode");
+        gst_object_unref (pipeline);
+        gst_encoding_profile_unref(profile);
         return;
     }
 
     qDebug() << "Rendering";
 
     bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
-    gst_element_set_state (GST_ELEMENT (pipeline), GST_STATE_PLAYING);
+    if(!gst_element_set_state (GST_ELEMENT (pipeline), GST_STATE_PLAYING)) {
+        gst_element_set_state (GST_ELEMENT (pipeline), GST_STATE_NULL);
+        gst_object_unref (bus);
+        gst_object_unref (pipeline);
+
+        emit error(RENDERING_FAILED, "Failed to set pipeline to playing state");
+        return;
+    }
 
     msg = gst_bus_timed_pop_filtered(bus, -1, (GstMessageType) (GST_MESSAGE_EOS | GST_MESSAGE_ERROR));
 
     if(GST_MESSAGE_TYPE(msg) == GST_MESSAGE_ERROR) {
-        //TODO notify user
-        qDebug() << "Rendering failed";
+        GError *gerror = NULL;
+
+        gst_message_parse_error(msg, &gerror, NULL);
+        emit error(RENDERING_FAILED, gerror->message);
     } else {
         //TODO notify user
         qDebug() << "Rendering finished successfully";

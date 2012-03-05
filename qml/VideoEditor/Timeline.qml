@@ -9,6 +9,10 @@ Page {
 
     VideoEditor {
         id: videoeditor
+
+        onError: {
+            console.debug("Error: " + message + " (" + debug + ")");
+        }
     }
 
     Rectangle {

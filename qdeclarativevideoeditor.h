@@ -25,6 +25,13 @@ public:
     Q_INVOKABLE void render();
 
 signals:
+    /**
+      * Emitted when an error occurred.
+      *
+      * Message is user displayable text about the error.
+      * Debug is further information to help debugging the issue.
+      */
+    void error(QString message, QString debug);
 
 public slots:
 
