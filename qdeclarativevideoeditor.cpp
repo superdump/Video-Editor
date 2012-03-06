@@ -35,7 +35,6 @@ QVariant QDeclarativeVideoEditor::data(const QModelIndex &index, int role) const
         {
             GESTimelineFileSource *src = (GESTimelineFileSource*) ges_simple_timeline_layer_nth((GESSimpleTimelineLayer*) m_timelineLayer, index.row());
             QVariant ret = QVariant(ges_timeline_filesource_get_uri(src));
-            gst_object_unref(src);
             return ret;
         }
         }
@@ -113,7 +112,6 @@ void QDeclarativeVideoEditor::render()
         gst_object_unref (pipeline);
         return;
     }
-
 
     QString output_uri = "file:///home/user/MyDocs/VideoEditor - " + createFileNameFromCurrentTimestamp() + ".mp4";
     GstEncodingProfile *profile = createEncodingProfile();
