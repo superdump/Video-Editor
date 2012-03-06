@@ -84,7 +84,7 @@ QString createFileNameFromCurrentTimestamp() {
 
 GstEncodingProfile *createEncodingProfile() {
     GstEncodingProfile *profile = (GstEncodingProfile *)
-            gst_encoding_container_profile_new("mp4", NULL, gst_caps_new_simple("application/quicktime",
+            gst_encoding_container_profile_new("mp4", NULL, gst_caps_new_simple("video/quicktime",
                                                                                 "variant", G_TYPE_STRING, "iso",
                                                                                 NULL), NULL);
     GstEncodingProfile *video = (GstEncodingProfile *)
