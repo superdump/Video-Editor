@@ -17,6 +17,7 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     ges_timeline_add_layer(m_timeline, m_timelineLayer);
     m_pipeline = ges_timeline_pipeline_new();
     ges_timeline_pipeline_add_timeline (m_pipeline, m_timeline);
+    m_filename = NULL;
 }
 
 QDeclarativeVideoEditor::~QDeclarativeVideoEditor()
@@ -76,12 +77,6 @@ bool QDeclarativeVideoEditor::append(const QString &value, int role)
     if (r) m_size++;
     endInsertRows();
     return r;
-}
-
-QString createFileNameFromCurrentTimestamp() {
-    QDateTime current = QDateTime::currentDateTime();
-
-    return QString((int) (current.toMSecsSinceEpoch()/1000));
 }
 
 GstEncodingProfile *createEncodingProfile() {
@@ -145,7 +140,9 @@ void QDeclarativeVideoEditor::render()
 
     qDebug() << "Render preparations started";
 
-    QString output_uri = "file:///home/user/MyDocs/VideoEditor.mp4";
+    QString output_uri = "file:///home/user/MyDocs/Movies/";
+    output_uri.append(getFileName().data());
+
     GstEncodingProfile *profile = createEncodingProfile();
     if (!ges_timeline_pipeline_set_render_settings (m_pipeline, output_uri.toUtf8().data(), profile)) {
         emit error(RENDERING_FAILED, "Failed setting rendering options");
@@ -172,4 +169,24 @@ void QDeclarativeVideoEditor::render()
         emit error(RENDERING_FAILED, "Failed to set pipeline to playing state");
         return;
     }
+}
+
+QString createFileNameFromCurrentTimestamp() {
+    QDateTime current = QDateTime::currentDateTime();
+
+    return QString((int) (current.toMSecsSinceEpoch()/1000));
+}
+
+QString QDeclarativeVideoEditor::getFileName (void)
+{
+    if (m_filename == NULL) {
+        /* generate filename from date and time */
+        m_filename = createFileNameFromCurrentTimestamp();
+    }
+    return m_filename;
+}
+
+void QDeclarativeVideoEditor::setFileName (QString filename)
+{
+    m_filename = filename;
 }

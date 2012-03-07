@@ -10,9 +10,9 @@ Page {
     VideoEditor {
         id: videoeditor
 
-        onError: {
-            console.debug("Error: " + message + " (" + debug + ")");
-        }
+        //onError: {
+        //    console.debug("Error: " + message + " (" + debug + ")");
+        //}
     }
 
     Rectangle {
@@ -86,6 +86,59 @@ Page {
         }
     }
 
+    Sheet {
+        id: exportFile
+        x: 0
+
+        width: parent.width
+        anchors.top: timelineBar.bottom
+        anchors.topMargin: 0
+        anchors.bottom: timelineBar.top
+        anchors.bottomMargin: 0
+
+        acceptButtonText: "Save"
+        rejectButtonText: "Cancel"
+
+        content: TextInput {
+            id: filename
+
+            anchors.fill: parent
+            anchors.leftMargin: 16
+            anchors.topMargin: 16
+
+            font.pointSize: 22
+            maximumLength: 64 // FIXME - set to maximum filename length
+
+            //validator: RegExpValidator
+            //inputMask: something
+
+            text: videoeditor.getFileName()
+
+            activeFocusOnPress: false
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    if (!filename.activeFocus) {
+                        filename.forceActiveFocus()
+                        filename.openSoftwareInputPanel();
+                    } else {
+                        filename.focus = false;
+                    }
+                }
+                onPressAndHold: filename.closeSoftwareInputPanel();
+            }
+        }
+        onAccepted: {
+            videoeditor.setFileName(filename.text)
+            filename.closeSoftwareInputPanel()
+            videoeditor.render()
+        }
+        onRejected: {
+            videoeditor.setFileName(filename.text)
+            filename.closeSoftwareInputPanel()
+        }
+    }
+
     Item {
         id: rightButtons
         anchors.bottom: timelineBar.top
@@ -106,7 +159,7 @@ Page {
             height: parent.height / 2.0 - 24
 
             onClicked: {
-                videoeditor.render()
+                exportFile.open()
             }
         }
         Button {
