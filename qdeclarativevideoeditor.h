@@ -39,6 +39,7 @@ public slots:
 protected:
     GESTimeline *m_timeline;
     GESTimelineLayer *m_timelineLayer;
+    GESTimelinePipeline *m_pipeline;
 
     int m_size;
 

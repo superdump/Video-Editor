@@ -15,11 +15,14 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     m_timeline = ges_timeline_new_audio_video();
     m_timelineLayer = (GESTimelineLayer*) ges_simple_timeline_layer_new();
     ges_timeline_add_layer(m_timeline, m_timelineLayer);
+    m_pipeline = ges_timeline_pipeline_new();
+    ges_timeline_pipeline_add_timeline (m_pipeline, m_timeline);
 }
 
 QDeclarativeVideoEditor::~QDeclarativeVideoEditor()
 {
-    gst_object_unref (m_timeline);
+    gst_element_set_state ((GstElement*) m_pipeline, GST_STATE_NULL);
+    gst_object_unref (m_pipeline);
 }
 
 int QDeclarativeVideoEditor::rowCount(const QModelIndex &parent) const
@@ -88,10 +91,10 @@ GstEncodingProfile *createEncodingProfile() {
                                                                                 NULL), NULL);
     GstEncodingProfile *video = (GstEncodingProfile *)
             gst_encoding_video_profile_new(gst_caps_new_simple("video/mpeg", "mpegversion",
-                                           G_TYPE_INT, 4, NULL), NULL, NULL, 1);
+                                                               G_TYPE_INT, 4, NULL), NULL, NULL, 1);
     GstEncodingProfile *audio = (GstEncodingProfile *)
             gst_encoding_audio_profile_new(gst_caps_new_simple("audio/mpeg", "mpegversion",
-                                           G_TYPE_INT, 4, NULL), NULL, NULL, 0);
+                                                               G_TYPE_INT, 4, NULL), NULL, NULL, 0);
 
     gst_encoding_container_profile_add_profile((GstEncodingContainerProfile*) profile, video);
     gst_encoding_container_profile_add_profile((GstEncodingContainerProfile*) profile, audio);
@@ -99,65 +102,67 @@ GstEncodingProfile *createEncodingProfile() {
     return profile;
 }
 
+static gboolean bus_call (GstBus *bus, GstMessage *msg, gpointer data)
+{
+    QDeclarativeVideoEditor *self = (QDeclarativeVideoEditor *) data;
+
+    switch (GST_MESSAGE_TYPE (msg)) {
+
+    case GST_MESSAGE_EOS:
+        qDebug() << "End of stream";
+        break;
+
+    case GST_MESSAGE_ERROR: {
+        gchar  *debug;
+        GError *error;
+
+        gst_message_parse_error (msg, &error, &debug);
+        g_free (debug);
+
+        qDebug() << "Error: " << error->message;
+        g_error_free (error);
+
+        break;
+    }
+    default:
+        break;
+    }
+
+    return TRUE;
+}
+
 void QDeclarativeVideoEditor::render()
 {
-    GESTimelinePipeline *pipeline = ges_timeline_pipeline_new();
     GstBus *bus = NULL;
     GstMessage *msg = NULL;
 
     qDebug() << "Render preparations started";
 
-    if (!ges_timeline_pipeline_add_timeline (pipeline, (GESTimeline*) gst_object_ref (m_timeline))) {
-        emit error(RENDERING_FAILED, "Failed to add timeline to pipeline");
-        gst_object_unref (pipeline);
-        return;
-    }
-
-    QString output_uri = "file:///home/user/MyDocs/VideoEditor - " + createFileNameFromCurrentTimestamp() + ".mp4";
+    QString output_uri = "file:///home/user/MyDocs/VideoEditor.mp4";
     GstEncodingProfile *profile = createEncodingProfile();
-    if (!ges_timeline_pipeline_set_render_settings (pipeline, output_uri.toUtf8().data(), profile)) {
+    if (!ges_timeline_pipeline_set_render_settings (m_pipeline, output_uri.toUtf8().data(), profile)) {
         emit error(RENDERING_FAILED, "Failed setting rendering options");
-        gst_object_unref (pipeline);
         gst_encoding_profile_unref(profile);
         return;
     }
     gst_encoding_profile_unref (profile);
 
-    if (!ges_timeline_pipeline_set_mode (pipeline, TIMELINE_MODE_SMART_RENDER)) {
+    if (!ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_SMART_RENDER)) {
         emit error(RENDERING_FAILED, "Failed to set rendering mode");
-        gst_object_unref (pipeline);
         gst_encoding_profile_unref(profile);
         return;
     }
 
     qDebug() << "Rendering";
 
-    bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
-    if(!gst_element_set_state (GST_ELEMENT (pipeline), GST_STATE_PLAYING)) {
-        gst_element_set_state (GST_ELEMENT (pipeline), GST_STATE_NULL);
+    bus = gst_pipeline_get_bus (GST_PIPELINE (m_pipeline));
+    gst_bus_add_watch (bus, bus_call, this);
+    gst_object_unref (bus);
+    if(!gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PLAYING)) {
+        gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_NULL);
         gst_object_unref (bus);
-        gst_object_unref (pipeline);
 
         emit error(RENDERING_FAILED, "Failed to set pipeline to playing state");
         return;
     }
-
-    msg = gst_bus_timed_pop_filtered(bus, -1, (GstMessageType) (GST_MESSAGE_EOS | GST_MESSAGE_ERROR));
-
-    if(GST_MESSAGE_TYPE(msg) == GST_MESSAGE_ERROR) {
-        GError *gerror = NULL;
-
-        gst_message_parse_error(msg, &gerror, NULL);
-        emit error(RENDERING_FAILED, gerror->message);
-    } else {
-        //TODO notify user
-        qDebug() << "Rendering finished successfully";
-    }
-    gst_message_unref(msg);
-
-    gst_element_set_state (GST_ELEMENT (pipeline), GST_STATE_NULL);
-    gst_object_unref (bus);
-    gst_object_unref (pipeline);
-
-    return;
 }
