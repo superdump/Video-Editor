@@ -163,7 +163,7 @@ void QDeclarativeVideoEditor::render()
     qDebug() << "Rendering";
 
     bus = gst_pipeline_get_bus (GST_PIPELINE (m_pipeline));
-    gst_bus_add_watch (bus, bus_call, NULL);
+    gst_bus_add_watch (bus, bus_call, this);
     gst_object_unref (bus);
     if(!gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PLAYING)) {
         gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_NULL);
