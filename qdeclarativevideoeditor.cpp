@@ -102,26 +102,27 @@ GstEncodingProfile *createEncodingProfile() {
     return profile;
 }
 
-static gboolean bus_call (GstBus *bus, GstMessage *msg, gpointer data)
+gboolean
+QDeclarativeVideoEditor::handleBusMessage (GstBus *bus, GstMessage *msg)
 {
-    QDeclarativeVideoEditor *self = (QDeclarativeVideoEditor *) data;
-
     switch (GST_MESSAGE_TYPE (msg)) {
 
     case GST_MESSAGE_EOS:
         qDebug() << "End of stream";
+        gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
         break;
 
     case GST_MESSAGE_ERROR: {
         gchar  *debug;
-        GError *error;
+        GError *gerror;
 
-        gst_message_parse_error (msg, &error, &debug);
+        gst_message_parse_error (msg, &gerror, &debug);
         g_free (debug);
 
-        qDebug() << "Error: " << error->message;
-        g_error_free (error);
-
+        qDebug() << "Error: " << gerror->message;
+        emit error(RENDERING_FAILED, gerror->message);
+        g_error_free (gerror);
+        gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
         break;
     }
     default:
@@ -131,10 +132,16 @@ static gboolean bus_call (GstBus *bus, GstMessage *msg, gpointer data)
     return TRUE;
 }
 
+static gboolean
+bus_call(GstBus * bus, GstMessage * msg, gpointer data)
+{
+    QDeclarativeVideoEditor *self = (QDeclarativeVideoEditor*) data;
+    return self->handleBusMessage(bus, msg);
+}
+
 void QDeclarativeVideoEditor::render()
 {
     GstBus *bus = NULL;
-    GstMessage *msg = NULL;
 
     qDebug() << "Render preparations started";
 
@@ -156,7 +163,7 @@ void QDeclarativeVideoEditor::render()
     qDebug() << "Rendering";
 
     bus = gst_pipeline_get_bus (GST_PIPELINE (m_pipeline));
-    gst_bus_add_watch (bus, bus_call, this);
+    gst_bus_add_watch (bus, bus_call, NULL);
     gst_object_unref (bus);
     if(!gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PLAYING)) {
         gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_NULL);
