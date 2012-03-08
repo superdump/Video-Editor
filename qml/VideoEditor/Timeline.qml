@@ -16,7 +16,7 @@ Page {
 
         onRenderComplete: {
             progressDialog.close();
-            messageField.text = "Export complete";
+            messageTitleField.text = "Export complete";
             messageDialog.open();
         }
     }
@@ -102,7 +102,9 @@ Page {
 
         title: Text {
             id: titleField
+            color: "white"
             text: "Rendering progress:"
+            font.pixelSize: 28
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
@@ -131,12 +133,15 @@ Page {
 
         title: Text {
             id: messageTitleField
-            text: ""
+            color: "white";
+            font.pixelSize: 28
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
         content: Text {
             id: messageField
+            color: "white"
+            font.pixelSize: 22
             width: parent.width
         }
 
