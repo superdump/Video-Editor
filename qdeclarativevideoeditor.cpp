@@ -188,13 +188,19 @@ gboolean updateProgress (gpointer data)
         return false;
     }
 
-    gint64 cur_pos = GST_CLOCK_TIME_NONE;
-    GstFormat format_time = GST_FORMAT_TIME;
-    gst_element_query_position (GST_ELEMENT (self->getPipeline()), &format_time, &cur_pos);
+    double duration = self->getDuration();
+    if(duration == -1) {
+        //unknown
+        self->setProgress(0);
+    } else {
+        gint64 cur_pos = GST_CLOCK_TIME_NONE;
+        GstFormat format_time = GST_FORMAT_TIME;
+        gst_element_query_position (GST_ELEMENT (self->getPipeline()), &format_time, &cur_pos);
 
-    self->setProgress ((double)cur_pos / (double)self->getDuration());
-    qDebug() << "Render progress " << self->getProgress() * 100
-             << "% (" << cur_pos << "/" << self->getDuration() << ")";
+        self->setProgress ((double)cur_pos / duration);
+        qDebug() << "Render progress " << self->getProgress() * 100
+             << "% (" << cur_pos << "/" << duration << ")";
+    }
     emit self->emitProgressChanged();
 
     return true;
