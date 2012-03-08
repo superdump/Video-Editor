@@ -17,7 +17,6 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     ges_timeline_add_layer(m_timeline, m_timelineLayer);
     m_pipeline = ges_timeline_pipeline_new();
     ges_timeline_pipeline_add_timeline (m_pipeline, m_timeline);
-    m_filename = NULL;
 }
 
 QDeclarativeVideoEditor::~QDeclarativeVideoEditor()
@@ -134,14 +133,19 @@ bus_call(GstBus * bus, GstMessage * msg, gpointer data)
     return self->handleBusMessage(bus, msg);
 }
 
+QString getDateTimeString() {
+    QDateTime current = QDateTime::currentDateTime();
+
+    return current.toString("yyyyMMdd-hhmmss");
+}
+
 void QDeclarativeVideoEditor::render()
 {
     GstBus *bus = NULL;
 
     qDebug() << "Render preparations started";
 
-    QString output_uri = "file:///home/user/MyDocs/Movies/";
-    output_uri.append(getFileName().data());
+    QString output_uri = "file:///home/user/MyDocs/Movies/" + getDateTimeString() + ".mp4";
 
     GstEncodingProfile *profile = createEncodingProfile();
     if (!ges_timeline_pipeline_set_render_settings (m_pipeline, output_uri.toUtf8().data(), profile)) {
@@ -157,7 +161,7 @@ void QDeclarativeVideoEditor::render()
         return;
     }
 
-    qDebug() << "Rendering";
+    qDebug() << "Rendering to " << output_uri;
 
     bus = gst_pipeline_get_bus (GST_PIPELINE (m_pipeline));
     gst_bus_add_watch (bus, bus_call, this);
@@ -169,24 +173,4 @@ void QDeclarativeVideoEditor::render()
         emit error(RENDERING_FAILED, "Failed to set pipeline to playing state");
         return;
     }
-}
-
-QString createFileNameFromCurrentTimestamp() {
-    QDateTime current = QDateTime::currentDateTime();
-
-    return QString((int) (current.toMSecsSinceEpoch()/1000));
-}
-
-QString QDeclarativeVideoEditor::getFileName (void)
-{
-    if (m_filename == NULL) {
-        /* generate filename from date and time */
-        m_filename = createFileNameFromCurrentTimestamp();
-    }
-    return m_filename;
-}
-
-void QDeclarativeVideoEditor::setFileName (QString filename)
-{
-    m_filename = filename;
 }

@@ -24,9 +24,6 @@ public:
     //videoeditor API
     Q_INVOKABLE void render();
 
-    Q_INVOKABLE QString getFileName(void);
-    Q_INVOKABLE void setFileName(QString filename);
-
 
     gboolean handleBusMessage(GstBus * bus, GstMessage * msg);
 
@@ -48,8 +45,6 @@ protected:
     GESTimelinePipeline *m_pipeline;
 
     int m_size;
-
-    QString m_filename;
 
     Q_DISABLE_COPY(QDeclarativeVideoEditor)
 };
