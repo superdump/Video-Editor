@@ -63,18 +63,6 @@ Page {
 
         Button {
             id: projectsButton
-            text: "Projects"
-            anchors.topMargin: 16
-            anchors.leftMargin: 16
-            anchors.rightMargin: 16
-            anchors.bottomMargin: 16
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            height: parent.height / 2.0 - 24
-        }
-        Button {
-            id: addMediaButton
             text: "Add Media"
             anchors.topMargin: 16
             anchors.leftMargin: 16
@@ -82,9 +70,8 @@ Page {
             anchors.bottomMargin: 16
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.top: projectsButton.bottom
-            anchors.bottom: parent.bottom
-
+            anchors.top: parent.top
+            height: parent.height - 24
             onClicked: {
                 var component = Qt.createComponent("VideoGallery.qml")
                 pageStack.push(component);
@@ -169,24 +156,12 @@ Page {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            height: parent.height / 2.0 - 24
+            height: parent.height - 24
 
             onClicked: {
                 progressDialog.open()
                 videoeditor.render()
             }
-        }
-        Button {
-            id: cameraButton
-            text: "Camera"
-            anchors.topMargin: 16
-            anchors.leftMargin: 16
-            anchors.rightMargin: 16
-            anchors.bottomMargin: 16
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: exportButton.bottom
-            anchors.bottom: parent.bottom
         }
     }
 
