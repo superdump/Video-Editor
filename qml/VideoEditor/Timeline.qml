@@ -16,6 +16,8 @@ Page {
 
         onRenderComplete: {
             progressDialog.close();
+            messageField.text = "Export complete";
+            messageDialog.open();
         }
     }
 
@@ -117,6 +119,32 @@ Page {
         }
 
         onRejected: videoeditor.cancel()
+    }
+
+    Dialog {
+        id: messageDialog
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        status: DialogStatus.Closed
+        visualParent: timeline
+
+        title: Text {
+            id: messageTitleField
+            text: ""
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        content: Text {
+            id: messageField
+            width: parent.width
+        }
+
+        buttons: Button {
+            text: "Ok"
+            anchors.horizontalCenter: parent.horizontalCenter
+            onClicked: messageDialog.close()
+        }
     }
 
     Item {
