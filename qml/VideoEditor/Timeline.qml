@@ -13,6 +13,10 @@ Page {
         //onError: {
         //    console.debug("Error: " + message + " (" + debug + ")");
         //}
+
+        onRenderComplete: {
+            progressDialog.close();
+        }
     }
 
     Rectangle {

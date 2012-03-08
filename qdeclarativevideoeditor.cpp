@@ -107,7 +107,7 @@ QDeclarativeVideoEditor::handleBusMessage (GstBus *bus, GstMessage *msg)
         qDebug() << "End of stream";
         setProgress(1.0);
         gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
-        //emit renderComplete();
+        emit renderComplete();
         setProgress(-1.0);
         break;
 

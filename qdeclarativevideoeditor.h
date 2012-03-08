@@ -59,7 +59,7 @@ signals:
     /**
       * Emitted when the pipeline hits EOS from rendering
       */
-    //void renderComplete();
+    void renderComplete();
 
 public slots:
 
