@@ -17,6 +17,8 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     ges_timeline_add_layer(m_timeline, m_timelineLayer);
     m_pipeline = ges_timeline_pipeline_new();
     ges_timeline_pipeline_add_timeline (m_pipeline, m_timeline);
+    m_duration = GST_CLOCK_TIME_NONE;
+    m_progress = 0.0;
 }
 
 QDeclarativeVideoEditor::~QDeclarativeVideoEditor()
@@ -103,7 +105,10 @@ QDeclarativeVideoEditor::handleBusMessage (GstBus *bus, GstMessage *msg)
 
     case GST_MESSAGE_EOS:
         qDebug() << "End of stream";
+        setProgress(1.0);
         gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
+        //emit renderComplete();
+        setProgress(-1.0);
         break;
 
     case GST_MESSAGE_ERROR: {
@@ -139,6 +144,62 @@ QString getDateTimeString() {
     return current.toString("yyyyMMdd-hhmmss");
 }
 
+GESTimelinePipeline *QDeclarativeVideoEditor::getPipeline()
+{
+    return m_pipeline;
+}
+
+gint64 QDeclarativeVideoEditor::getDuration()
+{
+    if (m_duration == GST_CLOCK_TIME_NONE) {
+        GstFormat format_time = GST_FORMAT_TIME;
+        gst_element_query_duration (GST_ELEMENT (m_pipeline), &format_time, &m_duration);
+    }
+    return m_duration;
+}
+
+void QDeclarativeVideoEditor::setDuration(gint64 duration)
+{
+    m_duration = duration;
+}
+
+double QDeclarativeVideoEditor::getProgress()
+{
+    return m_progress;
+}
+
+void QDeclarativeVideoEditor::setProgress(double progress)
+{
+    m_progress = progress;
+}
+
+void QDeclarativeVideoEditor::emitProgressChanged()
+{
+    emit progressChanged();
+}
+
+gboolean updateProgress (gpointer data)
+{
+    QDeclarativeVideoEditor *self = (QDeclarativeVideoEditor*) data;
+
+    double progress = self->getProgress();
+    if (progress == -1.0) {
+        progress = 0.0;
+        return false;
+    }
+
+    gint64 cur_pos = GST_CLOCK_TIME_NONE;
+    GstFormat format_time = GST_FORMAT_TIME;
+    gst_element_query_position (GST_ELEMENT (self->getPipeline()), &format_time, &cur_pos);
+
+    self->setProgress ((double)cur_pos / (double)self->getDuration());
+    qDebug() << "Render progress " << self->getProgress() * 100
+             << "% (" << cur_pos << "/" << self->getDuration() << ")";
+    emit self->emitProgressChanged();
+
+    return true;
+}
+
 void QDeclarativeVideoEditor::render()
 {
     GstBus *bus = NULL;
@@ -166,6 +227,12 @@ void QDeclarativeVideoEditor::render()
     bus = gst_pipeline_get_bus (GST_PIPELINE (m_pipeline));
     gst_bus_add_watch (bus, bus_call, this);
     gst_object_unref (bus);
+
+    // reset duration and progress
+    setDuration(GST_CLOCK_TIME_NONE);
+    setProgress(0.0);
+    g_timeout_add (500, updateProgress, this);
+
     if(!gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PLAYING)) {
         gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_NULL);
         gst_object_unref (bus);

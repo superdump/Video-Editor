@@ -9,6 +9,7 @@ extern "C" {
 class QDeclarativeVideoEditor : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(double progress READ getProgress NOTIFY progressChanged)
 public:
     explicit QDeclarativeVideoEditor(QObject *parent = 0);
     virtual ~QDeclarativeVideoEditor();
@@ -24,8 +25,19 @@ public:
     //videoeditor API
     Q_INVOKABLE void render();
 
-
     gboolean handleBusMessage(GstBus * bus, GstMessage * msg);
+
+    gint64 getDuration();
+    void setDuration(gint64 duration);
+    double getProgress();
+    void setProgress(double progress);
+    void emitProgressChanged();
+
+    GESTimelinePipeline *getPipeline ();
+
+private:
+    gint64 m_duration;
+    double m_progress;
 
 signals:
     /**
@@ -36,8 +48,19 @@ signals:
       */
     void error(QString message, QString debug);
 
-public slots:
+    /**
+      * Emitted when the progress property has been updated.
+      *
+      * Read the value from the property.
+      */
+    void progressChanged();
 
+    /**
+      * Emitted when the pipeline hits EOS from rendering
+      */
+    //void renderComplete();
+
+public slots:
 
 protected:
     GESTimeline *m_timeline;

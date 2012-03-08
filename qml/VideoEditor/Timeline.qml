@@ -86,6 +86,36 @@ Page {
         }
     }
 
+    Dialog {
+        id: progressDialog
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        status: DialogStatus.Closed
+        visualParent: timeline
+
+        title: Text {
+            id: titleField
+            text: "Rendering progress:"
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        content: ProgressBar {
+            id: progressBar
+            width: parent.width
+            value: videoeditor.progress
+        }
+
+        buttons: Button {
+            text: "Cancel"
+            anchors.horizontalCenter: parent.horizontalCenter
+            onClicked: progressDialog.reject()
+        }
+
+        // FIXME - onRejected: videoeditor.cancel()
+
+    }
+
     Item {
         id: rightButtons
         anchors.bottom: timelineBar.top
@@ -106,6 +136,7 @@ Page {
             height: parent.height / 2.0 - 24
 
             onClicked: {
+                progressDialog.open()
                 videoeditor.render()
             }
         }
