@@ -112,8 +112,7 @@ Page {
             onClicked: progressDialog.reject()
         }
 
-        // FIXME - onRejected: videoeditor.cancel()
-
+        onRejected: videoeditor.cancel()
     }
 
     Item {

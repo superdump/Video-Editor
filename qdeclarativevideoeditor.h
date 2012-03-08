@@ -24,6 +24,7 @@ public:
 
     //videoeditor API
     Q_INVOKABLE void render();
+    Q_INVOKABLE void cancelRender();
 
     gboolean handleBusMessage(GstBus * bus, GstMessage * msg);
 

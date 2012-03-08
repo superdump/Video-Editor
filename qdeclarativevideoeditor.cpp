@@ -247,3 +247,10 @@ void QDeclarativeVideoEditor::render()
         return;
     }
 }
+
+void QDeclarativeVideoEditor::cancelRender()
+{
+    qDebug() << "Cancelling rendering operation";
+    gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_NULL);
+    setProgress(0);
+}
