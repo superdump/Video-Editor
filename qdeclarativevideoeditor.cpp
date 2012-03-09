@@ -106,6 +106,7 @@ QDeclarativeVideoEditor::handleBusMessage (GstBus *bus, GstMessage *msg)
     case GST_MESSAGE_EOS:
         qDebug() << "End of stream";
         setProgress(1.0);
+        emit progressChanged();
         gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
         emit renderComplete();
         setProgress(-1.0);
@@ -201,6 +202,12 @@ gboolean updateProgress (gpointer data)
         qDebug() << "Render progress " << self->getProgress() * 100
              << "% (" << cur_pos << "/" << duration << ")";
     }
+
+    if (self->getProgress() < 0.0) {
+        self->setProgress(0.0);
+        return false;
+    }
+
     emit self->emitProgressChanged();
 
     return true;
