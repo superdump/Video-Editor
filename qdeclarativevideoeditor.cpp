@@ -75,6 +75,17 @@ bool QDeclarativeVideoEditor::append(const QString &value)
     return r;
 }
 
+void QDeclarativeVideoEditor::removeAll()
+{
+    beginRemoveRows(QModelIndex(), 0, rowCount());
+    while(m_size > 0) {
+        GESTimelineObject *obj = ges_simple_timeline_layer_nth((GESSimpleTimelineLayer*) m_timelineLayer, m_size-1);
+        ges_timeline_layer_remove_object(m_timelineLayer, obj);
+        m_size--;
+    }
+    endRemoveRows();
+}
+
 GstEncodingProfile *createEncodingProfile() {
     GstEncodingProfile *profile = (GstEncodingProfile *)
             gst_encoding_container_profile_new("mp4", NULL, gst_caps_new_simple("video/quicktime",

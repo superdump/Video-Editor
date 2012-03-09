@@ -20,6 +20,7 @@ public:
 
     //List manipulation API (not using the usual listmodel API)
     Q_INVOKABLE bool append(const QString &value);
+    Q_INVOKABLE void removeAll();
 
     //videoeditor API
     Q_INVOKABLE void render();

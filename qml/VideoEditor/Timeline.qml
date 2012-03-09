@@ -63,7 +63,7 @@ Page {
         anchors.bottom: timelineBar.top
 
         Button {
-            id: projectsButton
+            id: addMediaButton
             text: "Add Media"
             anchors.topMargin: 16
             anchors.leftMargin: 16
@@ -72,10 +72,26 @@ Page {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            height: parent.height - 24
+            height: parent.height/2 - 24
             onClicked: {
                 var component = Qt.createComponent("VideoGallery.qml")
                 pageStack.push(component);
+            }
+        }
+
+        Button {
+            id: removeAllButton
+            text: "Remove all"
+            anchors.topMargin: 16
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            anchors.bottomMargin: 16
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: parent.height/2 - 24
+            onClicked: {
+                videoeditor.removeAll();
             }
         }
     }
