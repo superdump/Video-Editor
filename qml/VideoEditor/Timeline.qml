@@ -13,7 +13,7 @@ Page {
         onError: {
             console.debug("Error: " + message + " (" + debug + ")");
             progressDialog.close();
-            messageTitleField.text = message;
+            messageTitleField.text = message + "\n(" + debug + ")";
             messageDialog.open();
         }
 
@@ -137,6 +137,7 @@ Page {
 
     Dialog {
         id: messageDialog
+        width: parent.width
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -145,9 +146,10 @@ Page {
 
         title: Text {
             id: messageTitleField
+            width: parent.width
             color: "white";
             font.pixelSize: 28
-            anchors.horizontalCenter: parent.horizontalCenter
+            horizontalAlignment: Text.AlignHCenter
         }
 
         content: Item {
