@@ -22,6 +22,7 @@ Page {
             color: "#FFFFFF"
             radius: 5
         }
+        highlightMoveDuration: 1
         spacing: 8
 
         model: DocumentGalleryModel {
