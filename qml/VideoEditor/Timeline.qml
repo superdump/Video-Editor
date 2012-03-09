@@ -10,9 +10,12 @@ Page {
     VideoEditor {
         id: videoeditor
 
-        //onError: {
-        //    console.debug("Error: " + message + " (" + debug + ")");
-        //}
+        onError: {
+            console.debug("Error: " + message + " (" + debug + ")");
+            progressDialog.close();
+            messageTitleField.text = message;
+            messageDialog.open();
+        }
 
         onRenderComplete: {
             progressDialog.close();
