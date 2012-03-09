@@ -17,10 +17,9 @@ public:
     //QAbstractListModel
     int rowCount(const QModelIndex &parent=QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role) const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    bool setData(const QModelIndex &index, const QVariant &value, int role);
 
-    Q_INVOKABLE bool append(const QString &value, int role=Qt::EditRole);
+    //List manipulation API (not using the usual listmodel API)
+    Q_INVOKABLE bool append(const QString &value);
 
     //videoeditor API
     Q_INVOKABLE void render();

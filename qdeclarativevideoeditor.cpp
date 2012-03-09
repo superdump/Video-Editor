@@ -48,28 +48,7 @@ QVariant QDeclarativeVideoEditor::data(const QModelIndex &index, int role) const
     }
 }
 
-Qt::ItemFlags QDeclarativeVideoEditor::flags(const QModelIndex &index) const
-{
-    Qt::ItemFlags flags = QAbstractListModel::flags(index);
-    return flags | Qt::ItemIsEditable;
-}
-
-bool QDeclarativeVideoEditor::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-    qDebug() << "Setting data:" << index.isValid() << value.toString() << role;
-    if(index.isValid() && role == Qt::EditRole) {
-        if(index.row() == m_size) {
-            //m_list.append(value.toString());
-            //emit dataChanged(this->createIndex(index.row(),0), this->createIndex(index.row(),0));
-            return false;
-        }
-    } else {
-        qDebug() << "Invalid index or role";
-    }
-    return false;
-}
-
-bool QDeclarativeVideoEditor::append(const QString &value, int role)
+bool QDeclarativeVideoEditor::append(const QString &value)
 {
     qDebug() << "Appending new item:" << value;
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
