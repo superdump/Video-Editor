@@ -217,25 +217,22 @@ Page {
 
             boundsBehavior: Flickable.StopAtBounds
 
-            delegate: Column {
+            delegate: Rectangle {
+                color: "light grey"
+                width: list.width / 3
+                height: list.height
                 anchors.verticalCenter: parent.verticalCenter
-                Rectangle {
-                    color: "light grey"
-                    width: list.width / 3
-                    height: list.height
-                    Text {
-                        width: parent.width - 16
-                        height: parent.height - 16
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: fileName
-                        font.pointSize: 20
-                        color: "black"
-                        wrapMode: Text.WrapAnywhere
-                        maximumLineCount: 4
-                        elide: Text.ElideRight
-                        horizontalAlignment: Text.AlignHCenter
-                    }
+                Text {
+                    width: parent.width - 16
+                    height: parent.height - 16
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    text: fileName
+                    font.pointSize: 20
+                    color: "black"
+                    wrapMode: Text.WrapAnywhere
+                    maximumLineCount: 4
+                    elide: Text.ElideRight
                 }
             }
 
