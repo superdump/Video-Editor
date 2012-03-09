@@ -222,18 +222,5 @@ Page {
 
             // x: parent.width / 2 - flickable.contentWidth * flickable.visibleArea.xPosition / (1.0 - flickable.visibleArea.widthRatio)
         }
-
-        Rectangle {
-            id: playhead
-
-            anchors.top: parent.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: parent.bottom
-
-            width: 3
-            height: parent.height
-
-            color: "red"
-        }
     }
 }
