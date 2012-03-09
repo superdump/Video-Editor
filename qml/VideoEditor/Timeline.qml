@@ -209,7 +209,7 @@ Page {
                         height: parent.height - 16
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.verticalCenter: parent.verticalCenter
-                        text: uri
+                        text: fileName
                         font.pointSize: 20
                         color: "black"
                         wrapMode: Text.WrapAnywhere

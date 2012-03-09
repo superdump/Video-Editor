@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QDateTime>
+#include <QFileInfo>
 
 #define RENDERING_FAILED "Rendering failed"
 
@@ -10,6 +11,7 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
 {
     QHash<int, QByteArray> roles;
     roles.insert( 33 , "uri" );
+    roles.insert( 34 , "fileName" );
     setRoleNames(roles);
 
     m_timeline = ges_timeline_new_audio_video();
@@ -35,14 +37,28 @@ int QDeclarativeVideoEditor::rowCount(const QModelIndex &parent) const
 QVariant QDeclarativeVideoEditor::data(const QModelIndex &index, int role) const
 {
     if (index.isValid() && index.row() < m_size) {
+        QVariant ret = NULL;
         switch (role) {
-        default:
+        case 33:
         {
             GESTimelineFileSource *src = (GESTimelineFileSource*) ges_simple_timeline_layer_nth((GESSimpleTimelineLayer*) m_timelineLayer, index.row());
             QVariant ret = QVariant(ges_timeline_filesource_get_uri(src));
-            return ret;
+            break;
+        }
+        case 34:
+        {
+            GESTimelineFileSource *src = (GESTimelineFileSource*) ges_simple_timeline_layer_nth((GESSimpleTimelineLayer*) m_timelineLayer, index.row());
+            QFileInfo file(QString(ges_timeline_filesource_get_uri(src)));
+            ret = QVariant(file.fileName());
+            break;
+        }
+        default:
+        {
+            qDebug() << "Unknown role: " << role;
+            break;
         }
         }
+        return ret;
     } else {
         return QVariant();
     }

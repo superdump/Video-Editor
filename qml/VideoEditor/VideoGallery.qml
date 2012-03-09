@@ -27,7 +27,7 @@ Page {
         model: DocumentGalleryModel {
             id: docGalModel
             rootType: DocumentGallery.Video
-            properties: [ "url" ]
+            properties: [ "url", "fileName" ]
             autoUpdate: true
 
 
@@ -41,7 +41,7 @@ Page {
             height: 64
             anchors.horizontalCenter: parent.horizontalCenter
             verticalAlignment: Text.AlignVCenter
-            text: url
+            text: fileName
             font.pointSize: 26
             elide: Text.ElideLeft
             MouseArea{
