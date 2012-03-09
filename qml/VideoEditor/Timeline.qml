@@ -81,7 +81,7 @@ Page {
 
         Button {
             id: removeAllButton
-            text: "Remove all"
+            text: "Clear"
             anchors.topMargin: 16
             anchors.leftMargin: 16
             anchors.rightMargin: 16
