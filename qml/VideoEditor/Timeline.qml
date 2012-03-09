@@ -129,7 +129,7 @@ Page {
             onClicked: progressDialog.reject()
         }
 
-        onRejected: videoeditor.cancel()
+        onRejected: videoeditor.cancelRender()
     }
 
     Dialog {
