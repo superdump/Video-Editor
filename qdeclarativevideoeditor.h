@@ -23,7 +23,7 @@ public:
     Q_INVOKABLE void removeAll();
 
     //videoeditor API
-    Q_INVOKABLE void render();
+    Q_INVOKABLE bool render();
     Q_INVOKABLE void cancelRender();
 
     gboolean handleBusMessage(GstBus * bus, GstMessage * msg);

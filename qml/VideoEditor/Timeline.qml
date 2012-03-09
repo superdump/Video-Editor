@@ -183,8 +183,9 @@ Page {
             height: parent.height - 24
 
             onClicked: {
-                progressDialog.open()
-                videoeditor.render()
+                if (videoeditor.render()) {
+                    progressDialog.open()
+                }
             }
         }
     }

@@ -5,6 +5,7 @@
 #include <QFileInfo>
 
 #define RENDERING_FAILED "Rendering failed"
+#define NO_MEDIA "Add clips before exporting"
 
 QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     QAbstractListModel(parent), m_size(0)
@@ -219,9 +220,15 @@ gboolean updateProgress (gpointer data)
     return true;
 }
 
-void QDeclarativeVideoEditor::render()
+bool QDeclarativeVideoEditor::render()
 {
     GstBus *bus = NULL;
+
+    //sanity check
+    if (m_size < 1) {
+        emit error(NO_MEDIA, "No media added to the timeline");
+        return false;
+    }
 
     qDebug() << "Render preparations started";
 
@@ -231,14 +238,14 @@ void QDeclarativeVideoEditor::render()
     if (!ges_timeline_pipeline_set_render_settings (m_pipeline, output_uri.toUtf8().data(), profile)) {
         emit error(RENDERING_FAILED, "Failed setting rendering options");
         gst_encoding_profile_unref(profile);
-        return;
+        return false;
     }
     gst_encoding_profile_unref (profile);
 
     if (!ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_SMART_RENDER)) {
         emit error(RENDERING_FAILED, "Failed to set rendering mode");
         gst_encoding_profile_unref(profile);
-        return;
+        return false;
     }
 
     qDebug() << "Rendering to " << output_uri;
@@ -257,8 +264,9 @@ void QDeclarativeVideoEditor::render()
         gst_object_unref (bus);
 
         emit error(RENDERING_FAILED, "Failed to set pipeline to playing state");
-        return;
+        return false;
     }
+    return true;
 }
 
 void QDeclarativeVideoEditor::cancelRender()
