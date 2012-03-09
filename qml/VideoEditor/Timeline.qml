@@ -45,12 +45,13 @@ Page {
 
         Text {
             id: previewText
-            text: qsTr("Video preview\n(Tap to play)")
-            font.bold: true
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
             anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-            font.pixelSize: 32
+            text: qsTr("Video preview\n(Coming soon!)")
             color: "white"
+            font.bold: true
+            font.pixelSize: 32
         }
     }
 
@@ -90,15 +91,20 @@ Page {
         title: Text {
             id: titleField
             color: "white"
-            text: "Rendering progress:"
+            text: "Export progress:"
             font.pixelSize: 28
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
-        content: ProgressBar {
-            id: progressBar
+        content: Item {
             width: parent.width
-            value: videoeditor.progress
+            height: 32
+            ProgressBar {
+                id: progressBar
+                width: parent.width
+                anchors.verticalCenter: parent.verticalCenter
+                value: videoeditor.progress
+            }
         }
 
         buttons: Button {
@@ -125,15 +131,12 @@ Page {
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
-        content: Text {
-            id: messageField
-            color: "white"
-            font.pixelSize: 22
-            width: parent.width
+        content: Item {
+            height: 8
         }
 
         buttons: Button {
-            text: "Ok"
+            text: "OK"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: messageDialog.close()
         }
