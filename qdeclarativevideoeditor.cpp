@@ -26,6 +26,8 @@
 #define RENDERING_FAILED "Rendering failed"
 #define NO_MEDIA "Add clips before exporting"
 
+static gboolean bus_call(GstBus * bus, GstMessage * msg, gpointer data);
+
 QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     QAbstractListModel(parent), m_size(0)
 {
@@ -49,6 +51,10 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_PREVIEW);
     m_duration = GST_CLOCK_TIME_NONE;
     m_progress = 0.0;
+
+    GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE (m_pipeline));
+    gst_bus_add_watch (bus, bus_call, this);
+    gst_object_unref (bus);
 }
 
 QDeclarativeVideoEditor::~QDeclarativeVideoEditor()
@@ -260,8 +266,6 @@ gboolean updateProgress (gpointer data)
 
 bool QDeclarativeVideoEditor::render()
 {
-    GstBus *bus = NULL;
-
     //sanity check
     if (m_size < 1) {
         emit error(NO_MEDIA, "No media added to the timeline");
@@ -288,10 +292,6 @@ bool QDeclarativeVideoEditor::render()
 
     qDebug() << "Rendering to " << output_uri;
 
-    bus = gst_pipeline_get_bus (GST_PIPELINE (m_pipeline));
-    gst_bus_add_watch (bus, bus_call, this);
-    gst_object_unref (bus);
-
     // reset duration and progress
     setDuration(GST_CLOCK_TIME_NONE);
     setProgress(0.0);
@@ -299,7 +299,6 @@ bool QDeclarativeVideoEditor::render()
 
     if(!gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PLAYING)) {
         gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_NULL);
-        gst_object_unref (bus);
 
         emit error(RENDERING_FAILED, "Failed to set pipeline to playing state");
         return false;
