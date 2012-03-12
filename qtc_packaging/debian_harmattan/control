@@ -2,7 +2,7 @@ Source: videoeditor
 Section: user/other
 Priority: optional
 Maintainer: Robert Swain <robert.swain@collabora.co.uk>
-Build-Depends: debhelper (>= 5), libqt4-dev, libges-0.10-dev,
+Build-Depends: debhelper (>= 5), libqt4-dev
 Standards-Version: 3.7.3
 Homepage: http://github.com/superdump/Video-Editor/
 
@@ -12,12 +12,10 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Video editing in the palm of your hand
  VideoEditor is a video editing application using GStreamer Editing Services
  and GStreamer.
-
  The goal is to enable editing multiple video clips together into a single
  composition via a simple touch interface. Add clips of various formats, trim
  them to cut out the sequences you want, reorder them as necessary, preview
  your composition and export to a new file.
-
  The initial version is capable of concatenation but more features will follow
  soon. Watch this space!
 XSBC-Maemo-Display-Name: VideoEditor
