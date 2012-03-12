@@ -1,5 +1,13 @@
 videoeditor (0.0.1) unstable; urgency=low
 
   * Initial Release.
+  * Can concatenate clips and export to a file named yyMMdd-hhmmss.mp4 in
+    /home/user/MyDocs/Movies
+  * No video preview
+  * No export settings
+  * No composition project files
+  * No reordering
+  * No trimming
+  * Export often fails
 
- -- unknown <rob@unknown>  Tue, 28 Feb 2012 14:38:08 +0100
+ -- Robert Swain <robert.swain@collabora.co.uk>  Mon, 12 Mar 2012 13:07:08 +0100

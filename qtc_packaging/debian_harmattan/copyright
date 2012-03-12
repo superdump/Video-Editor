@@ -1,39 +1,39 @@
-This package was debianized by unknown <rob@unknown> on
-Tue, 28 Feb 2012 14:38:08 +0100.
+This package was debianized by Robert Swain <robert.swain@collabora.co.uk> on
+Mon, 12 Mar 2012 13:07:00 +0100.
 
-It was downloaded from <url://example.com>
+It was downloaded from <http://github.com/superdump/Video-Editor/>
 
 Upstream Author(s):
 
-    <put author's name and email here>
-    <likewise for another author>
+    Robert Swain <robert.swain@collabora.co.uk>
+    Thiago Sousa Santos <thiago.sousa.santos@collabora.co.uk>
 
 Copyright:
 
-    <Copyright (C) YYYY Name OfAuthor>
-    <likewise for another author>
+    <Copyright (C) 2012 Robert Swain>
+    <Copyright (C) 2012 Thiago Sousa Santos>
 
 License:
 
-    This package is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
 
-    This package is distributed in the hope that it will be useful,
+    This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this package; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-On Debian systems, the complete text of the GNU General
-Public License can be found in `/usr/share/common-licenses/GPL'.
+On Debian systems, the complete text of the GNU Lesser General
+Public License can be found in `/usr/share/common-licenses/LGPL-2.1'.
 
-The Debian packaging is (C) 2012, unknown <rob@unknown> and
-is licensed under the GPL, see above.
+The Debian packaging is (C) 2012, Robert Swain <robert.swain@collabora.co.uk> and
+is licensed under the LGPL v2.1, see above.
 
 
 # Please also look if there are files or directories which have a

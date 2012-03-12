@@ -1,6 +1,15 @@
 The Debian Package videoeditor
-----------------------------
+------------------------------
 
-Comments regarding the Package
+ VideoEditor is a video editing application using GStreamer Editing Services
+ and GStreamer.
 
- -- unknown <rob@unknown>  Tue, 28 Feb 2012 14:38:08 +0100
+ The goal is to enable editing multiple video clips together into a single
+ composition via a simple touch interface. Add clips of various formats, trim
+ them to cut out the sequences you want, reorder them as necessary, preview
+ your composition and export to a new file.
+
+ The initial version is capable of concatenation but more features will follow
+ soon. Watch this space!
+
+ -- Robert Swain <robert.swain@collabora.co.uk>  Mon, 12 Mar 2012 13:07:08 +0100
