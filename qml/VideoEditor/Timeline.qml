@@ -252,22 +252,84 @@ Page {
 
             boundsBehavior: Flickable.StopAtBounds
 
-            delegate: Rectangle {
-                color: "light grey"
-                width: list.width / 3
-                height: list.height
-                anchors.verticalCenter: parent.verticalCenter
-                Text {
-                    width: parent.width - 16
-                    height: parent.height - 16
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    text: fileName
-                    font.pointSize: 20
-                    color: "black"
-                    wrapMode: Text.WrapAnywhere
-                    maximumLineCount: 4
-                    elide: Text.ElideRight
+            delegate: Component {
+                Rectangle {
+                    id: delegateRect
+                    color: "light grey"
+                    width: list.width / 3
+                    height: list.height
+                    anchors.verticalCenter: parent.verticalCenter
+                    Text {
+                        id: mediaText
+                        width: parent.width - 16
+                        height: parent.height - 16
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: fileName
+                        font.pointSize: 20
+                        color: "black"
+                        wrapMode: Text.WrapAnywhere
+                        maximumLineCount: 4
+                        elide: Text.ElideRight
+                    }
+                    MouseArea {
+                        id: dragArea
+                        anchors.fill: parent
+                        property int positionStarted: 0
+                        property int positionEnded: 0
+                        property int positionsMoved: Math.floor((positionEnded - positionStarted)/mediaText.height)
+                        property int newPosition: index + positionsMoved
+                        property bool held: false
+                        drag.axis: Drag.XAxis
+                        onPressAndHold: {
+                            delegateRect.z = 2,
+                                    positionStarted = delegateRect.x,
+                                    dragArea.drag.target = delegateRect,
+                                    delegateRect.opacity = 0.5,
+                                    list.interactive = false,
+                                    held = true
+                            drag.maximumX = (timelineBar.width - mediaText.width - 1 + list.contentX),
+                                    drag.minimumX = 0
+                        }
+                        onPositionChanged: {
+                            positionEnded = delegateRect.x;
+                        }
+                        onReleased: {
+                            if (Math.abs(positionsMoved) < 1 && held == true) {
+                                delegateRect.x = positionStarted,
+                                        delegateRect.opacity = 1,
+                                        list.interactive = true,
+                                        dragArea.drag.target = null,
+                                        held = false
+                            } else {
+                                if (held == true) {
+                                    if (newPosition < 1) {
+                                        delegateRect.z = 1,
+                                                videoeditor.move(index,0),
+                                                delegateRect.opacity = 1,
+                                                list.interactive = true,
+                                                dragArea.drag.target = null,
+                                                held = false
+                                    } else if (newPosition > list.count - 1) {
+                                        delegateRect.z = 1,
+                                                videoeditor.move(index, list.count - 1),
+                                                delegateRect.opacity = 1,
+                                                list.interactive = true,
+                                                dragArea.drag.target = null,
+                                                held = false
+                                    }
+                                    else {
+                                        delegateRect.z = 1,
+                                                videoeditor.move(index,newPosition),
+                                                delegateRect.opacity = 1,
+                                                list.interactive = true,
+                                                dragArea.drag.target = null,
+                                                held = false
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 

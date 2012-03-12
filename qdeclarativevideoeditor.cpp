@@ -104,6 +104,15 @@ bool QDeclarativeVideoEditor::append(const QString &value)
     return r;
 }
 
+void QDeclarativeVideoEditor::move(int from, int to)
+{
+    qDebug() << "Moving media object from " << from << " to " << to;
+    beginResetModel();
+    GESTimelineObject *obj = ges_simple_timeline_layer_nth(GES_SIMPLE_TIMELINE_LAYER (m_timelineLayer), from);
+    ges_simple_timeline_layer_move_object(GES_SIMPLE_TIMELINE_LAYER (m_timelineLayer), obj, to);
+    endResetModel();
+}
+
 void QDeclarativeVideoEditor::removeAll()
 {
     beginRemoveRows(QModelIndex(), 0, rowCount());
