@@ -36,7 +36,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     qmlRegisterType<QDeclarativeVideoEditor>("VideoEditor", 1,0, "VideoEditor");
 
     QmlApplicationViewer viewer;
-    viewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
+    viewer.setOrientation(QmlApplicationViewer::ScreenOrientationLockLandscape);
     viewer.setMainQmlFile(QLatin1String("qml/VideoEditor/main.qml"));
     viewer.showExpanded();
 
