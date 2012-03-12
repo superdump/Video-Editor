@@ -233,7 +233,8 @@ Page {
         Rectangle {
             id: timelineBackground
             anchors.fill: parent
-            color: "grey"
+            color: "#202020"
+            border.color: "#101010"
         }
 
         ListView {
@@ -245,8 +246,15 @@ Page {
             anchors.margins: 16
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            highlightRangeMode: ListView.ApplyRange
             spacing: 16
+
+            highlight: Rectangle {
+                color: "light grey"
+                width: list.width / 3
+                height: list.height
+                radius: 4
+            }
+            highlightMoveDuration: 1
 
             orientation: ListView.Horizontal
 
@@ -255,10 +263,12 @@ Page {
             delegate: Component {
                 Rectangle {
                     id: delegateRect
-                    color: "light grey"
+                    color: "grey"
                     width: list.width / 3
                     height: list.height
                     anchors.verticalCenter: parent.verticalCenter
+                    radius: 4
+                    opacity: 0.5
                     Text {
                         id: mediaText
                         width: parent.width - 16
@@ -267,7 +277,7 @@ Page {
                         verticalAlignment: Text.AlignVCenter
                         text: fileName
                         font.pointSize: 20
-                        color: "black"
+                        color: list.isCurrentItem ? "black" : "white"
                         wrapMode: Text.WrapAnywhere
                         maximumLineCount: 4
                         elide: Text.ElideRight
@@ -328,6 +338,14 @@ Page {
                                     }
                                 }
                             }
+                        }
+                    }
+                    MouseArea {
+                        id: selectArea
+                        anchors.fill: parent
+                        onClicked: {
+                            console.log("Item " + index + " clicked")
+                            list.currentIndex = index;
                         }
                     }
                 }
