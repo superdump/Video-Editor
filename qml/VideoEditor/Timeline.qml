@@ -205,6 +205,16 @@ Page {
         }
     }
 
+    ExportSettingsDialog {
+        id: exportSettingsDialog
+
+        onAccepted: {
+            if (videoeditor.render()) {
+                progressDialog.open()
+            }
+        }
+    }
+
     Item {
         id: rightButtons
         anchors.bottom: timelineBar.top
@@ -223,9 +233,7 @@ Page {
             anchors.top: parent.top
 
             onClicked: {
-                if (videoeditor.render()) {
-                    progressDialog.open()
-                }
+                exportSettingsDialog.open();
             }
             platformStyle: buttonStyle
         }
