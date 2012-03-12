@@ -282,14 +282,14 @@ Page {
                         property bool held: false
                         drag.axis: Drag.XAxis
                         onPressAndHold: {
-                            delegateRect.z = 2,
-                                    positionStarted = delegateRect.x,
-                                    dragArea.drag.target = delegateRect,
-                                    delegateRect.opacity = 0.5,
-                                    list.interactive = false,
-                                    held = true
-                            drag.maximumX = (timelineBar.width - mediaText.width - 1 + list.contentX),
-                                    drag.minimumX = 0
+                            delegateRect.z = 2;
+                            positionStarted = delegateRect.x;
+                            dragArea.drag.target = delegateRect;
+                            delegateRect.opacity = 0.5;
+                            list.interactive = false;
+                            held = true;
+                            drag.maximumX = (timelineBar.width - mediaText.width - 1 + list.contentX);
+                            drag.minimumX = 0;
                         }
                         onPositionChanged: {
                             positionEnded = delegateRect.x;
