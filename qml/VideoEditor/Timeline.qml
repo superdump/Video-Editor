@@ -277,7 +277,7 @@ Page {
                         anchors.fill: parent
                         property int positionStarted: 0
                         property int positionEnded: 0
-                        property int positionsMoved: Math.floor((positionEnded - positionStarted)/mediaText.height)
+                        property int positionsMoved: Math.floor((positionEnded - positionStarted)/delegateRect.width)
                         property int newPosition: index + positionsMoved
                         property bool held: false
                         drag.axis: Drag.XAxis
