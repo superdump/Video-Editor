@@ -296,35 +296,35 @@ Page {
                         }
                         onReleased: {
                             if (Math.abs(positionsMoved) < 1 && held == true) {
-                                delegateRect.x = positionStarted,
-                                        delegateRect.opacity = 1,
-                                        list.interactive = true,
-                                        dragArea.drag.target = null,
-                                        held = false
+                                delegateRect.x = positionStarted;
+                                delegateRect.opacity = 1;
+                                list.interactive = true;
+                                dragArea.drag.target = null;
+                                held = false;
                             } else {
                                 if (held == true) {
                                     if (newPosition < 1) {
-                                        delegateRect.z = 1,
-                                                videoeditor.move(index,0),
-                                                delegateRect.opacity = 1,
-                                                list.interactive = true,
-                                                dragArea.drag.target = null,
-                                                held = false
+                                        delegateRect.z = 1;
+                                        videoeditor.move(index,0);
+                                        delegateRect.opacity = 1;
+                                        list.interactive = true;
+                                        dragArea.drag.target = null;
+                                        held = false;
                                     } else if (newPosition > list.count - 1) {
-                                        delegateRect.z = 1,
-                                                videoeditor.move(index, list.count - 1),
-                                                delegateRect.opacity = 1,
-                                                list.interactive = true,
-                                                dragArea.drag.target = null,
-                                                held = false
+                                        delegateRect.z = 1;
+                                        videoeditor.move(index, list.count - 1);
+                                        delegateRect.opacity = 1;
+                                        list.interactive = true;
+                                        dragArea.drag.target = null;
+                                        held = false;
                                     }
                                     else {
-                                        delegateRect.z = 1,
-                                                videoeditor.move(index,newPosition),
-                                                delegateRect.opacity = 1,
-                                                list.interactive = true,
-                                                dragArea.drag.target = null,
-                                                held = false
+                                        delegateRect.z = 1;
+                                        videoeditor.move(index,newPosition);
+                                        delegateRect.opacity = 1;
+                                        list.interactive = true;
+                                        dragArea.drag.target = null;
+                                        held = false;
                                     }
                                 }
                             }
