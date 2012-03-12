@@ -29,7 +29,8 @@
 static gboolean bus_call(GstBus * bus, GstMessage * msg, gpointer data);
 
 QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
-    QAbstractListModel(parent), m_size(0)
+    QAbstractListModel(parent), m_size(0),
+    m_width(0), m_height(0), m_fpsn(0), m_fpsd(0)
 {
     QHash<int, QByteArray> roles;
     roles.insert( 33 , "uri" );
@@ -130,14 +131,27 @@ void QDeclarativeVideoEditor::removeAll()
     endRemoveRows();
 }
 
-GstEncodingProfile *createEncodingProfile() {
+GstEncodingProfile *QDeclarativeVideoEditor::createEncodingProfile() {
     GstEncodingProfile *profile = (GstEncodingProfile *)
             gst_encoding_container_profile_new("mp4", NULL, gst_caps_new_simple("video/quicktime",
                                                                                 "variant", G_TYPE_STRING, "iso",
                                                                                 NULL), NULL);
-    GstEncodingProfile *video = (GstEncodingProfile *)
+
+    GstEncodingProfile *video = NULL;
+    if (m_width > 0 && m_height > 0 && m_fpsn > 0 && m_fpsd > 0) {
+        video = (GstEncodingProfile *)
+            gst_encoding_video_profile_new(gst_caps_new_simple("video/mpeg", "mpegversion",
+                                                               G_TYPE_INT, 4,
+                                                               "width", G_TYPE_INT, m_width,
+                                                               "height", G_TYPE_INT, m_height,
+                                                               "framerate", GST_TYPE_FRACTION_RANGE,
+                                                               m_fpsn-1, m_fpsd, m_fpsn+1, m_fpsd, NULL),
+                                           NULL, NULL, 1);
+    } else {
+        video = (GstEncodingProfile *)
             gst_encoding_video_profile_new(gst_caps_new_simple("video/mpeg", "mpegversion",
                                                                G_TYPE_INT, 4, NULL), NULL, NULL, 1);
+    }
     GstEncodingProfile *audio = (GstEncodingProfile *)
             gst_encoding_audio_profile_new(gst_caps_new_simple("audio/mpeg", "mpegversion",
                                                                G_TYPE_INT, 4, NULL), NULL, NULL, 0);
@@ -262,6 +276,14 @@ gboolean updateProgress (gpointer data)
     emit self->emitProgressChanged();
 
     return true;
+}
+
+void QDeclarativeVideoEditor::setRenderSettings(int width, int height, int fps_n, int fps_d)
+{
+    this->m_width = width;
+    this->m_height = height;
+    this->m_fpsn = fps_n;
+    this->m_fpsd = fps_d;
 }
 
 bool QDeclarativeVideoEditor::render()

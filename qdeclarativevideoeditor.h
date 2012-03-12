@@ -50,6 +50,9 @@ public:
     Q_INVOKABLE bool render();
     Q_INVOKABLE void cancelRender();
 
+    //render settings API
+    Q_INVOKABLE void setRenderSettings(int width, int height, int fps_n, int fps_d);
+
     gboolean handleBusMessage(GstBus * bus, GstMessage * msg);
 
     gint64 getDuration();
@@ -62,6 +65,9 @@ public:
     Q_INVOKABLE void setWinId(uint winId);
 
     GESTimelinePipeline *getPipeline ();
+
+protected:
+    GstEncodingProfile *createEncodingProfile();
 
 private:
     gint64 m_duration;
@@ -103,6 +109,9 @@ protected:
     GstElement *m_vsink;
 
     int m_size;
+
+    int m_width, m_height;
+    int m_fpsn, m_fpsd;
 
     Q_DISABLE_COPY(QDeclarativeVideoEditor)
 };

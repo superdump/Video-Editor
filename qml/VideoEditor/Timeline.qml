@@ -205,16 +205,6 @@ Page {
         }
     }
 
-    ExportSettingsDialog {
-        id: exportSettingsDialog
-
-        onAccepted: {
-            if (videoeditor.render()) {
-                progressDialog.open()
-            }
-        }
-    }
-
     Item {
         id: rightButtons
         anchors.bottom: timelineBar.top
@@ -233,7 +223,8 @@ Page {
             anchors.top: parent.top
 
             onClicked: {
-                exportSettingsDialog.open();
+                var component = Qt.createComponent("ExportSettingsPage.qml")
+                pageStack.push(component);
             }
             platformStyle: buttonStyle
         }
