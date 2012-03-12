@@ -23,12 +23,14 @@
 #include <QAbstractListModel>
 extern "C" {
 #include <ges/ges.h>
+#include <gst/interfaces/xoverlay.h>
 }
 
 class QDeclarativeVideoEditor : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(double progress READ getProgress NOTIFY progressChanged)
+    Q_PROPERTY(uint winId READ getWinId WRITE setWinId NOTIFY winIdChanged)
 public:
     explicit QDeclarativeVideoEditor(QObject *parent = 0);
     virtual ~QDeclarativeVideoEditor();
@@ -42,6 +44,8 @@ public:
     Q_INVOKABLE void removeAll();
 
     //videoeditor API
+    Q_INVOKABLE void play();
+    Q_INVOKABLE void pause();
     Q_INVOKABLE bool render();
     Q_INVOKABLE void cancelRender();
 
@@ -53,11 +57,15 @@ public:
     void setProgress(double progress);
     void emitProgressChanged();
 
+    uint getWinId();
+    Q_INVOKABLE void setWinId(uint winId);
+
     GESTimelinePipeline *getPipeline ();
 
 private:
     gint64 m_duration;
     double m_progress;
+    uint m_winId;
 
 signals:
     /**
@@ -80,12 +88,18 @@ signals:
       */
     void renderComplete();
 
+    /**
+      * Emitted when the window id has been set
+      */
+    void winIdChanged();
+
 public slots:
 
 protected:
     GESTimeline *m_timeline;
     GESTimelineLayer *m_timelineLayer;
     GESTimelinePipeline *m_pipeline;
+    GstElement *m_vsink;
 
     int m_size;
 

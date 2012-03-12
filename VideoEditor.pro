@@ -24,7 +24,7 @@ symbian:TARGET.CAPABILITY += NetworkServices
 # MOBILITY +=
 
 CONFIG += link_pkgconfig
-PKGCONFIG += gst-editing-services-0.10
+PKGCONFIG += gst-editing-services-0.10 gstreamer-interfaces-0.10
 
 # Speed up launching on MeeGo/Harmattan when using applauncherd daemon
 CONFIG += qdeclarative-boostable

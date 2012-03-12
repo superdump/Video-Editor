@@ -70,10 +70,23 @@ Page {
             width: parent.width
             horizontalAlignment: Text.AlignHCenter
             anchors.verticalCenter: parent.verticalCenter
-            text: qsTr("Video preview\n(Coming soon!)")
+            text: "Video preview\nTap to play/pause"
             color: "white"
             font.bold: true
             font.pixelSize: 32
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                if (videoeditor.isPlaying) {
+                    videoeditor.pause();
+                    previewText.text = "Video preview\nTap to play/pause";
+                } else {
+                    previewText.text = "";
+                    videoeditor.play();
+                }
+            }
         }
     }
 

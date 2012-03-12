@@ -18,8 +18,11 @@
  */
 
 #include <QtGui/QApplication>
+#include <QDeclarativeView>
 #include <QDeclarativeEngine>
 #include <QDeclarativeComponent>
+#include <QDeclarativeContext>
+#include <QDebug>
 extern "C" {
     #include <ges/ges.h>
 }
@@ -39,6 +42,15 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     viewer.setOrientation(QmlApplicationViewer::ScreenOrientationLockLandscape);
     viewer.setMainQmlFile(QLatin1String("qml/VideoEditor/main.qml"));
     viewer.showExpanded();
+
+    QDeclarativeContext *context = new QDeclarativeContext(viewer.rootContext());
+    uint XWinId = viewer.winId();
+    context->setContextProperty("XWinId", XWinId);
+
+    qDebug() << "Window ID " << XWinId;
+    QDeclarativeComponent component(viewer.engine());
+    component.setData("import QtQuick 1.0\nVideoEditor { id: videoeditor; winId: XWinId }", QUrl());
+    QObject *window = component.create(context);
 
     return app->exec();
 }

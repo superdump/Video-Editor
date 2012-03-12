@@ -39,6 +39,14 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     ges_timeline_add_layer(m_timeline, m_timelineLayer);
     m_pipeline = ges_timeline_pipeline_new();
     ges_timeline_pipeline_add_timeline (m_pipeline, m_timeline);
+
+    m_vsink = gst_element_factory_make ("omapxvsink", "previewvsink");
+    ges_timeline_pipeline_preview_set_video_sink (m_pipeline, m_vsink);
+    gst_x_overlay_set_render_rectangle (GST_X_OVERLAY (m_vsink),
+                                        171, 0,
+                                        512, 288);
+
+    ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_PREVIEW);
     m_duration = GST_CLOCK_TIME_NONE;
     m_progress = 0.0;
 }
@@ -46,6 +54,7 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
 QDeclarativeVideoEditor::~QDeclarativeVideoEditor()
 {
     gst_element_set_state ((GstElement*) m_pipeline, GST_STATE_NULL);
+    gst_object_unref (m_vsink);
     gst_object_unref (m_pipeline);
 }
 
@@ -133,7 +142,8 @@ QDeclarativeVideoEditor::handleBusMessage (GstBus *bus, GstMessage *msg)
         qDebug() << "End of stream";
         setProgress(1.0);
         emit progressChanged();
-        gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
+        gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_PAUSED);
+        ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_PREVIEW);
         emit renderComplete();
         setProgress(-1.0);
         break;
@@ -291,6 +301,30 @@ bool QDeclarativeVideoEditor::render()
 void QDeclarativeVideoEditor::cancelRender()
 {
     qDebug() << "Cancelling rendering operation";
-    gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_NULL);
-    setProgress(0);
+    gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PAUSED);
+    setProgress(-1.0);
+    ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_PREVIEW);
+}
+
+uint QDeclarativeVideoEditor::getWinId()
+{
+    return m_winId;
+}
+
+void QDeclarativeVideoEditor::setWinId(uint winId)
+{
+    qDebug() << "X Window ID changed: " << m_winId << " to " << winId;
+    m_winId = winId;
+    gst_x_overlay_set_xwindow_id (GST_X_OVERLAY (m_vsink), m_winId);
+}
+
+void QDeclarativeVideoEditor::play()
+{
+    gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PLAYING);
+}
+
+
+void QDeclarativeVideoEditor::pause()
+{
+    gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PAUSED);
 }
