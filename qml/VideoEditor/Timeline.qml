@@ -53,6 +53,7 @@ Page {
 
     Item {
         id: preview
+        property bool isPlaying: false
         width: 512
         height: 288
         anchors.horizontalCenter: parent.horizontalCenter
@@ -81,10 +82,14 @@ Page {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                if (videoeditor.isPlaying) {
+                if (preview.isPlaying) {
+                    console.log("Video preview: playing -> paused");
+                    preview.isPlaying = false;
                     videoeditor.pause();
                     previewText.text = "Video preview\nTap to play/pause";
                 } else {
+                    console.log("Video preview: paused -> playing");
+                    preview.isPlaying = true;
                     previewText.text = "";
                     videoeditor.play();
                 }
