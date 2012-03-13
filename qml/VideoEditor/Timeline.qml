@@ -97,6 +97,11 @@ Page {
         }
     }
 
+    ButtonStyle {
+        id: buttonStyle
+        inverted: true
+    }
+
     Item {
         id: leftButtons
         anchors.top: parent.top
@@ -110,15 +115,14 @@ Page {
             anchors.topMargin: 16
             anchors.leftMargin: 16
             anchors.rightMargin: 16
-            anchors.bottomMargin: 16
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            height: parent.height/2 - 24
             onClicked: {
                 var component = Qt.createComponent("VideoGallery.qml")
                 pageStack.push(component);
             }
+            platformStyle: buttonStyle
         }
 
         Button {
@@ -127,14 +131,13 @@ Page {
             anchors.topMargin: 16
             anchors.leftMargin: 16
             anchors.rightMargin: 16
-            anchors.bottomMargin: 16
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            height: parent.height/2 - 24
+            anchors.top: addMediaButton.bottom
             onClicked: {
                 videoeditor.removeAll();
             }
+            platformStyle: buttonStyle
         }
     }
 
@@ -215,17 +218,16 @@ Page {
             anchors.topMargin: 16
             anchors.leftMargin: 16
             anchors.rightMargin: 16
-            anchors.bottomMargin: 16
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            height: parent.height - 24
 
             onClicked: {
                 if (videoeditor.render()) {
                     progressDialog.open()
                 }
             }
+            platformStyle: buttonStyle
         }
     }
 
@@ -239,9 +241,18 @@ Page {
 
         Rectangle {
             id: timelineBackground
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#000000"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#303030"
+                }
+            }
             anchors.fill: parent
-            color: "#202020"
-            border.color: "#101010"
         }
 
         ListView {
