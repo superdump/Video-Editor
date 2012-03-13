@@ -34,7 +34,9 @@ CONFIG += qdeclarative-boostable
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
+    gstdspgetcaps.c \
     qdeclarativevideoeditor.cpp
+
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -51,4 +53,5 @@ OTHER_FILES += \
     qml/VideoEditor/VideoGallery.qml
 
 HEADERS += \
-    qdeclarativevideoeditor.h
+    qdeclarativevideoeditor.h \
+    gstdspgetcaps.h

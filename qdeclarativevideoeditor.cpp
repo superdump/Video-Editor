@@ -23,6 +23,10 @@
 #include <QDateTime>
 #include <QFileInfo>
 
+extern "C" {
+    #include "gstdspgetcaps.h"
+}
+
 #define RENDERING_FAILED "Rendering failed"
 #define NO_MEDIA "Add clips before exporting"
 
@@ -41,6 +45,17 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     m_timelineLayer = (GESTimelineLayer*) ges_simple_timeline_layer_new();
     ges_timeline_add_layer(m_timeline, m_timelineLayer);
     m_pipeline = ges_timeline_pipeline_new();
+
+    GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE (m_pipeline));
+    gst_bus_add_watch (bus, bus_call, this);
+    gst_object_unref (bus);
+
+    /*
+     * gst-dsp encoders seems to not proxy downstream caps correctly, this can make
+     * GES fail to render some projects. We override the default getcaps on our own
+     */
+    g_signal_connect(m_pipeline, "element-added", (GCallback) gstdspgetcaps_pipeline_encodebin_added, NULL);
+
     ges_timeline_pipeline_add_timeline (m_pipeline, m_timeline);
 
     m_vsink = gst_element_factory_make ("omapxvsink", "previewvsink");
@@ -52,10 +67,6 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_PREVIEW);
     m_duration = GST_CLOCK_TIME_NONE;
     m_progress = 0.0;
-
-    GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE (m_pipeline));
-    gst_bus_add_watch (bus, bus_call, this);
-    gst_object_unref (bus);
 }
 
 QDeclarativeVideoEditor::~QDeclarativeVideoEditor()
