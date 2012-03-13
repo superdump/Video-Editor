@@ -76,8 +76,9 @@ Page {
                 } else {
                     videoeditor.setRenderSettings(640, 480, 30, 1);
                 }
-                videoeditor.render()
                 pageStack.pop(this)
+                progressDialog.open()
+                videoeditor.render()
             }
         }
         Button {
