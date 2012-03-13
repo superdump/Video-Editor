@@ -321,7 +321,6 @@ uint QDeclarativeVideoEditor::getWinId()
 
 void QDeclarativeVideoEditor::setWinId(uint winId)
 {
-    qDebug() << "X Window ID changed: " << m_winId << " to " << winId;
     m_winId = winId;
     gst_x_overlay_set_xwindow_id (GST_X_OVERLAY (m_vsink), m_winId);
 }

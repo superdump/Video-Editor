@@ -29,6 +29,8 @@ Page {
     VideoEditor {
         id: videoeditor
 
+        winId: XWinId;
+
         onError: {
             console.debug("Error: " + message + " (" + debug + ")");
             progressDialog.close();
