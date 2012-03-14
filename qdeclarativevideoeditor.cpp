@@ -18,6 +18,7 @@
  */
 
 #include "qdeclarativevideoeditor.h"
+#include "videoeditoritem.h"
 
 #include <QDebug>
 #include <QDateTime>
@@ -32,6 +33,32 @@ extern "C" {
 
 static gboolean bus_call(GstBus * bus, GstMessage * msg, gpointer data);
 
+void audio_track_duration_cb (GObject *object, GParamSpec *pspec, gpointer user_data)
+{
+    QDeclarativeVideoEditor *self = (QDeclarativeVideoEditor *)user_data;
+
+    qDebug() << "Audio track duration callback hit!";
+    quint64 adur = GST_CLOCK_TIME_NONE;
+    g_object_get (object, "duration", &adur, NULL);
+    self->setADuration(adur);
+
+    quint64 vdur = self->getVDuration();
+    self->setDuration(adur > vdur ? adur : vdur);
+}
+
+void video_track_duration_cb (GObject *object, GParamSpec *pspec, gpointer user_data)
+{
+    QDeclarativeVideoEditor *self = (QDeclarativeVideoEditor *)user_data;
+
+    qDebug() << "Video track duration callback hit!";
+    quint64 vdur = GST_CLOCK_TIME_NONE;
+    g_object_get (object, "duration", &vdur, NULL);
+    self->setVDuration(vdur);
+
+    quint64 adur = self->getADuration();
+    self->setDuration(adur > vdur ? adur : vdur);
+}
+
 QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     QAbstractListModel(parent), m_size(0),
     m_width(0), m_height(0), m_fpsn(0), m_fpsd(0)
@@ -39,12 +66,30 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     QHash<int, QByteArray> roles;
     roles.insert( 33 , "uri" );
     roles.insert( 34 , "fileName" );
+    roles.insert( 35 , "inPoint" );
+    roles.insert( 36 , "duration" );
     setRoleNames(roles);
 
     m_timeline = ges_timeline_new_audio_video();
     m_timelineLayer = (GESTimelineLayer*) ges_simple_timeline_layer_new();
     ges_timeline_add_layer(m_timeline, m_timelineLayer);
     m_pipeline = ges_timeline_pipeline_new();
+
+    GList *track_list = ges_timeline_get_tracks(m_timeline);
+    if (g_list_length (track_list) != 2)
+        qDebug() << "ERROR: Incorrect number of tracks!";
+
+    GESTrack *track = (GESTrack *)track_list->data;
+    if (track->type == GES_TRACK_TYPE_AUDIO) {
+        m_audio = track;
+        m_video = (GESTrack *)track_list->next->data;
+    } else {
+        m_video = track;
+        m_audio = (GESTrack *)track_list->next->data;
+    }
+    qDebug() << "Types: " << m_audio->type << m_video->type;
+    g_signal_connect(m_audio, "notify::duration", G_CALLBACK(audio_track_duration_cb), this);
+    g_signal_connect(m_video, "notify::duration", G_CALLBACK(video_track_duration_cb), this);
 
     GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE (m_pipeline));
     gst_bus_add_watch (bus, bus_call, this);
@@ -65,6 +110,9 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
                                         512, 288);
 
     ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_PREVIEW);
+    gst_element_set_state ((GstElement*) m_pipeline, GST_STATE_PAUSED);
+    m_adur = GST_CLOCK_TIME_NONE;
+    m_vdur = GST_CLOCK_TIME_NONE;
     m_duration = GST_CLOCK_TIME_NONE;
     m_progress = 0.0;
 }
@@ -72,6 +120,8 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
 QDeclarativeVideoEditor::~QDeclarativeVideoEditor()
 {
     gst_element_set_state ((GstElement*) m_pipeline, GST_STATE_NULL);
+    g_object_unref (m_video);
+    g_object_unref (m_audio);
     gst_object_unref (m_vsink);
     gst_object_unref (m_pipeline);
 }
@@ -85,20 +135,20 @@ QVariant QDeclarativeVideoEditor::data(const QModelIndex &index, int role) const
 {
     if (index.isValid() && index.row() < m_size) {
         QVariant ret = NULL;
+        const VideoEditorItem *item = m_items.at(index.row());
         switch (role) {
         case 33:
-        {
-            GESTimelineFileSource *src = (GESTimelineFileSource*) ges_simple_timeline_layer_nth((GESSimpleTimelineLayer*) m_timelineLayer, index.row());
-            ret = QVariant(ges_timeline_filesource_get_uri(src));
+            ret = QVariant(item->getUri());
             break;
-        }
         case 34:
-        {
-            GESTimelineFileSource *src = (GESTimelineFileSource*) ges_simple_timeline_layer_nth((GESSimpleTimelineLayer*) m_timelineLayer, index.row());
-            QFileInfo file(QString(ges_timeline_filesource_get_uri(src)));
-            ret = QVariant(file.fileName());
+            ret = QVariant(item->getFileName());
             break;
-        }
+        case 35:
+            ret = QVariant(item->getInPoint());
+            break;
+        case 36:
+            ret = QVariant(item->getDuration());
+            break;
         default:
         {
             qDebug() << "Unknown role: " << role;
@@ -111,13 +161,34 @@ QVariant QDeclarativeVideoEditor::data(const QModelIndex &index, int role) const
     }
 }
 
+void timeline_filesource_maxduration_cb (GObject *object, GParamSpec *pspec, gpointer user_data)
+{
+    VideoEditorItem *item = (VideoEditorItem *)user_data;
+
+    quint64 dur = GST_CLOCK_TIME_NONE;
+    g_object_get (item->getTlfs(), "max-duration", &dur, NULL);
+    item->setDuration(dur);
+}
+
 bool QDeclarativeVideoEditor::append(const QString &value)
 {
     qDebug() << "Appending new item:" << value;
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    GESTimelineFileSource *src = ges_timeline_filesource_new(value.toUtf8().data());
-    bool r = ges_timeline_layer_add_object(m_timelineLayer, (GESTimelineObject*) src);
+
+    VideoEditorItem *item = new VideoEditorItem();
+
+    item->setTlfs(ges_timeline_filesource_new(value.toUtf8().data()));
+    item->setUri(value);
+    QFileInfo file(value.toUtf8().data());
+    item->setFileName(file.fileName());
+    g_signal_connect(item->getTlfs(), "notify::max-duration",
+                     G_CALLBACK(timeline_filesource_maxduration_cb), item);
+
+    m_items.append(item);
+
+    bool r = ges_timeline_layer_add_object(m_timelineLayer, (GESTimelineObject*) item->getTlfs());
     if (r) m_size++;
+
     endInsertRows();
     return r;
 }
@@ -126,19 +197,26 @@ void QDeclarativeVideoEditor::move(int from, int to)
 {
     qDebug() << "Moving media object from " << from << " to " << to;
     beginResetModel();
-    GESTimelineObject *obj = ges_simple_timeline_layer_nth(GES_SIMPLE_TIMELINE_LAYER (m_timelineLayer), from);
-    ges_simple_timeline_layer_move_object(GES_SIMPLE_TIMELINE_LAYER (m_timelineLayer), obj, to);
+    const VideoEditorItem *item = m_items.at(from);
+    ges_simple_timeline_layer_move_object(GES_SIMPLE_TIMELINE_LAYER (m_timelineLayer),
+                                          (GESTimelineObject *)item->getTlfs(), to);
+    m_items.move(from, to);
     endResetModel();
+}
+
+void QDeclarativeVideoEditor::removeAt(int idx)
+{
+    VideoEditorItem *item = m_items.takeAt(idx);
+    ges_timeline_layer_remove_object(m_timelineLayer, (GESTimelineObject *)item->getTlfs());
+    delete item;
+    m_size--;
 }
 
 void QDeclarativeVideoEditor::removeAll()
 {
     beginRemoveRows(QModelIndex(), 0, rowCount());
-    while(m_size > 0) {
-        GESTimelineObject *obj = ges_simple_timeline_layer_nth((GESSimpleTimelineLayer*) m_timelineLayer, m_size-1);
-        ges_timeline_layer_remove_object(m_timelineLayer, obj);
-        m_size--;
-    }
+    while(m_items.isEmpty() == false)
+        removeAt(0);
     endRemoveRows();
 }
 
@@ -229,17 +307,43 @@ GESTimelinePipeline *QDeclarativeVideoEditor::getPipeline()
     return m_pipeline;
 }
 
-gint64 QDeclarativeVideoEditor::getDuration()
+qint64 QDeclarativeVideoEditor::getADuration()
 {
-    if (m_duration == GST_CLOCK_TIME_NONE) {
-        GstFormat format_time = GST_FORMAT_TIME;
-        gst_element_query_duration (GST_ELEMENT (m_pipeline), &format_time, &m_duration);
-    }
+    return m_adur;
+}
+
+void QDeclarativeVideoEditor::setADuration(qint64 aduration)
+{
+    qDebug() << "Audio duration: " << m_adur << " to " << aduration;
+    m_adur = aduration;
+}
+
+qint64 QDeclarativeVideoEditor::getVDuration()
+{
+    return m_vdur;
+}
+
+void QDeclarativeVideoEditor::setVDuration(qint64 vduration)
+{
+    qDebug() << "Video duration: " << m_vdur << " to " << vduration;
+    m_vdur = vduration;
+}
+
+qint64 QDeclarativeVideoEditor::getDuration()
+{
+    guint64 audio_dur = GST_CLOCK_TIME_NONE, video_dur = GST_CLOCK_TIME_NONE;
+    g_object_get (G_OBJECT (m_audio), "duration", &audio_dur, NULL);
+    g_object_get (G_OBJECT (m_video), "duration", &video_dur, NULL);
+    //m_duration = audio_dur > video_dur ? audio_dur : video_dur;
+    GstFormat format = GST_FORMAT_TIME;
+    gst_element_query_duration (GST_ELEMENT (m_pipeline), &format, &m_duration);
+    qDebug() << "Got duration :" << m_duration << " a: " << audio_dur << " v: " << video_dur;
     return m_duration;
 }
 
-void QDeclarativeVideoEditor::setDuration(gint64 duration)
+void QDeclarativeVideoEditor::setDuration(qint64 duration)
 {
+    qDebug() << "Composition duration: " << m_duration << " to " << duration;
     m_duration = duration;
 }
 

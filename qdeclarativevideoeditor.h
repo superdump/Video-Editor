@@ -21,16 +21,19 @@
 #define QDECLARATIVEVIDEOEDITOR_H
 
 #include <QAbstractListModel>
+#include <QList>
 extern "C" {
 #include <ges/ges.h>
 #include <gst/interfaces/xoverlay.h>
 }
+#include "videoeditoritem.h"
 
 class QDeclarativeVideoEditor : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(double progress READ getProgress NOTIFY progressChanged)
     Q_PROPERTY(uint winId READ getWinId WRITE setWinId NOTIFY winIdChanged)
+    Q_PROPERTY(qint64 duration READ getDuration WRITE setDuration NOTIFY durationChanged)
 public:
     explicit QDeclarativeVideoEditor(QObject *parent = 0);
     virtual ~QDeclarativeVideoEditor();
@@ -42,6 +45,7 @@ public:
     //List manipulation API (not using the usual listmodel API)
     Q_INVOKABLE bool append(const QString &value);
     Q_INVOKABLE void move(int from, int to);
+    Q_INVOKABLE void removeAt(int idx);
     Q_INVOKABLE void removeAll();
 
     //videoeditor API
@@ -55,8 +59,12 @@ public:
 
     gboolean handleBusMessage(GstBus * bus, GstMessage * msg);
 
-    gint64 getDuration();
-    void setDuration(gint64 duration);
+    qint64 getDuration();
+    void setDuration(qint64 duration);
+    qint64 getADuration();
+    void setADuration(qint64 aduration);
+    qint64 getVDuration();
+    void setVDuration(qint64 vduration);
     double getProgress();
     void setProgress(double progress);
     void emitProgressChanged();
@@ -73,6 +81,9 @@ private:
     gint64 m_duration;
     double m_progress;
     uint m_winId;
+    QList<VideoEditorItem *> m_items;
+    quint64 m_adur;
+    quint64 m_vdur;
 
 signals:
     /**
@@ -100,6 +111,8 @@ signals:
       */
     void winIdChanged();
 
+    void durationChanged();
+
 public slots:
 
 protected:
@@ -107,6 +120,8 @@ protected:
     GESTimelineLayer *m_timelineLayer;
     GESTimelinePipeline *m_pipeline;
     GstElement *m_vsink;
+    GESTrack *m_audio;
+    GESTrack *m_video;
 
     int m_size;
 
