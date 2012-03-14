@@ -43,7 +43,7 @@ Page {
         }
         focus:true
         highlight: Rectangle {
-            color: "white"
+            color: "#1082de"
             radius: 5
         }
         highlightMoveDuration: 1
@@ -67,7 +67,7 @@ Page {
             anchors.horizontalCenter: parent.horizontalCenter
             verticalAlignment: Text.AlignVCenter
             text: fileName
-            color: ListView.isCurrentItem ? "black" : "white"
+            color: "white"
             font.pointSize: 26
             elide: Text.ElideLeft
             MouseArea{
