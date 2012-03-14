@@ -268,91 +268,72 @@ Page {
             anchors.verticalCenter: parent.verticalCenter
             spacing: 16
 
-            highlight: Rectangle {
-                color: "light grey"
-                width: list.width / 3
-                height: list.height
-                radius: 4
-            }
-            highlightMoveDuration: 1
-
             orientation: ListView.Horizontal
 
             boundsBehavior: Flickable.StopAtBounds
 
-            delegate: Rectangle {
-                id: delegateRect
-                color: "grey"
+            delegate: Button {
+                id: delegateButton
+                platformStyle: ButtonStyle {
+                    inverted: true
+                }
                 width: list.width / 3
                 height: list.height
-                anchors.verticalCenter: parent.verticalCenter
-                radius: 4
-                opacity: 0.5
-                Text {
-                    id: mediaText
-                    width: parent.width - 16
-                    height: parent.height - 16
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    text: fileName
-                    font.pointSize: 20
-                    color: delegateRect.ListView.isCurrentItem ? "black" : "white"
-                    wrapMode: Text.WrapAnywhere
-                    maximumLineCount: 4
-                    elide: Text.ElideRight
-                }
+                text: fileName
+                checkable: true
+                checked: ListView.isCurrentItem
                 MouseArea {
                     id: dragArea
                     anchors.fill: parent
                     property int positionStarted: 0
                     property int positionEnded: 0
-                    property int positionsMoved: Math.floor((positionEnded - positionStarted)/delegateRect.width)
+                    property int positionsMoved: Math.floor((positionEnded - positionStarted)/delegateButton.width)
                     property int newPosition: index + positionsMoved
                     property bool held: false
                     drag.axis: Drag.XAxis
-                    enabled: delegateRect.ListView.isCurrentItem
+                    enabled: delegateButton.ListView.isCurrentItem
                     preventStealing: true
                     onPressed: {
-                        delegateRect.z = 2;
-                        positionStarted = delegateRect.x;
-                        dragArea.drag.target = delegateRect;
-                        delegateRect.opacity = 0.5;
+                        delegateButton.z = 2;
+                        positionStarted = delegateButton.x;
+                        dragArea.drag.target = delegateButton;
+                        delegateButton.opacity = 0.5;
                         list.interactive = false;
                         held = true;
-                        drag.maximumX = (timelineBar.width - mediaText.width - 1 + list.contentX);
+                        drag.maximumX = (timelineBar.width - delegateButton.width - 1 + list.contentX);
                         drag.minimumX = 0;
                     }
                     onPositionChanged: {
-                        positionEnded = delegateRect.x;
+                        positionEnded = delegateButton.x;
                     }
                     onReleased: {
                         if (Math.abs(positionsMoved) < 1 && held == true) {
-                            delegateRect.x = positionStarted;
-                            delegateRect.opacity = 1;
+                            delegateButton.x = positionStarted;
+                            delegateButton.opacity = 1;
                             list.interactive = true;
                             dragArea.drag.target = null;
                             held = false;
                         } else {
                             if (held == true) {
                                 if (newPosition < 1) {
-                                    delegateRect.z = 1;
+                                    delegateButton.z = 1;
                                     videoeditor.move(index,0);
-                                    delegateRect.opacity = 1;
+                                    delegateButton.opacity = 1;
                                     list.interactive = true;
                                     dragArea.drag.target = null;
                                     held = false;
                                 } else if (newPosition > list.count - 1) {
-                                    delegateRect.z = 1;
+                                    delegateButton.z = 1;
                                     videoeditor.move(index, list.count - 1);
-                                    delegateRect.opacity = 1;
+                                    delegateButton.opacity = 1;
                                     list.interactive = true;
                                     dragArea.drag.target = null;
                                     held = false;
                                 }
                                 else {
-                                    delegateRect.z = 1;
+                                    delegateButton.z = 1;
                                     videoeditor.move(index,newPosition);
-                                    delegateRect.opacity = 1;
+                                    delegateButton.opacity = 1;
                                     list.interactive = true;
                                     dragArea.drag.target = null;
                                     held = false;
@@ -361,10 +342,12 @@ Page {
                         }
                     }
                 }
+                // This MouseArea is to workaround the button pressed state that causes
+                // flicks and drags to momentarily flash the button as being selected
                 MouseArea {
-                    id: selectArea
+                    id: tapArea
                     anchors.fill: parent
-                    enabled: delegateRect.ListView.isCurrentItem ? false : true
+                    enabled: delegateButton.ListView.isCurrentItem ? false : true
                     onClicked: {
                         console.log("Item " + index + " selected")
                         list.currentIndex = index;
