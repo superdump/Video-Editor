@@ -199,6 +199,7 @@ QDeclarativeVideoEditor::handleBusMessage (GstBus *bus, GstMessage *msg)
         emit error(RENDERING_FAILED, gerror->message);
         g_error_free (gerror);
         gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
+        setProgress(-1.0);
         break;
     }
     default:
@@ -261,6 +262,7 @@ gboolean updateProgress (gpointer data)
 
     double progress = self->getProgress();
     if (progress == -1.0) {
+        qDebug() << "Stoping progress polling";
         progress = 0.0;
         return false;
     }
@@ -274,13 +276,21 @@ gboolean updateProgress (gpointer data)
         GstFormat format_time = GST_FORMAT_TIME;
         gst_element_query_position (GST_ELEMENT (self->getPipeline()), &format_time, &cur_pos);
 
-        self->setProgress ((double)cur_pos / duration);
-        qDebug() << "Render progress " << self->getProgress() * 100
-             << "% (" << cur_pos << "/" << duration << ")";
+        if(duration < 0 || cur_pos < 0) {
+            self->setProgress (0);
+            qDebug() << "Render progress unknown";
+        } else {
+            self->setProgress ((double)cur_pos / duration);
+            qDebug() << "Render progress " << self->getProgress() * 100
+                 << "% (" << cur_pos << "/" << duration << ")";
+        }
+
+
     }
 
     if (self->getProgress() < 0.0) {
         self->setProgress(0.0);
+        qDebug() << "Stoping progress polling";
         return false;
     }
 
@@ -328,6 +338,7 @@ bool QDeclarativeVideoEditor::render()
     // reset duration and progress
     setDuration(GST_CLOCK_TIME_NONE);
     setProgress(0.0);
+    qDebug() << "Starting progress polling";
     g_timeout_add (500, updateProgress, this);
 
     if(!gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PLAYING)) {
