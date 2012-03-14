@@ -371,6 +371,16 @@ Page {
                 }
             }
 
+            Text {
+                id: timelineText
+                color: "#ffffff"
+                text: list.count ? "" : "Add clips using the 'Add Media' button"
+                font.bold: true
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 22
+            }
+
             // x: parent.width / 2 - flickable.contentWidth * flickable.visibleArea.xPosition / (1.0 - flickable.visibleArea.widthRatio)
         }
     }
