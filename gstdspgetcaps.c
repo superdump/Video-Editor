@@ -1,5 +1,8 @@
 
 #include "gstdspgetcaps.h"
+#include <string.h>
+
+static void gstdspgetcaps_bin_find_dspenc(GstBin * bin);
 
 static gboolean
 is_encodebin(GstElement * element)
@@ -39,7 +42,7 @@ gstdspgetcaps_get_caps(GstPad * sinkpad)
     GstCaps *caps;
     GstCaps *outcaps;
     GstCaps *downstreamcaps;
-    gint i;
+    guint i;
 
     downstreamcaps = gst_pad_get_allowed_caps(srcpad);
 
@@ -113,6 +116,7 @@ gstdspgetcaps_pipeline_encodebin_added(GstBin * bin, GstElement * element, gpoin
     }
 }
 
+static
 void gstdspgetcaps_bin_find_dspenc(GstBin * bin)
 {
     GstIterator *iterator = gst_bin_iterate_elements(bin);
