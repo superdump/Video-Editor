@@ -4,86 +4,92 @@ import com.nokia.meego 1.0
 
 Page {
     id: settingsPage
+    orientationLock: PageOrientation.LockLandscape
+
+    Rectangle {
+        anchors.fill: parent
+        color: "black"
+    }
 
     Text {
         id: titleField
         text: "Export settings"
         font.bold: true
         font.pixelSize: 40
+        color: "white"
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
     }
 
-    Rectangle {
-        width: parent.width
+    Column {
+        anchors.margins: 16
+        anchors.top: titleField.bottom
+        anchors.bottom: buttonExport.top
+        anchors.left: parent.left
+        anchors.right: parent.right
 
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
+        ButtonRow {
+            id: resolution
+            checkedButton: buttonHD
+            platformStyle: ButtonStyle {
+                inverted: true
+            }
 
-        Column {
-            id: col
-            spacing: 10
-
-            RadioButton {
+            Button {
                 id: buttonHD
                 text: "HD"
-                checked: true
-                onCheckedChanged: {
-                    if(checked) {
-                        buttonWVGA.checked = false
-                        buttonVGA.checked = false
-                    }
-                }
             }
-            RadioButton {
+            Button {
                 id: buttonWVGA
                 text: "WVGA"
-                onCheckedChanged: {
-                    if(checked) {
-                        buttonHD.checked = false
-                        buttonVGA.checked = false
-                    }
-                }
             }
-            RadioButton {
+            Button {
                 id: buttonVGA
                 text: "VGA"
-                onCheckedChanged: {
-                    if(checked) {
-                        buttonHD.checked = false
-                        buttonWVGA.checked = false
-                    }
-                }
             }
         }
-
     }
 
-    ButtonRow {
+    ButtonStyle {
+        id: invertedStyle
+        inverted: true
+    }
+
+    Button {
+        id: buttonExport
+        text: "Export"
         anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left
         anchors.margins: 16
-
-        style: ButtonStyle { }
-
-        Button {
-            text: "Export"
-            onClicked: {
-                if(buttonHD.checked) {
-                    videoeditor.setRenderSettings(1280, 720, 30, 1);
-                } else if(buttonWVGA.checked) {
-                    videoeditor.setRenderSettings(848, 480, 30, 1);
-                } else {
-                    videoeditor.setRenderSettings(640, 480, 30, 1);
-                }
-                pageStack.pop(this)
-                progressDialog.open()
-                videoeditor.render()
+        platformStyle: invertedStyle
+        onClicked: {
+            switch(resolution.checkedButton) {
+            case buttonVGA:
+                videoeditor.setRenderSettings(640, 480, 30, 1);
+                break;
+            case buttonWVGA:
+                videoeditor.setRenderSettings(848, 480, 30, 1);
+                break;
+            case buttonHD:
+                // fall through
+            default:
+                videoeditor.setRenderSettings(1280, 720, 30, 1);
+                break;
             }
+
+            pageStack.pop(this)
+            progressDialog.open()
+            videoeditor.render()
         }
-        Button {
-            text: "Cancel"
-            onClicked: pageStack.pop(this)
-        }
+    }
+
+    Button {
+        id: buttonCancel
+        text: "Cancel"
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.margins: 16
+        platformStyle: invertedStyle
+        onClicked: pageStack.pop(this)
     }
 }

@@ -23,6 +23,7 @@ import VideoEditor 1.0
 
 Page {
     id: timeline
+    orientationLock: PageOrientation.LockLandscape
     width: 854
     height: 480
 
@@ -172,6 +173,7 @@ Page {
             text: "Cancel"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: progressDialog.reject()
+            platformStyle: buttonStyle
         }
 
         onRejected: videoeditor.cancelRender()
@@ -202,6 +204,7 @@ Page {
             text: "OK"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: messageDialog.close()
+            platformStyle: buttonStyle
         }
     }
 

@@ -23,8 +23,14 @@ import QtMobility.gallery 1.1
 
 Page {
     id: gallery
+    orientationLock: PageOrientation.LockLandscape
     width: 854
     height: 480
+
+    Rectangle {
+        anchors.fill: parent
+        color: "black"
+    }
 
     ListView {
         id: listView
@@ -37,7 +43,7 @@ Page {
         }
         focus:true
         highlight: Rectangle {
-            color: "#FFFFFF"
+            color: "white"
             radius: 5
         }
         highlightMoveDuration: 1
@@ -61,6 +67,7 @@ Page {
             anchors.horizontalCenter: parent.horizontalCenter
             verticalAlignment: Text.AlignVCenter
             text: fileName
+            color: ListView.isCurrentItem ? "black" : "white"
             font.pointSize: 26
             elide: Text.ElideLeft
             MouseArea{
@@ -72,10 +79,23 @@ Page {
         }
     }
 
+    ButtonStyle {
+        id: style
+        inverted: true
+    }
+
+    Rectangle {
+        anchors.top: addButton.top
+        anchors.topMargin: -16
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        color: "black"
+    }
+
     Button {
         id: addButton
-        width: 128
-        height: 92
+        platformStyle: style
         anchors {
             bottom: parent.bottom
             left: parent.left
@@ -92,8 +112,7 @@ Page {
 
     Button {
         id: cancelButton
-        width: 128
-        height: 92
+        platformStyle: style
         anchors {
             bottom: parent.bottom
             right: parent.right
