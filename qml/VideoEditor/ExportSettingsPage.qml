@@ -24,7 +24,7 @@ Page {
     Column {
         anchors.margins: 16
         anchors.top: titleField.bottom
-        anchors.bottom: buttonExport.top
+        anchors.bottom: buttonSave.top
         anchors.left: parent.left
         anchors.right: parent.right
 
@@ -56,8 +56,8 @@ Page {
     }
 
     Button {
-        id: buttonExport
-        text: "Export"
+        id: buttonSave
+        text: "Save"
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.margins: 16
@@ -78,8 +78,6 @@ Page {
             }
 
             pageStack.pop(this)
-            progressDialog.open()
-            videoeditor.render()
         }
     }
 

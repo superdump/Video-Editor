@@ -226,6 +226,22 @@ Page {
             anchors.top: parent.top
 
             onClicked: {
+                progressDialog.open()
+                videoeditor.render()
+            }
+            platformStyle: buttonStyle
+        }
+        Button {
+            id: settingsButton
+            text: "Settings"
+            anchors.topMargin: 16
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: exportButton.bottom
+
+            onClicked: {
                 var component = Qt.createComponent("ExportSettingsPage.qml")
                 pageStack.push(component);
             }
