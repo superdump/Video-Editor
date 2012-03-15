@@ -1,11 +1,33 @@
+/* VideoEditor main
+ * Copyright (C) 2012 Thiago Sousa Santos <thiago.sousa.santos@collabora.co.uk>
+ * Copyright (C) 2012 Robert Swain <robert.swain@collabora.co.uk>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 
 #include "gstcapstricks.h"
 #include <string.h>
 #include <glib.h>
 
-static void gstcapstricks_bin_find_dspenc(GstBin * bin);
+static void gstcapstricks_encodebin_find_elements(GstBin * bin);
 static gboolean gstcapstricks_qtmux_setcaps(GstPad * sinkpad, GstCaps * caps);
 
+/**
+  * Store the old setcaps function of a pad and the last caps that was set on that
+  * pad
+  */
 typedef struct {
   GstPadSetCapsFunction setcaps;
   GstCaps *caps;
@@ -98,7 +120,7 @@ is_video_pad(GstPad * pad) {
 }
 
 static GstCaps *
-gstcapstricks_get_caps(GstPad * sinkpad)
+gstcapstricks_video_getcaps(GstPad * sinkpad)
 {
     GstElement *parent = gst_pad_get_parent_element (sinkpad);
     GstPad *srcpad = gst_element_get_static_pad (parent, "src");
@@ -206,10 +228,10 @@ end:
 }
 
 static void
-gstcapstricks_set_get_caps(GstElement * element)
+gstcapstricks_set_video_getcaps(GstElement * element)
 {
     GstPad *sinkpad = gst_element_get_static_pad (element, "sink");
-    gst_pad_set_getcaps_function(sinkpad, gstcapstricks_get_caps);
+    gst_pad_set_getcaps_function(sinkpad, gstcapstricks_video_getcaps);
     gst_object_unref (sinkpad);
 }
 
@@ -230,8 +252,7 @@ qtmux_pad_added(GstElement * element, GstPad * pad, gpointer udata)
 }
 
 static void
-gstcapstricks_set_qtmux_set_caps(GstElement * element) {
-//    GstPad *sinkpad;
+gstcapstricks_set_qtmux_setcaps(GstElement * element) {
     GHashTable *table = qtmux_setcaps_functions;
 
     if(g_hash_table_lookup(table, element)) {
@@ -267,9 +288,6 @@ gstcapstricks_set_qtmux_set_caps(GstElement * element) {
 
         gst_iterator_free (iterator);
     }
-//    sinkpad = gst_element_get_static_pad (element, "sink");
-//    qtmux_setcaps_functions_add(element, sinkpad);
-//    gst_object_unref (sinkpad);
 }
 
 static gboolean
@@ -282,8 +300,6 @@ gstcapstricks_qtmux_setcaps(GstPad * sinkpad, GstCaps * caps)
     gboolean ret;
 
     gst_object_unref (element);
-
-    GST_ERROR ("Received caps %" GST_PTR_FORMAT, caps);
 
     newstructure = gst_caps_get_structure(caps, 0);
     if(data->caps) {
@@ -305,7 +321,6 @@ gstcapstricks_qtmux_setcaps(GstPad * sinkpad, GstCaps * caps)
         newcaps = gst_caps_ref (caps);
     }
 
-    GST_ERROR ("Setting caps %" GST_PTR_FORMAT, newcaps);
     ret = data->setcaps(sinkpad, newcaps);
     gst_caps_unref (newcaps);
     return ret;
@@ -316,25 +331,29 @@ gstcapstricks_add_get_caps(GstBin * bin, GstElement * element, gpointer udata)
 {
     if(is_dspenc(element)) {
         //This should be a dsp encoder element, let's make it getcaps better
-        gstcapstricks_set_get_caps(element);
+        gstcapstricks_set_video_getcaps(element);
     } else if(is_aacenc(element)) {
         gstcapstricks_set_audio_getcaps(element);
     } else if(is_qtmux(element)) {
-        gstcapstricks_set_qtmux_set_caps(element);
+        gstcapstricks_set_qtmux_setcaps(element);
     }
 }
 
+/**
+  * Wait for encodebin to be added to look for muxers and encoders that are
+  * added to it
+  */
 void
-gstcapstricks_pipeline_encodebin_added(GstBin * bin, GstElement * element, gpointer udata)
+gstcapstricks_pipeline_element_added(GstBin * bin, GstElement * element, gpointer udata)
 {
     if(is_encodebin(element)) {
         g_signal_connect(element, "element-added", (GCallback) gstcapstricks_add_get_caps, NULL);
-        gstcapstricks_bin_find_dspenc(GST_BIN(element));
+        gstcapstricks_encodebin_find_elements(GST_BIN(element));
     }
 }
 
 static
-void gstcapstricks_bin_find_dspenc(GstBin * bin)
+void gstcapstricks_encodebin_find_elements(GstBin * bin)
 {
     GstIterator *iterator = gst_bin_iterate_elements(bin);
     GstElement *item;
@@ -344,11 +363,11 @@ void gstcapstricks_bin_find_dspenc(GstBin * bin)
         switch (gst_iterator_next (iterator, (gpointer) &item)) {
         case GST_ITERATOR_OK:
             if(is_dspenc(item)) {
-                gstcapstricks_set_get_caps(item);
+                gstcapstricks_set_video_getcaps(item);
             } else if(is_aacenc(item)) {
                 gstcapstricks_set_audio_getcaps(item);
             } else if(is_qtmux(item)) {
-                gstcapstricks_set_qtmux_set_caps(item);
+                gstcapstricks_set_qtmux_setcaps(item);
             }
             gst_object_unref (item);
             break;
