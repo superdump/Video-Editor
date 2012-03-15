@@ -165,7 +165,9 @@ GstEncodingProfile *QDeclarativeVideoEditor::createEncodingProfile() {
     }
     GstEncodingProfile *audio = (GstEncodingProfile *)
             gst_encoding_audio_profile_new(gst_caps_new_simple("audio/mpeg", "mpegversion",
-                                                               G_TYPE_INT, 4, NULL), NULL, NULL, 0);
+                                                               G_TYPE_INT, 4,
+                                                               "rate", G_TYPE_INT, 48000,
+                                                               "channels", G_TYPE_INT, 2, NULL), NULL, NULL, 0);
 
     gst_encoding_container_profile_add_profile((GstEncodingContainerProfile*) profile, video);
     gst_encoding_container_profile_add_profile((GstEncodingContainerProfile*) profile, audio);
