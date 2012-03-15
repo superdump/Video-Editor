@@ -34,8 +34,8 @@ CONFIG += qdeclarative-boostable
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
-    gstdspgetcaps.c \
-    qdeclarativevideoeditor.cpp
+    qdeclarativevideoeditor.cpp \
+    gstcapstricks.c
 
 
 # Please do not modify the following two lines. Required for deployment.
@@ -54,4 +54,4 @@ OTHER_FILES += \
 
 HEADERS += \
     qdeclarativevideoeditor.h \
-    gstdspgetcaps.h
+    gstcapstricks.h

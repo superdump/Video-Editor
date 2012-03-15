@@ -24,7 +24,7 @@
 #include <QFileInfo>
 
 extern "C" {
-    #include "gstdspgetcaps.h"
+    #include "gstcapstricks.h"
 }
 
 #define RENDERING_FAILED "Rendering failed"
@@ -54,7 +54,7 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
      * gst-dsp encoders seems to not proxy downstream caps correctly, this can make
      * GES fail to render some projects. We override the default getcaps on our own
      */
-    g_signal_connect(m_pipeline, "element-added", (GCallback) gstdspgetcaps_pipeline_encodebin_added, NULL);
+    g_signal_connect(m_pipeline, "element-added", (GCallback) gstcapstricks_pipeline_encodebin_added, NULL);
 
     ges_timeline_pipeline_add_timeline (m_pipeline, m_timeline);
 

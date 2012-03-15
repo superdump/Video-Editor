@@ -29,12 +29,17 @@ extern "C" {
 #include "qmlapplicationviewer.h"
 #include "qdeclarativevideoeditor.h"
 
+extern "C" {
+    #include "gstcapstricks.h"
+}
+
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
     QScopedPointer<QApplication> app(createApplication(argc, argv));
 
     gst_init(&argc, &argv);
     ges_init();
+    gstcapstricks_init();
 
     qmlRegisterType<QDeclarativeVideoEditor>("VideoEditor", 1,0, "VideoEditor");
 
