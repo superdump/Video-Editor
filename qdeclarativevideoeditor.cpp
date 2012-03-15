@@ -329,7 +329,7 @@ bool QDeclarativeVideoEditor::render()
     }
     gst_encoding_profile_unref (profile);
 
-    if (!ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_SMART_RENDER)) {
+    if (!ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_RENDER)) {
         emit error(RENDERING_FAILED, "Failed to set rendering mode");
         gst_encoding_profile_unref(profile);
         return false;
