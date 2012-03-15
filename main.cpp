@@ -28,6 +28,7 @@ extern "C" {
 }
 #include "qmlapplicationviewer.h"
 #include "qdeclarativevideoeditor.h"
+#include "videoeditorimageprovider.h"
 
 extern "C" {
     #include "gstcapstricks.h"
@@ -44,6 +45,8 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     qmlRegisterType<QDeclarativeVideoEditor>("VideoEditor", 1,0, "VideoEditor");
 
     QmlApplicationViewer viewer;
+
+    viewer.engine()->addImageProvider("videoeditorimageprovider", new VideoEditorImageProvider());
 
     QDeclarativeContext *context = viewer.rootContext();
     uint XWinId = viewer.winId();
