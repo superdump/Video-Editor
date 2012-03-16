@@ -89,7 +89,7 @@ QVariant QDeclarativeVideoEditor::data(const QModelIndex &index, int role) const
         case 33:
         {
             GESTimelineFileSource *src = (GESTimelineFileSource*) ges_simple_timeline_layer_nth((GESSimpleTimelineLayer*) m_timelineLayer, index.row());
-            QVariant ret = QVariant(ges_timeline_filesource_get_uri(src));
+            ret = QVariant(ges_timeline_filesource_get_uri(src));
             break;
         }
         case 34:
