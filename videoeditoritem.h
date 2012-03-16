@@ -47,6 +47,8 @@ public:
     void setDuration(quint64 duration);
     GESTimelineFileSource *getTlfs() const;
     void setTlfs(GESTimelineFileSource *tlfs);
+    unsigned long getDurHdlrID() const;
+    void setDurHdlrID(unsigned long handler_id);
 
 signals:
 
@@ -63,6 +65,7 @@ private:
     QString m_fileName;
     quint64 m_inPoint;
     quint64 m_duration;
+    unsigned long m_dur_hdlr_id;
 
     Q_DISABLE_COPY(VideoEditorItem)
 };

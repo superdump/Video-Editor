@@ -84,3 +84,13 @@ void VideoEditorItem::setTlfs(GESTimelineFileSource *tlfs)
 {
     m_tlfs = tlfs;
 }
+
+unsigned long VideoEditorItem::getDurHdlrID() const
+{
+    return m_dur_hdlr_id;
+}
+
+void VideoEditorItem::setDurHdlrID(unsigned long handler_id)
+{
+    m_dur_hdlr_id = handler_id;
+}

@@ -181,8 +181,8 @@ bool QDeclarativeVideoEditor::append(const QString &value)
     item->setUri(value);
     QFileInfo file(value.toUtf8().data());
     item->setFileName(file.fileName());
-    g_signal_connect(item->getTlfs(), "notify::max-duration",
-                     G_CALLBACK(timeline_filesource_maxduration_cb), item);
+    item->setDurHdlrID(g_signal_connect(item->getTlfs(), "notify::max-duration",
+                       G_CALLBACK(timeline_filesource_maxduration_cb), item));
 
     m_items.append(item);
 
@@ -208,6 +208,7 @@ void QDeclarativeVideoEditor::removeAt(int idx)
 {
     VideoEditorItem *item = m_items.takeAt(idx);
     ges_timeline_layer_remove_object(m_timelineLayer, (GESTimelineObject *)item->getTlfs());
+    g_signal_handler_disconnect(item->getTlfs(), item->getDurHdlrID());
     delete item;
     m_size--;
 }
