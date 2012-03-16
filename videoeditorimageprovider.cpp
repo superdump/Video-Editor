@@ -20,21 +20,21 @@
 #include "videoeditorimageprovider.h"
 
 VideoEditorImageProvider::VideoEditorImageProvider() :
-    QDeclarativeImageProvider(QDeclarativeImageProvider::Pixmap)
+    QDeclarativeImageProvider(QDeclarativeImageProvider::Image)
 {
 }
 
-QPixmap VideoEditorImageProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
+QImage VideoEditorImageProvider::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
     int width = 100;
     int height = 50;
 
     if (size)
         *size = QSize(width, height);
-    QPixmap pixmap(requestedSize.width() > 0 ? requestedSize.width() : width,
-                   requestedSize.height() > 0 ? requestedSize.height() : height);
+    QImage image(requestedSize.width() > 0 ? requestedSize.width() : width,
+                   requestedSize.height() > 0 ? requestedSize.height() : height, QImage::Format_ARGB32);
 
-    pixmap.fill(QColor("blue").rgba());
+    image.fill(QColor("blue").rgba());
 
-    return pixmap;
+    return image;
 }

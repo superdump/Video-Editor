@@ -21,13 +21,14 @@
 #define QVIDEOEDITORIMAGEPROVIDER_H
 
 #include <QDeclarativeImageProvider>
+#include <QImage>
 
 class VideoEditorImageProvider : public QDeclarativeImageProvider
 {
 public:
     explicit VideoEditorImageProvider();
 
-    QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize);
+    QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize);
     
 signals:
     
