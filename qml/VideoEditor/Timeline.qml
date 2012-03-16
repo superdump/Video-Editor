@@ -290,6 +290,8 @@ Page {
 
             delegate: Item {
                 id: delegateButton
+                width: duration * list.width / (3 * 100 * 1000000000)
+                height: list.height
 
                 Image {
                     source: "image://videoeditorimageprovider/" + uri
@@ -297,8 +299,6 @@ Page {
                     height: parent.height
                 }
 
-                width: list.width / 3
-                height: list.height
                 Text {
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
