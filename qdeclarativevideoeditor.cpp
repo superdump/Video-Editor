@@ -33,32 +33,6 @@ extern "C" {
 
 static gboolean bus_call(GstBus * bus, GstMessage * msg, gpointer data);
 
-void audio_track_duration_cb (GObject *object, GParamSpec *pspec, gpointer user_data)
-{
-    QDeclarativeVideoEditor *self = (QDeclarativeVideoEditor *)user_data;
-
-    qDebug() << "Audio track duration callback hit!";
-    quint64 adur = GST_CLOCK_TIME_NONE;
-    g_object_get (object, "duration", &adur, NULL);
-    self->setADuration(adur);
-
-    quint64 vdur = self->getVDuration();
-    self->setDuration(adur > vdur ? adur : vdur);
-}
-
-void video_track_duration_cb (GObject *object, GParamSpec *pspec, gpointer user_data)
-{
-    QDeclarativeVideoEditor *self = (QDeclarativeVideoEditor *)user_data;
-
-    qDebug() << "Video track duration callback hit!";
-    quint64 vdur = GST_CLOCK_TIME_NONE;
-    g_object_get (object, "duration", &vdur, NULL);
-    self->setVDuration(vdur);
-
-    quint64 adur = self->getADuration();
-    self->setDuration(adur > vdur ? adur : vdur);
-}
-
 QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     QAbstractListModel(parent), m_size(0),
     m_width(0), m_height(0), m_fpsn(0), m_fpsd(0)
@@ -74,21 +48,6 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     m_timelineLayer = (GESTimelineLayer*) ges_simple_timeline_layer_new();
     ges_timeline_add_layer(m_timeline, m_timelineLayer);
     m_pipeline = ges_timeline_pipeline_new();
-
-    GList *track_list = ges_timeline_get_tracks(m_timeline);
-    if (g_list_length (track_list) != 2)
-        qDebug() << "ERROR: Incorrect number of tracks!";
-
-    GESTrack *track = (GESTrack *)track_list->data;
-    if (track->type == GES_TRACK_TYPE_AUDIO) {
-        m_audio = track;
-        m_video = (GESTrack *)track_list->next->data;
-    } else {
-        m_video = track;
-        m_audio = (GESTrack *)track_list->next->data;
-    }
-    g_signal_connect(m_audio, "notify::duration", G_CALLBACK(audio_track_duration_cb), this);
-    g_signal_connect(m_video, "notify::duration", G_CALLBACK(video_track_duration_cb), this);
 
     GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE (m_pipeline));
     gst_bus_add_watch (bus, bus_call, this);
@@ -110,8 +69,6 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
 
     ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_PREVIEW);
     gst_element_set_state ((GstElement*) m_pipeline, GST_STATE_PAUSED);
-    m_adur = GST_CLOCK_TIME_NONE;
-    m_vdur = GST_CLOCK_TIME_NONE;
     m_duration = GST_CLOCK_TIME_NONE;
     m_progress = 0.0;
 }
@@ -119,8 +76,6 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
 QDeclarativeVideoEditor::~QDeclarativeVideoEditor()
 {
     gst_element_set_state ((GstElement*) m_pipeline, GST_STATE_NULL);
-    g_object_unref (m_video);
-    g_object_unref (m_audio);
     gst_object_unref (m_vsink);
     gst_object_unref (m_pipeline);
 }
@@ -315,37 +270,11 @@ GESTimelinePipeline *QDeclarativeVideoEditor::getPipeline()
     return m_pipeline;
 }
 
-qint64 QDeclarativeVideoEditor::getADuration()
-{
-    return m_adur;
-}
-
-void QDeclarativeVideoEditor::setADuration(qint64 aduration)
-{
-    qDebug() << "Audio duration: " << m_adur << " to " << aduration;
-    m_adur = aduration;
-}
-
-qint64 QDeclarativeVideoEditor::getVDuration()
-{
-    return m_vdur;
-}
-
-void QDeclarativeVideoEditor::setVDuration(qint64 vduration)
-{
-    qDebug() << "Video duration: " << m_vdur << " to " << vduration;
-    m_vdur = vduration;
-}
-
 qint64 QDeclarativeVideoEditor::getDuration()
 {
-    guint64 audio_dur = GST_CLOCK_TIME_NONE, video_dur = GST_CLOCK_TIME_NONE;
-    g_object_get (G_OBJECT (m_audio), "duration", &audio_dur, NULL);
-    g_object_get (G_OBJECT (m_video), "duration", &video_dur, NULL);
-    //m_duration = audio_dur > video_dur ? audio_dur : video_dur;
     GstFormat format = GST_FORMAT_TIME;
     gst_element_query_duration (GST_ELEMENT (m_pipeline), &format, &m_duration);
-    qDebug() << "Got duration :" << m_duration << " a: " << audio_dur << " v: " << video_dur;
+    qDebug() << "Got duration :" << m_duration;
     return m_duration;
 }
 

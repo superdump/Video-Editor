@@ -61,10 +61,6 @@ public:
 
     qint64 getDuration();
     void setDuration(qint64 duration);
-    qint64 getADuration();
-    void setADuration(qint64 aduration);
-    qint64 getVDuration();
-    void setVDuration(qint64 vduration);
     double getProgress();
     void setProgress(double progress);
     void emitProgressChanged();
@@ -82,8 +78,6 @@ private:
     double m_progress;
     uint m_winId;
     QList<VideoEditorItem *> m_items;
-    quint64 m_adur;
-    quint64 m_vdur;
 
 signals:
     /**
@@ -121,8 +115,6 @@ protected:
     GESTimelineLayer *m_timelineLayer;
     GESTimelinePipeline *m_pipeline;
     GstElement *m_vsink;
-    GESTrack *m_audio;
-    GESTrack *m_video;
 
     int m_size;
 
