@@ -301,6 +301,7 @@ Page {
 
                 Image {
                     source: "image://videoeditorimageprovider/" + uri
+                    asynchronous: true
                     width: parent.width
                     height: parent.height
                 }
