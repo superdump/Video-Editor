@@ -273,6 +273,12 @@ Page {
             anchors.fill: parent
         }
 
+        Item {
+            id: listScale
+            width: parent.width / timelinePinch.pinch.minimumScale
+            height: parent.height / timelinePinch.pinch.minimumScale
+        }
+
         ListView {
             id: list
             model: videoeditor
@@ -290,7 +296,7 @@ Page {
 
             delegate: Item {
                 id: delegateButton
-                width: duration * list.width / (3 * 100 * 1000000000)
+                width: listScale.scale * duration * list.width / (3 * 100 * 1000000000)
                 height: list.height
 
                 Image {
@@ -391,6 +397,19 @@ Page {
             }
 
             // x: parent.width / 2 - flickable.contentWidth * flickable.visibleArea.xPosition / (1.0 - flickable.visibleArea.widthRatio)
+        }
+
+        PinchArea {
+            id: timelinePinch
+            anchors.fill: parent
+            pinch {
+                minimumScale: 0.1
+                maximumScale: 1000.0
+                minimumRotation: 0.0
+                maximumRotation: 0.0
+                dragAxis: Pinch.NoDrag
+                target: listScale
+            }
         }
     }
 }
