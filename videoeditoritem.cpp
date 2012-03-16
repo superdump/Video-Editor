@@ -72,7 +72,7 @@ quint64 VideoEditorItem::getDuration() const
 void VideoEditorItem::setDuration(quint64 duration)
 {
     m_duration = duration;
-    emit durationChanged();
+    emit durationChanged(this);
 }
 
 GESTimelineFileSource *VideoEditorItem::getTlfs() const

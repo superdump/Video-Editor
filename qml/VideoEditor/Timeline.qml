@@ -306,8 +306,7 @@ Page {
                     color: "#FFFFFF"
                     text: fileName
                 }
-//                checkable: true
-//                checked: ListView.isCurrentItem
+
                 MouseArea {
                     id: dragArea
                     anchors.fill: parent

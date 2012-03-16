@@ -55,7 +55,7 @@ signals:
     void uriChanged();
     void fileNameChanged();
     void inPointChanged();
-    void durationChanged();
+    void durationChanged(VideoEditorItem*);
 
 public slots:
 

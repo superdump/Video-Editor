@@ -87,7 +87,6 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
         m_video = track;
         m_audio = (GESTrack *)track_list->next->data;
     }
-    qDebug() << "Types: " << m_audio->type << m_video->type;
     g_signal_connect(m_audio, "notify::duration", G_CALLBACK(audio_track_duration_cb), this);
     g_signal_connect(m_video, "notify::duration", G_CALLBACK(video_track_duration_cb), this);
 
@@ -170,6 +169,12 @@ void timeline_filesource_maxduration_cb (GObject *object, GParamSpec *pspec, gpo
     item->setDuration(dur);
 }
 
+void QDeclarativeVideoEditor::objectUpdated(VideoEditorItem *item)
+{
+    int row = m_items.indexOf(item);
+    emit dataChanged(index(row), index(row));
+}
+
 bool QDeclarativeVideoEditor::append(const QString &value)
 {
     qDebug() << "Appending new item:" << value;
@@ -183,6 +188,8 @@ bool QDeclarativeVideoEditor::append(const QString &value)
     item->setFileName(file.fileName());
     item->setDurHdlrID(g_signal_connect(item->getTlfs(), "notify::max-duration",
                        G_CALLBACK(timeline_filesource_maxduration_cb), item));
+    connect(item, SIGNAL(durationChanged(VideoEditorItem*)),
+            SLOT(objectUpdated(VideoEditorItem*)));
 
     m_items.append(item);
 

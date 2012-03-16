@@ -114,6 +114,7 @@ signals:
     void durationChanged();
 
 public slots:
+    void objectUpdated(VideoEditorItem*);
 
 protected:
     GESTimeline *m_timeline;
