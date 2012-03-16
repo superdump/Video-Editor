@@ -288,16 +288,26 @@ Page {
 
             boundsBehavior: Flickable.StopAtBounds
 
-            delegate: Button {
+            delegate: Item {
                 id: delegateButton
-                platformStyle: ButtonStyle {
-                    inverted: true
+
+                Image {
+                    source: "image://videoeditorimageprovider/" + uri
+                    width: parent.width
+                    height: parent.height
                 }
+
                 width: list.width / 3
                 height: list.height
-                text: fileName
-                checkable: true
-                checked: ListView.isCurrentItem
+                Text {
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    font.pixelSize: 20
+                    color: "#FFFFFF"
+                    text: fileName
+                }
+//                checkable: true
+//                checked: ListView.isCurrentItem
                 MouseArea {
                     id: dragArea
                     anchors.fill: parent

@@ -33,7 +33,8 @@ QPixmap VideoEditorImageProvider::requestPixmap(const QString &id, QSize *size, 
         *size = QSize(width, height);
     QPixmap pixmap(requestedSize.width() > 0 ? requestedSize.width() : width,
                    requestedSize.height() > 0 ? requestedSize.height() : height);
-    pixmap.fill(QColor(id).rgba());
+
+    pixmap.fill(QColor("blue").rgba());
 
     return pixmap;
 }
