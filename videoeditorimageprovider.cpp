@@ -19,22 +19,68 @@
 
 #include "videoeditorimageprovider.h"
 
+VideoEditorImageProviderRequest::VideoEditorImageProviderRequest(QObject *parent, const QString uri,
+                                                                 const QSize requestedSize) :
+    QObject(parent), m_uri(uri), m_requestedSize(requestedSize)
+{
+}
+
+QImage VideoEditorImageProviderRequest::getThumbnailImage() const
+{
+    int width = 100;
+    int height = 50;
+
+    QImage image(m_requestedSize.width() > 0 ? m_requestedSize.width() : width,
+                   m_requestedSize.height() > 0 ? m_requestedSize.height() : height, QImage::Format_ARGB32);
+
+    image.fill(QColor("blue").rgba());
+
+    return image;
+}
+
+void VideoEditorImageProviderRequest::startRequest()
+{
+    emit requestFinished(this);
+}
+
+bool VideoEditorImageProviderRequest::hasFinished() const
+{
+    return true;
+}
+
 VideoEditorImageProvider::VideoEditorImageProvider() :
-    QDeclarativeImageProvider(QDeclarativeImageProvider::Image)
+    QObject(), QDeclarativeImageProvider(QDeclarativeImageProvider::Image),
+    m_mutex(), m_requestFinishedCondition()
 {
 }
 
 QImage VideoEditorImageProvider::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
-    int width = 100;
-    int height = 50;
+    m_mutex.lock();
+    VideoEditorImageProviderRequest *request = addRequest(id, requestedSize);
 
-    if (size)
-        *size = QSize(width, height);
-    QImage image(requestedSize.width() > 0 ? requestedSize.width() : width,
-                   requestedSize.height() > 0 ? requestedSize.height() : height, QImage::Format_ARGB32);
+    while(!request->hasFinished()) {
+        m_requestFinishedCondition.wait(&m_mutex);
+    }
 
-    image.fill(QColor("blue").rgba());
-
+    QImage image = request->getThumbnailImage();
+    delete request;
+    m_mutex.unlock();
     return image;
+}
+
+void VideoEditorImageProvider::requestFinished(VideoEditorImageProviderRequest* request)
+{
+    m_mutex.lock();
+    //wake them all and let them test if their request has finished
+    m_requestFinishedCondition.wakeAll();
+    m_mutex.unlock();
+}
+
+VideoEditorImageProviderRequest* VideoEditorImageProvider::addRequest(const QString uri, const QSize requestedSize)
+{
+    VideoEditorImageProviderRequest *request = new VideoEditorImageProviderRequest(NULL, uri, requestedSize);
+    connect(request, SIGNAL(requestFinished(VideoEditorImageProviderRequest*)), SLOT(requestFinished(VideoEditorImageProviderRequest*)));
+    request->startRequest();
+    return request;
 }

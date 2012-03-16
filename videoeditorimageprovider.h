@@ -22,17 +22,47 @@
 
 #include <QDeclarativeImageProvider>
 #include <QImage>
+#include <QMutex>
+#include <QWaitCondition>
 
-class VideoEditorImageProvider : public QDeclarativeImageProvider
+class VideoEditorImageProviderRequest : public QObject
 {
+    Q_OBJECT
+public:
+    explicit VideoEditorImageProviderRequest(QObject *parent, const QString uri,
+                                             const QSize requestedSize);
+
+    void startRequest();
+
+    bool hasFinished() const;
+    QImage getThumbnailImage() const;
+
+signals:
+    void requestFinished(VideoEditorImageProviderRequest*);
+
+private:
+    QString m_uri;
+    QSize m_requestedSize;
+};
+
+class VideoEditorImageProvider : public QObject, public QDeclarativeImageProvider
+{
+    Q_OBJECT
 public:
     explicit VideoEditorImageProvider();
 
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize);
+
+    VideoEditorImageProviderRequest *addRequest(const QString uri, const QSize requestedSize);
     
 signals:
     
 public slots:
+    void requestFinished(VideoEditorImageProviderRequest*);
+
+private:
+    QMutex m_mutex;
+    QWaitCondition m_requestFinishedCondition;
     
 };
 
