@@ -327,11 +327,16 @@ Page {
                 width: duration * listScale.listScale * listScale.scale
                 height: list.height
 
-                Image {
-                    source: "image://videoeditorimageprovider/" + uri
-                    asynchronous: true
-                    width: parent.width
-                    height: parent.height
+                Rectangle {
+                    id: highlight
+                    anchors.fill: parent
+                    color: delegateButton.ListView.isCurrentItem ? "white" : "transparent"
+                    Image {
+                        source: "image://videoeditorimageprovider/" + uri
+                        anchors.fill: parent
+                        anchors.margins: 2
+                        asynchronous: true
+                    }
                 }
 
                 Text {
