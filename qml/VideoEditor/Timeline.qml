@@ -289,6 +289,17 @@ Page {
             anchors.fill: parent
         }
 
+        PinchArea {
+            id: timelinePinch
+            anchors.fill: parent
+            pinch {
+                minimumScale: minUsableWidthPx / (list.width * zoomProportion)
+                maximumScale: 1 / zoomProportion
+                target: listScale
+                dragAxis: Pinch.NoDrag
+            }
+        }
+
         Item {
             id: listScale
             property double listScale: 1.0
@@ -419,17 +430,6 @@ Page {
             }
 
             // x: parent.width / 2 - flickable.contentWidth * flickable.visibleArea.xPosition / (1.0 - flickable.visibleArea.widthRatio)
-        }
-
-        PinchArea {
-            id: timelinePinch
-            anchors.fill: parent
-            pinch {
-                minimumScale: 1.0/3.0
-                maximumScale: 10.0
-                target: listScale
-                dragAxis: Pinch.NoDrag
-            }
         }
     }
 }
