@@ -31,6 +31,16 @@ VideoEditorImageProviderRequest::VideoEditorImageProviderRequest(QObject *parent
 
 VideoEditorImageProviderRequest::~VideoEditorImageProviderRequest()
 {
+    if(m_thumbnail) {
+        gst_buffer_unref(m_thumbnail);
+    }
+    if(m_videosink) {
+        gst_object_unref(m_videosink);
+    }
+    if(m_pipeline) {
+        gst_element_set_state(m_pipeline, GST_STATE_NULL);
+        gst_object_unref (m_pipeline);
+    }
 }
 
 QImage VideoEditorImageProviderRequest::getThumbnailImage() const
@@ -56,6 +66,9 @@ void VideoEditorImageProviderRequest::setThumbnail(GstBuffer *buffer)
     m_height = m_requestedSize.height() > 0 ? m_requestedSize.height() : 50;
 
     outcaps = gst_video_format_new_caps(GST_VIDEO_FORMAT_RGB, m_width, m_height, 1, 1, 1, 1);
+    if(m_thumbnail) {
+        gst_buffer_unref (m_thumbnail);
+    }
     m_thumbnail = gst_video_convert_frame(buffer, outcaps, GST_CLOCK_TIME_NONE, NULL);
     gst_caps_unref (outcaps);
     finish();
@@ -120,15 +133,12 @@ void VideoEditorImageProviderRequest::startRequest()
     if(m_pipeline == NULL) {
         m_pipeline = gst_element_factory_make("playbin2", NULL);
 
-
         m_videosink = gst_element_factory_make("fakesink", "video-sink");
         g_object_set (m_videosink, "sync", TRUE, "enable-last-buffer", TRUE, NULL);
         GstElement *audiosink = gst_element_factory_make ("fakesink", "audio-sink");
-
         gst_object_ref (m_videosink);
         g_object_set (m_pipeline, "video-sink", m_videosink, "audio-sink", audiosink, NULL);
     }
-    bus = gst_pipeline_get_bus(GST_PIPELINE (m_pipeline));
 
     g_object_set (m_pipeline, "uri", m_uri.toUtf8().data(), NULL);
 
@@ -140,6 +150,7 @@ void VideoEditorImageProviderRequest::startRequest()
 
     qDebug() << "Entering message loop";
     bool go = true;
+    bus = gst_pipeline_get_bus(GST_PIPELINE (m_pipeline));
     while(go) {
         GstMessage *msg = gst_bus_pop(bus);
         if(msg == NULL) {
