@@ -155,6 +155,14 @@ bool QDeclarativeVideoEditor::append(const QString &value)
     return r;
 }
 
+QVariant QDeclarativeVideoEditor::getObjDuration(int idx)
+{
+    if (idx >= 0 && idx < rowCount()) {
+        return data(index(idx), 36);
+    }
+    return 1000000000; // one second for safety
+}
+
 void QDeclarativeVideoEditor::move(int from, int to)
 {
     qDebug() << "Moving media object from " << from << " to " << to;

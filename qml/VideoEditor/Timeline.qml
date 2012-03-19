@@ -23,6 +23,15 @@ import VideoEditor 1.0
 
 Page {
     id: timeline
+    property int screenWidthPx: 854;
+    property int screenHeightPx: 480;
+    property double screenWidthMM: 86.3382727
+    property double minUsableWidthMM: 10.0
+    property double zoomProportion: 1.0/3.0
+    property double minGranularityNS: 1000000000.0 / 30.0
+    property double maxGranularityNS: 1000000000.0 * 3.0 * 60.0 * 60.0
+    property double screenHDPMM: screenWidthPx / screenWidthMM
+    property double minUsableWidthPx: minUsableWidthMM * screenHDPMM
     orientationLock: PageOrientation.LockLandscape
     width: 854
     height: 480
@@ -43,6 +52,13 @@ Page {
             progressDialog.close();
             messageTitleField.text = "Export complete";
             messageDialog.open();
+        }
+
+        onDataChanged: {
+            if (list.count == 1) {
+                listScale.listScale = list.width * timeline.zoomProportion / videoeditor.getObjDuration(0);
+                listScale.scale = 1.0;
+            }
         }
     }
 
@@ -275,8 +291,9 @@ Page {
 
         Item {
             id: listScale
-            width: parent.width / timelinePinch.pinch.minimumScale
-            height: parent.height / timelinePinch.pinch.minimumScale
+            property double listScale: 1.0
+            property double minimumScale: minUsableWidthPx / maxGranularityNS
+            property double maximumScale: minUsableWidthPx / minGranularityNS
         }
 
         ListView {
@@ -296,7 +313,7 @@ Page {
 
             delegate: Item {
                 id: delegateButton
-                width: listScale.scale * duration * list.width / (3 * 100 * 1000000000)
+                width: duration * listScale.listScale * listScale.scale
                 height: list.height
 
                 Image {
@@ -404,12 +421,10 @@ Page {
             id: timelinePinch
             anchors.fill: parent
             pinch {
-                minimumScale: 0.1
-                maximumScale: 1000.0
-                minimumRotation: 0.0
-                maximumRotation: 0.0
-                dragAxis: Pinch.NoDrag
+                minimumScale: 1.0/3.0
+                maximumScale: 10.0
                 target: listScale
+                dragAxis: Pinch.NoDrag
             }
         }
     }
