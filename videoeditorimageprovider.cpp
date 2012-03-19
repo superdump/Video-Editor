@@ -24,8 +24,8 @@
 
 VideoEditorImageProviderRequest::VideoEditorImageProviderRequest(QObject *parent, const QString uri, GstClockTime timestamp,
                                                                  bool perc, const QSize requestedSize) :
-    QObject(parent), m_uri(uri), m_requestedSize(requestedSize), m_pipeline(NULL),
-    m_videosink(NULL), m_state(IDLE), m_thumbnail(NULL), m_timestamp(timestamp), m_perc(perc)
+    QObject(parent), m_uri(uri), m_requestedSize(requestedSize), m_timestamp(timestamp), m_perc(perc),
+    m_pipeline(NULL), m_videosink(NULL), m_width(0), m_height(0), m_thumbnail(NULL), m_state(IDLE)
 {
 }
 
@@ -74,7 +74,7 @@ void VideoEditorImageProviderRequest::setThumbnail(GstBuffer *buffer)
     finish();
 }
 
-bool VideoEditorImageProviderRequest::handleBusMessage(GstBus *bus, GstMessage *msg)
+bool VideoEditorImageProviderRequest::handleBusMessage(GstBus *, GstMessage *msg)
 {
     bool ret = TRUE;
     switch (GST_MESSAGE_TYPE (msg)) {
@@ -259,7 +259,7 @@ QImage VideoEditorImageProvider::requestImage(const QString &id, QSize *size, co
     return image;
 }
 
-void VideoEditorImageProvider::requestFinished(VideoEditorImageProviderRequest* request)
+void VideoEditorImageProvider::requestFinished(VideoEditorImageProviderRequest*)
 {
     m_mutex.lock();
     //wake them all and let them test if their request has finished

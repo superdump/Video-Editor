@@ -115,7 +115,7 @@ QVariant QDeclarativeVideoEditor::data(const QModelIndex &index, int role) const
     }
 }
 
-void timeline_filesource_maxduration_cb (GObject *object, GParamSpec *pspec, gpointer user_data)
+void timeline_filesource_maxduration_cb (GObject *, GParamSpec *, gpointer user_data)
 {
     VideoEditorItem *item = (VideoEditorItem *)user_data;
 
@@ -225,7 +225,7 @@ GstEncodingProfile *QDeclarativeVideoEditor::createEncodingProfile() {
 }
 
 gboolean
-QDeclarativeVideoEditor::handleBusMessage (GstBus *bus, GstMessage *msg)
+QDeclarativeVideoEditor::handleBusMessage (GstBus *, GstMessage *msg)
 {
     switch (GST_MESSAGE_TYPE (msg)) {
 
