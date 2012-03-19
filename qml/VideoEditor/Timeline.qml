@@ -357,7 +357,6 @@ Page {
                     property bool held: false
                     drag.axis: Drag.XAxis
                     enabled: delegateButton.ListView.isCurrentItem
-                    preventStealing: true
                     onPressed: {
                         delegateButton.z = 2;
                         positionStarted = delegateButton.x;
@@ -383,6 +382,7 @@ Page {
                                 if (newPosition < 1) {
                                     delegateButton.z = 1;
                                     videoeditor.move(index,0);
+                                    list.currentIndex = 0;
                                     delegateButton.opacity = 1;
                                     list.interactive = true;
                                     dragArea.drag.target = null;
@@ -390,6 +390,7 @@ Page {
                                 } else if (newPosition > list.count - 1) {
                                     delegateButton.z = 1;
                                     videoeditor.move(index, list.count - 1);
+                                    list.currentIndex = list.count - 1;
                                     delegateButton.opacity = 1;
                                     list.interactive = true;
                                     dragArea.drag.target = null;
@@ -398,6 +399,7 @@ Page {
                                 else {
                                     delegateButton.z = 1;
                                     videoeditor.move(index,newPosition);
+                                    list.currentIndex = newPosition;
                                     delegateButton.opacity = 1;
                                     list.interactive = true;
                                     dragArea.drag.target = null;
@@ -406,20 +408,24 @@ Page {
                             }
                         }
                     }
+                    onClicked: {
+                        console.log("Drag " + index + " deselected")
+                        list.currentIndex = -1;
+                    }
+                    onDoubleClicked: {
+                        listScale.listScale = list.width * timeline.zoomProportion / duration;
+                        listScale.scale = 1.0;
+                    }
                 }
                 // This MouseArea is to workaround the button pressed state that causes
                 // flicks and drags to momentarily flash the button as being selected
                 MouseArea {
                     id: tapArea
                     anchors.fill: parent
+                    enabled: delegateButton.ListView.isCurrentItem ? "false" : "true"
                     onClicked: {
-                        if (delegateButton.ListView.isCurrentItem) {
-                            console.log("Item " + index + " deselected")
-                            list.currentIndex = -1;
-                        } else {
-                            console.log("Item " + index + " selected")
-                            list.currentIndex = index;
-                        }
+                        console.log("Item " + index + " selected")
+                        list.currentIndex = index;
                     }
                     onDoubleClicked: {
                         listScale.listScale = list.width * timeline.zoomProportion / duration;
