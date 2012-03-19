@@ -396,10 +396,14 @@ Page {
                 MouseArea {
                     id: tapArea
                     anchors.fill: parent
-                    enabled: delegateButton.ListView.isCurrentItem ? false : true
                     onClicked: {
-                        console.log("Item " + index + " selected")
-                        list.currentIndex = index;
+                        if (delegateButton.ListView.isCurrentItem) {
+                            console.log("Item " + index + " deselected")
+                            list.currentIndex = -1;
+                        } else {
+                            console.log("Item " + index + " selected")
+                            list.currentIndex = index;
+                        }
                     }
                 }
             }
