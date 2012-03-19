@@ -421,6 +421,10 @@ Page {
                             list.currentIndex = index;
                         }
                     }
+                    onDoubleClicked: {
+                        listScale.listScale = list.width * timeline.zoomProportion / duration;
+                        listScale.scale = 1.0;
+                    }
                 }
             }
 
