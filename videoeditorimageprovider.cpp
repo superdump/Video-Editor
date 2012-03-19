@@ -96,6 +96,7 @@ bool VideoEditorImageProviderRequest::handleBusMessage(GstBus *bus, GstMessage *
         g_error_free (gerror);
         gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
         ret = FALSE;
+        fail();
         break;
     }
     case GST_MESSAGE_STATE_CHANGED:
@@ -145,7 +146,9 @@ void VideoEditorImageProviderRequest::startRequest()
     GstStateChangeReturn changeret = gst_element_set_state (m_pipeline, GST_STATE_PAUSED);
     if(changeret == GST_STATE_CHANGE_FAILURE) {
         qDebug() << "Failed to get thumbnail" << m_uri;
-        //TODO react with failure
+        fail();
+        gst_element_set_state(m_pipeline, GST_STATE_NULL);
+        return;
     }
 
     qDebug() << "Entering message loop";
@@ -167,9 +170,14 @@ void VideoEditorImageProviderRequest::finish() {
     emit requestFinished(this);
 }
 
+void VideoEditorImageProviderRequest::fail() {
+    m_state = FAILED;
+    emit requestFinished(this);
+}
+
 bool VideoEditorImageProviderRequest::hasFinished() const
 {
-    return m_state == FINISHED;
+    return m_state == FINISHED || m_state == FAILED;
 }
 
 VideoEditorImageProvider::VideoEditorImageProvider() :

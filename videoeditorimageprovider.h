@@ -57,6 +57,7 @@ public:
     bool handleBusMessage(GstBus * bus, GstMessage * msg);
 
 protected:
+    void fail();
     void finish();
     void setThumbnail(GstBuffer *buffer);
 
