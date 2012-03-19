@@ -22,10 +22,10 @@
 
 #include <QDebug>
 
-VideoEditorImageProviderRequest::VideoEditorImageProviderRequest(QObject *parent, const QString uri,
-                                                                 const QSize requestedSize) :
+VideoEditorImageProviderRequest::VideoEditorImageProviderRequest(QObject *parent, const QString uri, GstClockTime timestamp,
+                                                                 bool perc, const QSize requestedSize) :
     QObject(parent), m_uri(uri), m_requestedSize(requestedSize), m_pipeline(NULL),
-    m_videosink(NULL), m_state(IDLE), m_thumbnail(NULL)
+    m_videosink(NULL), m_state(IDLE), m_thumbnail(NULL), m_timestamp(timestamp), m_perc(perc)
 {
 }
 
@@ -105,19 +105,77 @@ bool VideoEditorImageProviderRequest::handleBusMessage(GstBus *bus, GstMessage *
             GstState state;
             gst_message_parse_state_changed(msg, NULL, &state, NULL);
             if(state == GST_STATE_PAUSED) {
-                qDebug() << "Playbin reached paused state";
-                m_state = GENERATING;
-                GstBuffer *last_buffer;
-                g_object_get(m_videosink, "last-buffer", &last_buffer, NULL);
+                if(m_state == STARTED) {
+                    qDebug() << "Playbin reached paused state";
+                    if (m_timestamp == 0) {
+                        m_state = GENERATING;
+                        GstBuffer *last_buffer;
+                        g_object_get(m_videosink, "last-buffer", &last_buffer, NULL);
 
-                setThumbnail(last_buffer);
-                gst_buffer_unref(last_buffer);
-                gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
-                ret = FALSE;
+                        setThumbnail(last_buffer);
+                        gst_buffer_unref(last_buffer);
+                        gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
+                        ret = FALSE;
+                    } else {
+                        qDebug() << "Initiating seek";
+                        m_state = SEEKING_START;
+                        gint64 seek_ts = m_timestamp;
+                        GstFormat format = GST_FORMAT_TIME;
+                        gint64 dur = 0;
+                        if(m_perc) {
+                            qDebug() << "Percentual seek";
+                            if(gst_element_query_duration(GST_ELEMENT(m_pipeline), &format, &dur)) {
+                                seek_ts = (m_timestamp/10000.0) * dur;
+                            } else {
+                                qDebug() << "Duration query failed";
+                                fail();
+                                ret=FALSE;
+                            }
+                        }
+                        if(ret) {
+                            qDebug() << "Sending seek to " << seek_ts << "/" << dur;
+                            bool seek = gst_element_seek_simple(GST_ELEMENT(m_pipeline), format,
+                                                                GST_SEEK_FLAG_FLUSH, m_timestamp);
+                            if(!seek) {
+                                qDebug() << "Seek failed";
+                                //Failed
+                                fail();
+                                ret = FALSE;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
         break;
+    case GST_MESSAGE_ASYNC_DONE:
+    {
+        if(GST_MESSAGE_SRC(msg) == (GstObject*) m_pipeline) {
+            qDebug() << "Async done";
+            if(m_state == SEEKING) {
+                GstBuffer *last_buffer;
+                g_object_get(m_videosink, "last-buffer", &last_buffer, NULL);
+
+                qDebug() << "Seeking finished" << last_buffer;
+                setThumbnail(last_buffer);
+                gst_buffer_unref(last_buffer);
+                gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
+                ret = FALSE;
+            } else if(m_state == SEEKING_START) {
+                /*
+                 * TODO we are discarding the first async-done because it seems
+                 * to come from the first state change.
+                 *
+                 * Need to investigate what happens with various formats and check
+                 * for a way that wouldn't rely on this.
+                 *
+                 * Ideas: clear the bus of async-done messages before issuing the seek
+                 */
+                m_state = SEEKING;
+            }
+        }
+    }
     default:
         break;
     }
@@ -209,9 +267,28 @@ void VideoEditorImageProvider::requestFinished(VideoEditorImageProviderRequest* 
     m_mutex.unlock();
 }
 
-VideoEditorImageProviderRequest* VideoEditorImageProvider::addRequest(const QString uri, const QSize requestedSize)
+VideoEditorImageProviderRequest* VideoEditorImageProvider::addRequest(const QString uriAndTimestamp, const QSize requestedSize)
 {
-    VideoEditorImageProviderRequest *request = new VideoEditorImageProviderRequest(NULL, uri, requestedSize);
+    QString uri = uriAndTimestamp;
+    int index = uri.lastIndexOf('#');
+    GstClockTime timestamp = 0;
+    bool perc = false;
+
+    if(index != -1) {
+        QString tsstr = uri.right(uri.length() - (index + 1));
+        uri = uri.left(index);
+
+        if(tsstr.endsWith('%')) {
+            perc = true;
+            tsstr = tsstr.left(tsstr.length()-1);
+        }
+
+        timestamp = tsstr.toULongLong();
+    }
+
+    qDebug() << "Requested thumbnail for" << uri << " # " << timestamp << (perc ? "%" : "");
+
+    VideoEditorImageProviderRequest *request = new VideoEditorImageProviderRequest(NULL, uri, timestamp, perc, requestedSize);
     connect(request, SIGNAL(requestFinished(VideoEditorImageProviderRequest*)), SLOT(requestFinished(VideoEditorImageProviderRequest*)));
     request->startRequest();
     return request;

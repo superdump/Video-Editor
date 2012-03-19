@@ -332,7 +332,7 @@ Page {
                     anchors.fill: parent
                     color: delegateButton.ListView.isCurrentItem ? "white" : "transparent"
                     Image {
-                        source: "image://videoeditorimageprovider/" + uri
+                        source: "image://videoeditorimageprovider/" + uri + "#1000%"
                         anchors.fill: parent
                         anchors.margins: 2
                         asynchronous: true

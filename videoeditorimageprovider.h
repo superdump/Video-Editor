@@ -38,6 +38,7 @@ public:
     enum State {
         IDLE,
         STARTED,
+        SEEKING_START,
         SEEKING,
         GENERATING,
         FINISHED,
@@ -45,8 +46,8 @@ public:
     };
 
 public:
-    explicit VideoEditorImageProviderRequest(QObject *parent, const QString uri,
-                                             const QSize requestedSize);
+    explicit VideoEditorImageProviderRequest(QObject *parent, const QString uri, GstClockTime timestamp,
+                                             bool perc, const QSize requestedSize);
     virtual ~VideoEditorImageProviderRequest();
 
     void startRequest();
@@ -65,8 +66,11 @@ signals:
     void requestFinished(VideoEditorImageProviderRequest*);
 
 private:
+    /* request data */
     QString m_uri;
     QSize m_requestedSize;
+    GstClockTime m_timestamp;
+    bool m_perc; //if true, m_timestamp is in percent, should be interpreted as 00.00%
 
     GstElement *m_pipeline;
     GstElement *m_videosink;
