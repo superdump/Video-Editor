@@ -18,10 +18,16 @@
  */
 
 #include "videoeditorimageprovider.h"
+#include <QDebug>
 
 VideoEditorImageProviderRequest::VideoEditorImageProviderRequest(QObject *parent, const QString uri,
                                                                  const QSize requestedSize) :
-    QObject(parent), m_uri(uri), m_requestedSize(requestedSize)
+    QObject(parent), m_uri(uri), m_requestedSize(requestedSize), m_pipeline(NULL),
+    m_videosink(NULL), m_state(IDLE)
+{
+}
+
+VideoEditorImageProviderRequest::~VideoEditorImageProviderRequest()
 {
 }
 
@@ -31,21 +37,116 @@ QImage VideoEditorImageProviderRequest::getThumbnailImage() const
     int height = 50;
 
     QImage image(m_requestedSize.width() > 0 ? m_requestedSize.width() : width,
-                   m_requestedSize.height() > 0 ? m_requestedSize.height() : height, QImage::Format_ARGB32);
+                 m_requestedSize.height() > 0 ? m_requestedSize.height() : height, QImage::Format_ARGB32);
 
     image.fill(QColor("blue").rgba());
 
     return image;
 }
 
+void VideoEditorImageProviderRequest::setThumbnail(GstBuffer *buffer)
+{
+    finish();
+}
+
+bool VideoEditorImageProviderRequest::handleBusMessage(GstBus *bus, GstMessage *msg)
+{
+    bool ret = TRUE;
+    switch (GST_MESSAGE_TYPE (msg)) {
+
+    case GST_MESSAGE_EOS:
+        qDebug() << "ImageProviderRequest EOS";
+        gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
+        ret = FALSE;
+        break;
+
+    case GST_MESSAGE_ERROR: {
+        gchar  *debug;
+        GError *gerror;
+
+        gst_message_parse_error (msg, &gerror, &debug);
+        g_free (debug);
+
+        qDebug() << "Image provider error:" << gerror->message;
+        g_error_free (gerror);
+        gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
+        ret = FALSE;
+        break;
+    }
+    case GST_MESSAGE_STATE_CHANGED:
+    {
+        if(GST_MESSAGE_SRC (msg) == (GstObject *) m_pipeline) {
+            GstState state;
+            gst_message_parse_state_changed(msg, NULL, &state, NULL);
+            if(state == GST_STATE_PAUSED) {
+                qDebug() << "Playbin reached paused state";
+                m_state = GENERATING;
+                GstBuffer *last_buffer;
+                g_object_get(m_videosink, "last-buffer", &last_buffer, NULL);
+
+                setThumbnail(last_buffer);
+                gst_buffer_unref(last_buffer);
+                gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
+                ret = FALSE;
+            }
+        }
+    }
+        break;
+    default:
+        break;
+    }
+
+    return ret;
+}
+
 void VideoEditorImageProviderRequest::startRequest()
 {
+    GstBus *bus;
+
+    //TODO check current state
+    m_state = STARTED;
+    if(m_pipeline == NULL) {
+        m_pipeline = gst_element_factory_make("playbin2", NULL);
+
+
+        m_videosink = gst_element_factory_make("fakesink", "video-sink");
+        g_object_set (m_videosink, "sync", TRUE, "enable-last-buffer", TRUE, NULL);
+        GstElement *audiosink = gst_element_factory_make ("fakesink", "audio-sink");
+
+        gst_object_ref (m_videosink);
+        g_object_set (m_pipeline, "video-sink", m_videosink, "audio-sink", audiosink, NULL);
+    }
+    bus = gst_pipeline_get_bus(GST_PIPELINE (m_pipeline));
+
+    g_object_set (m_pipeline, "uri", m_uri.toUtf8().data(), NULL);
+
+    GstStateChangeReturn changeret = gst_element_set_state (m_pipeline, GST_STATE_PAUSED);
+    if(changeret == GST_STATE_CHANGE_FAILURE) {
+        qDebug() << "Failed to get thumbnail" << m_uri;
+        //TODO react with failure
+    }
+
+    qDebug() << "Entering message loop";
+    bool go = true;
+    while(go) {
+        GstMessage *msg = gst_bus_pop(bus);
+        if(msg == NULL) {
+            sleep(1);
+        } else {
+            go = this->handleBusMessage(bus, msg);
+        }
+    }
+    gst_object_unref (bus);
+}
+
+void VideoEditorImageProviderRequest::finish() {
+    m_state = FINISHED;
     emit requestFinished(this);
 }
 
 bool VideoEditorImageProviderRequest::hasFinished() const
 {
-    return true;
+    return m_state == FINISHED;
 }
 
 VideoEditorImageProvider::VideoEditorImageProvider() :

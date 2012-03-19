@@ -24,18 +24,41 @@
 #include <QImage>
 #include <QMutex>
 #include <QWaitCondition>
+#include <QTimerEvent>
+
+extern "C" {
+    #include <gst/gst.h>
+}
 
 class VideoEditorImageProviderRequest : public QObject
 {
     Q_OBJECT
+
+public:
+    enum State {
+        IDLE,
+        STARTED,
+        SEEKING,
+        GENERATING,
+        FINISHED,
+        FAILED
+    };
+
 public:
     explicit VideoEditorImageProviderRequest(QObject *parent, const QString uri,
                                              const QSize requestedSize);
+    virtual ~VideoEditorImageProviderRequest();
 
     void startRequest();
 
     bool hasFinished() const;
     QImage getThumbnailImage() const;
+
+    bool handleBusMessage(GstBus * bus, GstMessage * msg);
+
+protected:
+    void finish();
+    void setThumbnail(GstBuffer *buffer);
 
 signals:
     void requestFinished(VideoEditorImageProviderRequest*);
@@ -43,6 +66,11 @@ signals:
 private:
     QString m_uri;
     QSize m_requestedSize;
+
+    GstElement *m_pipeline;
+    GstElement *m_videosink;
+
+    enum State m_state;
 };
 
 class VideoEditorImageProvider : public QObject, public QDeclarativeImageProvider
