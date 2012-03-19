@@ -1,4 +1,4 @@
-/* VideoEditor main
+/* VideoEditor CapsTricks
  * Copyright (C) 2012 Thiago Sousa Santos <thiago.sousa.santos@collabora.co.uk>
  * Copyright (C) 2012 Robert Swain <robert.swain@collabora.co.uk>
  *
