@@ -18,12 +18,14 @@
  */
 
 #include "videoeditorimageprovider.h"
+#include <gst/video/video.h>
+
 #include <QDebug>
 
 VideoEditorImageProviderRequest::VideoEditorImageProviderRequest(QObject *parent, const QString uri,
                                                                  const QSize requestedSize) :
     QObject(parent), m_uri(uri), m_requestedSize(requestedSize), m_pipeline(NULL),
-    m_videosink(NULL), m_state(IDLE)
+    m_videosink(NULL), m_state(IDLE), m_thumbnail(NULL)
 {
 }
 
@@ -35,17 +37,27 @@ QImage VideoEditorImageProviderRequest::getThumbnailImage() const
 {
     int width = 100;
     int height = 50;
+    if(m_thumbnail == NULL) {
+        QImage image(m_requestedSize.width() > 0 ? m_requestedSize.width() : width,
+                     m_requestedSize.height() > 0 ? m_requestedSize.height() : height, QImage::Format_ARGB32);
 
-    QImage image(m_requestedSize.width() > 0 ? m_requestedSize.width() : width,
-                 m_requestedSize.height() > 0 ? m_requestedSize.height() : height, QImage::Format_ARGB32);
+        image.fill(QColor("blue").rgba());
+        return image;
+    }
 
-    image.fill(QColor("blue").rgba());
-
-    return image;
+    return QImage(GST_BUFFER_DATA(m_thumbnail), m_width, m_height, QImage::Format_RGB888);
 }
 
 void VideoEditorImageProviderRequest::setThumbnail(GstBuffer *buffer)
 {
+    GstCaps *outcaps;
+
+    m_width = m_requestedSize.width() > 0 ? m_requestedSize.width() : 100;
+    m_height = m_requestedSize.height() > 0 ? m_requestedSize.height() : 50;
+
+    outcaps = gst_video_format_new_caps(GST_VIDEO_FORMAT_RGB, m_width, m_height, 1, 1, 1, 1);
+    m_thumbnail = gst_video_convert_frame(buffer, outcaps, GST_CLOCK_TIME_NONE, NULL);
+    gst_caps_unref (outcaps);
     finish();
 }
 

@@ -70,6 +70,10 @@ private:
     GstElement *m_pipeline;
     GstElement *m_videosink;
 
+    int m_width;
+    int m_height;
+    GstBuffer *m_thumbnail;
+
     enum State m_state;
 };
 
