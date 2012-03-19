@@ -343,6 +343,8 @@ Page {
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
                     font.pixelSize: 20
+                    width: parent.width
+                    clip: true
                     color: "#FFFFFF"
                     text: fileName
                 }
