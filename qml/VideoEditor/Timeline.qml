@@ -315,6 +315,37 @@ Page {
             property double maximumScale: minUsableWidthPx / minGranularityNS
         }
 
+        Item {
+            id: scrollBar
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: 8
+
+            height: 10
+
+            property real position: videoeditor.position / videoeditor.duration
+            property real pageSize: list.width < list.contentWidth ? (list.width / list.contentWidth) : 1
+
+            visible: pageSize < 1
+
+            Rectangle {
+                anchors.fill: parent
+                radius: (height / 2 - 1)
+                color: "white"
+                opacity: 0.3
+            }
+
+            Rectangle {
+                x: scrollBar.position * (scrollBar.width - 2) + 1
+                width: scrollBar.pageSize * (scrollBar.width - 2)
+                height: parent.height - 2
+                radius: height / 2 - 1
+                color: "white"
+                opacity: 0.7
+            }
+        }
+
         ListView {
             id: list
             model: videoeditor
@@ -323,8 +354,9 @@ Page {
             height: parent.height - 32
             anchors.margins: 16
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: 16
+            anchors.top: scrollBar.bottom
+            anchors.bottom: parent.bottom
+            spacing: 8
 
             orientation: ListView.Horizontal
 
