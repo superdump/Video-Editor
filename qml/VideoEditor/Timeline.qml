@@ -156,6 +156,10 @@ Page {
             anchors.right: parent.right
             anchors.top: addMediaButton.bottom
             onClicked: {
+                if (videoeditor.isRendering())
+                    videoeditor.cancelRender();
+                if (videoeditor.isPlaying)
+                    videoeditor.pause();
                 videoeditor.removeAll();
             }
             platformStyle: buttonStyle
