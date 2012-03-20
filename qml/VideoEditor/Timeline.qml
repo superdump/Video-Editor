@@ -56,7 +56,7 @@ Page {
 
         onDataChanged: {
             if (list.count == 1) {
-                listScale.listScale = list.width * timeline.zoomProportion / videoeditor.getObjDuration(0);
+                listScale.calculatedScale = list.width * timeline.zoomProportion / videoeditor.getObjDuration(0);
                 listScale.scale = 1.0;
             }
         }
@@ -310,7 +310,8 @@ Page {
 
         Item {
             id: listScale
-            property double listScale: 1.0
+            property double calculatedScale: 1.0
+            property double currentScale: calculatedScale * scale
             property double minimumScale: minUsableWidthPx / maxGranularityNS
             property double maximumScale: minUsableWidthPx / minGranularityNS
         }
@@ -353,18 +354,15 @@ Page {
             width: parent.width - 32
             height: parent.height - 32
             anchors.margins: 16
-            anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: scrollBar.bottom
             anchors.bottom: parent.bottom
-            spacing: 8
 
             orientation: ListView.Horizontal
-
             boundsBehavior: Flickable.StopAtBounds
 
             delegate: Item {
                 id: delegateButton
-                width: duration * listScale.listScale * listScale.scale
+                width: duration * listScale.currentScale
                 height: list.height
 
                 Rectangle {
@@ -455,7 +453,7 @@ Page {
                         list.currentIndex = -1;
                     }
                     onDoubleClicked: {
-                        listScale.listScale = list.width * timeline.zoomProportion / duration;
+                        listScale.calculatedScale = list.width * timeline.zoomProportion / duration;
                         listScale.scale = 1.0;
                     }
                 }
@@ -470,7 +468,7 @@ Page {
                         list.currentIndex = index;
                     }
                     onDoubleClicked: {
-                        listScale.listScale = list.width * timeline.zoomProportion / duration;
+                        listScale.calculatedScale = list.width * timeline.zoomProportion / duration;
                         listScale.scale = 1.0;
                     }
                 }
@@ -494,6 +492,7 @@ Page {
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             color: "red"
+            x: listScale.currentScale * videoeditor.position
             z: 1000
         }
     }
