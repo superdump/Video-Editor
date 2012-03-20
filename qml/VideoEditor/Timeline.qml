@@ -450,6 +450,14 @@ Page {
                 font.pixelSize: 22
             }
 
+            Rectangle {
+                height: parent.height
+                color: "#FF0000"
+                width: 2
+                z: 1000
+                x: parent.width * (videoeditor.position / videoeditor.duration)
+            }
+
             // x: parent.width / 2 - flickable.contentWidth * flickable.visibleArea.xPosition / (1.0 - flickable.visibleArea.widthRatio)
         }
     }
