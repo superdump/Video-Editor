@@ -372,6 +372,7 @@ void QDeclarativeVideoEditor::setRenderSettings(int width, int height, int fps_n
     this->m_height = height;
     this->m_fpsn = fps_n;
     this->m_fpsd = fps_d;
+    emit renderResolutionChanged();
 }
 
 bool QDeclarativeVideoEditor::render()
@@ -457,4 +458,24 @@ void QDeclarativeVideoEditor::pause()
 bool QDeclarativeVideoEditor::isRendering() const
 {
     return m_rendering;
+}
+
+uint QDeclarativeVideoEditor::getRenderWidth() const
+{
+    return m_width;
+}
+
+uint QDeclarativeVideoEditor::getRenderHeight() const
+{
+    return m_height;
+}
+
+uint QDeclarativeVideoEditor::getRenderFpsN() const
+{
+    return m_fpsn;
+}
+
+uint QDeclarativeVideoEditor::getRenderFpsD() const
+{
+    return m_fpsd;
 }

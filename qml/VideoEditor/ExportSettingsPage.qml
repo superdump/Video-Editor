@@ -6,6 +6,20 @@ Page {
     id: settingsPage
     orientationLock: PageOrientation.LockLandscape
 
+    Component.onCompleted: {
+        switch(videoeditor.renderWidth) {
+        case 640:
+            resolution.checkedButton = buttonVGA;
+            break;
+        case 848:
+            resolution.checkedButton = buttonWVGA;
+            break;
+        default:
+            resolution.checkedButton = buttonHD;
+            break;
+        }
+    }
+
     Rectangle {
         anchors.fill: parent
         color: "black"

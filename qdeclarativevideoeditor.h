@@ -36,6 +36,12 @@ class QDeclarativeVideoEditor : public QAbstractListModel
     Q_PROPERTY(qint64 position READ getPosition NOTIFY progressChanged)
     Q_PROPERTY(uint winId READ getWinId WRITE setWinId NOTIFY winIdChanged)
     Q_PROPERTY(qint64 duration READ getDuration WRITE setDuration NOTIFY durationChanged)
+
+    Q_PROPERTY(uint renderWidth READ getRenderWidth NOTIFY renderResolutionChanged)
+    Q_PROPERTY(uint renderHeight READ getRenderHeight NOTIFY renderResolutionChanged)
+    Q_PROPERTY(uint renderFpsN READ getRenderFpsN NOTIFY renderResolutionChanged)
+    Q_PROPERTY(uint renderFpsD READ getRenderFpsD NOTIFY renderResolutionChanged)
+
 public:
     explicit QDeclarativeVideoEditor(QObject *parent = 0);
     virtual ~QDeclarativeVideoEditor();
@@ -69,6 +75,11 @@ public:
     void setProgress(double progress);
     qint64 getPosition();
     void setPosition(qint64 position);
+
+    uint getRenderWidth() const;
+    uint getRenderHeight() const;
+    uint getRenderFpsN() const;
+    uint getRenderFpsD() const;
 
     uint getWinId();
     Q_INVOKABLE void setWinId(uint winId);
@@ -117,6 +128,8 @@ signals:
     void winIdChanged();
 
     void durationChanged();
+
+    void renderResolutionChanged();
 
 public slots:
     void objectUpdated(VideoEditorItem*);
