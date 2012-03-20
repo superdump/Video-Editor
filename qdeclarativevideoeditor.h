@@ -22,6 +22,7 @@
 
 #include <QAbstractListModel>
 #include <QList>
+#include <QTimer>
 extern "C" {
 #include <ges/ges.h>
 #include <gst/interfaces/xoverlay.h>
@@ -76,7 +77,11 @@ protected:
 
 private:
     gint64 m_duration;
+    gint64 m_position;
     double m_progress;
+
+    QTimer m_positionTimer;
+
     uint m_winId;
     QList<VideoEditorItem *> m_items;
 
@@ -110,6 +115,7 @@ signals:
 
 public slots:
     void objectUpdated(VideoEditorItem*);
+    void updatePosition();
 
 protected:
     GESTimeline *m_timeline;

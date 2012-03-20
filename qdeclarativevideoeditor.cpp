@@ -34,7 +34,7 @@ extern "C" {
 static gboolean bus_call(GstBus * bus, GstMessage * msg, gpointer data);
 
 QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
-    QAbstractListModel(parent), m_size(0),
+    QAbstractListModel(parent), m_position(0), m_positionTimer(this), m_size(0),
     m_width(0), m_height(0), m_fpsn(0), m_fpsd(0)
 {
     QHash<int, QByteArray> roles;
@@ -43,6 +43,8 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     roles.insert( 35 , "inPoint" );
     roles.insert( 36 , "duration" );
     setRoleNames(roles);
+
+    connect(&m_positionTimer, SIGNAL(timeout()), SLOT(updatePosition()));
 
     m_timeline = ges_timeline_new_audio_video();
     m_timelineLayer = (GESTimelineLayer*) ges_simple_timeline_layer_new();
@@ -75,6 +77,7 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
 
 QDeclarativeVideoEditor::~QDeclarativeVideoEditor()
 {
+    m_positionTimer.stop();
     gst_element_set_state ((GstElement*) m_pipeline, GST_STATE_NULL);
     gst_object_unref (m_vsink);
     gst_object_unref (m_pipeline);
@@ -307,47 +310,45 @@ void QDeclarativeVideoEditor::emitProgressChanged()
     emit progressChanged();
 }
 
-gboolean updateProgress (gpointer data)
+void QDeclarativeVideoEditor::updatePosition()
 {
-    QDeclarativeVideoEditor *self = (QDeclarativeVideoEditor*) data;
-
-    double progress = self->getProgress();
+    double progress = this->getProgress();
     if (progress == -1.0) {
         qDebug() << "Stoping progress polling";
         progress = 0.0;
-        return false;
+        m_positionTimer.stop();
+        return;
     }
 
-    double duration = self->getDuration();
+    double duration = this->getDuration();
     if(duration == -1) {
         //unknown
-        self->setProgress(0);
+        this->setProgress(0);
     } else {
         gint64 cur_pos = GST_CLOCK_TIME_NONE;
         GstFormat format_time = GST_FORMAT_TIME;
-        gst_element_query_position (GST_ELEMENT (self->getPipeline()), &format_time, &cur_pos);
+        gst_element_query_position (GST_ELEMENT (this->getPipeline()), &format_time, &cur_pos);
 
         if(duration < 0 || cur_pos < 0) {
-            self->setProgress (0);
+            this->setProgress (0);
             qDebug() << "Render progress unknown";
         } else {
-            self->setProgress ((double)cur_pos / duration);
-            qDebug() << "Render progress " << self->getProgress() * 100
+            this->setProgress ((double)cur_pos / duration);
+            qDebug() << "Render progress " << this->getProgress() * 100
                  << "% (" << cur_pos << "/" << duration << ")";
         }
 
 
     }
 
-    if (self->getProgress() < 0.0) {
-        self->setProgress(0.0);
+    if (this->getProgress() < 0.0) {
+        this->setProgress(0.0);
         qDebug() << "Stoping progress polling";
-        return false;
+        m_positionTimer.stop();
+        return;
     }
 
-    emit self->emitProgressChanged();
-
-    return true;
+    emit emitProgressChanged();
 }
 
 void QDeclarativeVideoEditor::setRenderSettings(int width, int height, int fps_n, int fps_d)
@@ -390,7 +391,9 @@ bool QDeclarativeVideoEditor::render()
     setDuration(GST_CLOCK_TIME_NONE);
     setProgress(0.0);
     qDebug() << "Starting progress polling";
-    g_timeout_add (500, updateProgress, this);
+
+    m_positionTimer.start(500);
+    //g_timeout_add (500, updateProgress, this);
 
     if(!gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PLAYING)) {
         gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_NULL);
