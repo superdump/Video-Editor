@@ -328,7 +328,7 @@ void QDeclarativeVideoEditor::updatePosition()
 {
     double progress = this->getProgress();
     if (progress == -1.0) {
-        qDebug() << "Stoping progress polling";
+        qDebug() << "Stopping progress polling";
         progress = 0.0;
         m_positionTimer.stop();
         return;
@@ -358,7 +358,7 @@ void QDeclarativeVideoEditor::updatePosition()
     if (this->getProgress() < 0.0) {
         this->setProgress(0.0);
         this->setPosition(0);
-        qDebug() << "Stoping progress polling";
+        qDebug() << "Stopping progress polling";
         m_positionTimer.stop();
         return;
     }

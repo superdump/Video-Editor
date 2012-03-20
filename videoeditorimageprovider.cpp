@@ -123,7 +123,7 @@ bool VideoEditorImageProviderRequest::handleBusMessage(GstBus *, GstMessage *msg
                         GstFormat format = GST_FORMAT_TIME;
                         gint64 dur = 0;
                         if(m_perc) {
-                            qDebug() << "Percentual seek";
+                            qDebug() << "Percentage seek";
                             if(gst_element_query_duration(GST_ELEMENT(m_pipeline), &format, &dur)) {
                                 seek_ts = (m_timestamp/10000.0) * dur;
                             } else {
