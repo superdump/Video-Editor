@@ -69,6 +69,7 @@ public:
 
     gboolean handleBusMessage(GstBus * bus, GstMessage * msg);
 
+    void updateDuration();
     qint64 getDuration();
     void setDuration(qint64 duration);
     double getProgress();

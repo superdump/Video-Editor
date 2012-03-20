@@ -130,6 +130,8 @@ void timeline_filesource_maxduration_cb (GObject *, GParamSpec *, gpointer user_
 
 void QDeclarativeVideoEditor::objectUpdated(VideoEditorItem *item)
 {
+    updateDuration();
+
     int row = m_items.indexOf(item);
     emit dataChanged(index(row), index(row));
 }
@@ -185,6 +187,7 @@ void QDeclarativeVideoEditor::removeAt(int idx)
     g_signal_handler_disconnect(item->getTlfs(), item->getDurHdlrID());
     delete item;
     m_size--;
+    //updateDuration();
 }
 
 void QDeclarativeVideoEditor::removeAll()
@@ -193,6 +196,7 @@ void QDeclarativeVideoEditor::removeAll()
     while(m_items.isEmpty() == false)
         removeAt(0);
     endRemoveRows();
+    updateDuration();
 }
 
 GstEncodingProfile *QDeclarativeVideoEditor::createEncodingProfile() {
@@ -290,11 +294,20 @@ GESTimelinePipeline *QDeclarativeVideoEditor::getPipeline()
     return m_pipeline;
 }
 
+void QDeclarativeVideoEditor::updateDuration()
+{
+    quint64 list_duration = 0;
+    QList<VideoEditorItem*>::iterator i;
+    for (i = m_items.begin(); i != m_items.end(); ++i)
+        list_duration += (*i)->getDuration();
+
+    qDebug() << "List duration: " << list_duration;
+    m_duration = list_duration;
+    emit durationChanged();
+}
+
 qint64 QDeclarativeVideoEditor::getDuration()
 {
-    GstFormat format = GST_FORMAT_TIME;
-    gst_element_query_duration (GST_ELEMENT (m_pipeline), &format, &m_duration);
-    qDebug() << "Got duration :" << m_duration;
     return m_duration;
 }
 
