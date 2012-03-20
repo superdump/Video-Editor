@@ -305,6 +305,16 @@ void QDeclarativeVideoEditor::setProgress(double progress)
     m_progress = progress;
 }
 
+qint64 QDeclarativeVideoEditor::getPosition()
+{
+    return this->m_position;
+}
+
+void QDeclarativeVideoEditor::setPosition(qint64 position)
+{
+    this->m_position = position;
+}
+
 void QDeclarativeVideoEditor::emitProgressChanged()
 {
     emit progressChanged();
@@ -331,18 +341,19 @@ void QDeclarativeVideoEditor::updatePosition()
 
         if(duration < 0 || cur_pos < 0) {
             this->setProgress (0);
+            this->setPosition(0);
             qDebug() << "Render progress unknown";
         } else {
+            this->setPosition(cur_pos);
             this->setProgress ((double)cur_pos / duration);
             qDebug() << "Render progress " << this->getProgress() * 100
                  << "% (" << cur_pos << "/" << duration << ")";
         }
-
-
     }
 
     if (this->getProgress() < 0.0) {
         this->setProgress(0.0);
+        this->setPosition(0);
         qDebug() << "Stoping progress polling";
         m_positionTimer.stop();
         return;
@@ -425,11 +436,13 @@ void QDeclarativeVideoEditor::setWinId(uint winId)
 
 void QDeclarativeVideoEditor::play()
 {
+    m_positionTimer.start(500);
     gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PLAYING);
 }
 
 
 void QDeclarativeVideoEditor::pause()
 {
+    m_positionTimer.stop();
     gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PAUSED);
 }

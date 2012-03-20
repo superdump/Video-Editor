@@ -33,6 +33,7 @@ class QDeclarativeVideoEditor : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(double progress READ getProgress NOTIFY progressChanged)
+    Q_PROPERTY(qint64 position READ getPosition NOTIFY progressChanged)
     Q_PROPERTY(uint winId READ getWinId WRITE setWinId NOTIFY winIdChanged)
     Q_PROPERTY(qint64 duration READ getDuration WRITE setDuration NOTIFY durationChanged)
 public:
@@ -65,6 +66,8 @@ public:
     void setDuration(qint64 duration);
     double getProgress();
     void setProgress(double progress);
+    qint64 getPosition();
+    void setPosition(qint64 position);
     void emitProgressChanged();
 
     uint getWinId();

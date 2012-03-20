@@ -60,6 +60,10 @@ Page {
                 listScale.scale = 1.0;
             }
         }
+
+        onProgressChanged: {
+            console.debug("Position: " + position + " / " + duration)
+        }
     }
 
     Rectangle {
