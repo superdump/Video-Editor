@@ -63,6 +63,14 @@ Page {
 
         onProgressChanged: {
             console.debug("Position: " + position + " / " + duration)
+
+            if(list.contentX + list.width >= list.contentWidth) {
+                playhead.x = ((position / duration) * list.contentWidth - list.contentX);
+            } else if(playhead.x < (1-0.50) * list.width) {
+                playhead.x = ((position / duration) * list.contentWidth - list.contentX);
+            } else {
+                list.contentX = ((position / duration) * list.contentWidth - playhead.x);
+            }
         }
     }
 
@@ -484,16 +492,16 @@ Page {
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 22
             }
+            Rectangle {
+                id: playhead
+                width: 2
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                color: "red"
+                z: 1000
+            }
         }
 
-        Rectangle {
-            id: playhead
-            width: 2
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            color: "red"
-            x: listScale.currentScale * videoeditor.position
-            z: 1000
-        }
+
     }
 }
