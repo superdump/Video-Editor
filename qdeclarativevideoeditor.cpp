@@ -29,12 +29,13 @@ extern "C" {
 }
 
 #define RENDERING_FAILED "Rendering failed"
+#define PLAYBACK_FAILED "Playback failed"
 #define NO_MEDIA "Add clips before exporting"
 
 static gboolean bus_call(GstBus * bus, GstMessage * msg, gpointer data);
 
 QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
-    QAbstractListModel(parent), m_position(0), m_positionTimer(this), m_size(0),
+    QAbstractListModel(parent), m_position(0), m_positionTimer(this), m_rendering(false), m_size(0),
     m_width(0), m_height(0), m_fpsn(0), m_fpsd(0)
 {
     QHash<int, QByteArray> roles;
@@ -237,8 +238,11 @@ QDeclarativeVideoEditor::handleBusMessage (GstBus *, GstMessage *msg)
         setProgress(1.0);
         emit progressChanged();
         gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_PAUSED);
-        ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_PREVIEW);
-        emit renderComplete();
+        if(isRendering()) {
+            m_rendering = false;
+            ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_PREVIEW);
+            emit renderComplete();
+        }
         setProgress(-1.0);
         break;
 
@@ -250,7 +254,12 @@ QDeclarativeVideoEditor::handleBusMessage (GstBus *, GstMessage *msg)
         g_free (debug);
 
         qDebug() << "Error: " << gerror->message;
-        emit error(RENDERING_FAILED, gerror->message);
+        if(isRendering()) {
+            m_rendering = false;
+            emit error(RENDERING_FAILED, gerror->message);
+        } else {
+            emit error(PLAYBACK_FAILED, gerror->message);
+        }
         g_error_free (gerror);
         gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
         setProgress(-1.0);
@@ -401,9 +410,11 @@ bool QDeclarativeVideoEditor::render()
     m_positionTimer.start(500);
     //g_timeout_add (500, updateProgress, this);
 
+    m_rendering = true;
     if(!gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PLAYING)) {
         gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_NULL);
 
+        m_rendering = false;
         emit error(RENDERING_FAILED, "Failed to set pipeline to playing state");
         return false;
     }
@@ -415,6 +426,7 @@ void QDeclarativeVideoEditor::cancelRender()
     qDebug() << "Cancelling rendering operation";
     gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PAUSED);
     setProgress(-1.0);
+    m_rendering = false;
     ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_PREVIEW);
 }
 
@@ -440,4 +452,9 @@ void QDeclarativeVideoEditor::pause()
 {
     m_positionTimer.stop();
     gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PAUSED);
+}
+
+bool QDeclarativeVideoEditor::isRendering() const
+{
+    return m_rendering;
 }

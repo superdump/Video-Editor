@@ -69,6 +69,8 @@ public:
     qint64 getPosition();
     void setPosition(qint64 position);
 
+    bool isRendering() const;
+
     uint getWinId();
     Q_INVOKABLE void setWinId(uint winId);
 
@@ -83,6 +85,8 @@ private:
     double m_progress;
 
     QTimer m_positionTimer;
+
+    bool m_rendering;
 
     uint m_winId;
     QList<VideoEditorItem *> m_items;
