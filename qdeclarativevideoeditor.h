@@ -59,6 +59,7 @@ public:
 
     //render settings API
     Q_INVOKABLE void setRenderSettings(int width, int height, int fps_n, int fps_d);
+    Q_INVOKABLE bool isRendering() const;
 
     gboolean handleBusMessage(GstBus * bus, GstMessage * msg);
 
@@ -68,8 +69,6 @@ public:
     void setProgress(double progress);
     qint64 getPosition();
     void setPosition(qint64 position);
-
-    bool isRendering() const;
 
     uint getWinId();
     Q_INVOKABLE void setWinId(uint winId);
