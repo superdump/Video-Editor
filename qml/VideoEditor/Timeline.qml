@@ -454,6 +454,7 @@ Page {
                 id: playhead
                 width: 2
                 height: timelineBar.height
+                anchors.verticalCenter: parent.verticalCenter
                 color: "red"
                 z: 1000
                 x: parent.contentWidth * (videoeditor.position / videoeditor.duration)
