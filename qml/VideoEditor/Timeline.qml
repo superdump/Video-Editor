@@ -451,11 +451,12 @@ Page {
             }
 
             Rectangle {
-                height: parent.height
-                color: "#FF0000"
+                id: playhead
                 width: 2
+                height: timelineBar.height
+                color: "red"
                 z: 1000
-                x: parent.width * (videoeditor.position / videoeditor.duration)
+                x: parent.contentWidth * (videoeditor.position / videoeditor.duration)
             }
 
             // x: parent.width / 2 - flickable.contentWidth * flickable.visibleArea.xPosition / (1.0 - flickable.visibleArea.widthRatio)
