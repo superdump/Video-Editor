@@ -453,18 +453,16 @@ Page {
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 22
             }
+        }
 
-            Rectangle {
-                id: playhead
-                width: 2
-                height: timelineBar.height
-                anchors.verticalCenter: parent.verticalCenter
-                color: "red"
-                z: 1000
-                x: parent.contentWidth * (videoeditor.position / videoeditor.duration)
-            }
-
-            // x: parent.width / 2 - flickable.contentWidth * flickable.visibleArea.xPosition / (1.0 - flickable.visibleArea.widthRatio)
+        Rectangle {
+            id: playhead
+            width: 2
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "red"
+            z: 1000
         }
     }
 }
