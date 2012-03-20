@@ -315,11 +315,6 @@ void QDeclarativeVideoEditor::setPosition(qint64 position)
     this->m_position = position;
 }
 
-void QDeclarativeVideoEditor::emitProgressChanged()
-{
-    emit progressChanged();
-}
-
 void QDeclarativeVideoEditor::updatePosition()
 {
     double progress = this->getProgress();
@@ -359,7 +354,7 @@ void QDeclarativeVideoEditor::updatePosition()
         return;
     }
 
-    emit emitProgressChanged();
+    emit progressChanged();
 }
 
 void QDeclarativeVideoEditor::setRenderSettings(int width, int height, int fps_n, int fps_d)

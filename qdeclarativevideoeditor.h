@@ -68,7 +68,6 @@ public:
     void setProgress(double progress);
     qint64 getPosition();
     void setPosition(qint64 position);
-    void emitProgressChanged();
 
     uint getWinId();
     Q_INVOKABLE void setWinId(uint winId);
