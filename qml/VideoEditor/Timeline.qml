@@ -356,6 +356,7 @@ Page {
             anchors.margins: 16
             anchors.top: scrollBar.bottom
             anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
 
             orientation: ListView.Horizontal
             boundsBehavior: Flickable.StopAtBounds
@@ -490,7 +491,6 @@ Page {
             width: 2
             anchors.top: parent.top
             anchors.bottom: parent.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
             color: "red"
             x: listScale.currentScale * videoeditor.position
             z: 1000
