@@ -575,6 +575,12 @@ Page {
                     onPositionChanged: {
                         timelineMoveTimer.start();
                     }
+
+                    onReleased: {
+                        var pos = videoeditor.duration * (playhead.x + list.contentX) / list.listContentWidth;
+                        console.debug("Sending seek to " + pos + " / " + videoeditor.duration);
+                        videoeditor.seek(pos);
+                    }
                 }
 
                 Timer {
