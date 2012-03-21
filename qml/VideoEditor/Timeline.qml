@@ -590,7 +590,7 @@ Page {
 
                     onTriggered: {
                         if(dragMouseArea.drag.active) {
-                            if(playhead.x >= list.x + list.width * 0.8 && list.contentWidth - list.contentX > list.width) {
+                            if(playhead.x >= list.x + list.width * 0.8 && list.listContentWidth - list.contentX > list.width) {
                                 list.contentX += 5
                             } else if(playhead.x < list.x + list.width * 0.2 && list.contentX > 0) {
                                 list.contentX -= 5
