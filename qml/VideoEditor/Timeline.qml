@@ -533,10 +533,10 @@ Page {
                     id: seekBall
 
                     width: 15
-                    height: 15
+                    height: 30
                     radius: 0
                     color: "red"
-                    anchors.bottom: parent.top
+                    anchors.verticalCenter: parent.top
                     anchors.horizontalCenter: parent.horizontalCenter
 
                 }
@@ -553,7 +553,10 @@ Page {
                 MouseArea {
                     id: dragMouseArea
 
-                    anchors.fill : seekBall
+                    anchors.centerIn: seekBall.Center
+                    width: seekBall.width*4
+                    height: seekBall.height*2
+
                     drag.axis: Drag.XAxis
                     drag.target: parent
                     drag.minimumX: 0
