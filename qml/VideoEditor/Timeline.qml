@@ -577,7 +577,8 @@ Page {
                 MouseArea {
                     id: dragMouseArea
 
-                    anchors.centerIn: seekBall.Center
+                    anchors.top: seekBall.top
+                    anchors.horizontalCenter: seekBall.horizontalCenter
                     width: seekBall.width*4
                     height: seekBall.height*2
 
