@@ -125,6 +125,37 @@ Page {
         }
     }
 
+
+    QueryDialog {
+        id: removeAllDialog
+        acceptButtonText: "Clear"
+        rejectButtonText: "Cancel"
+        message: "Clear all clips?"
+        onAccepted: {
+            if (videoeditor.isRendering())
+                videoeditor.cancelRender();
+            if (videoeditor.isPlaying)
+                videoeditor.pause();
+            videoeditor.removeAll();
+            close();
+        }
+    }
+    QueryDialog {
+        id: removeDialog
+        acceptButtonText: "Remove"
+        rejectButtonText: "Cancel"
+        message: "Remove the selected clip?"
+        onAccepted: {
+            console.log("Removing item " + list.currentIndex);
+            if (videoeditor.isRendering())
+                videoeditor.cancelRender();
+            if (videoeditor.isPlaying)
+                videoeditor.pause();
+            videoeditor.removeAt(list.currentIndex);
+            close();
+        }
+    }
+
     Item {
         id: leftButtons
         anchors.top: parent.top
@@ -157,11 +188,8 @@ Page {
             anchors.right: parent.right
             anchors.top: addMediaButton.bottom
             onClicked: {
-                if (videoeditor.isRendering())
-                    videoeditor.cancelRender();
-                if (videoeditor.isPlaying)
-                    videoeditor.pause();
-                videoeditor.removeAll();
+                if (list.count > 0)
+                    removeAllDialog.open();
             }
         }
 
@@ -176,12 +204,8 @@ Page {
             anchors.bottom: parent.bottom
             visible: list.count > 0
             onClicked: {
-                console.log("Removing item " + list.currentIndex);
-                if (videoeditor.isRendering())
-                    videoeditor.cancelRender();
-                if (videoeditor.isPlaying)
-                    videoeditor.pause();
-                videoeditor.removeAt(list.currentIndex);
+                if (list.count > 0)
+                    removeDialog.open();
             }
         }
     }
