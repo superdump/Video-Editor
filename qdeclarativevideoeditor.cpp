@@ -359,12 +359,9 @@ void QDeclarativeVideoEditor::updatePosition()
         if(duration < 0 || cur_pos < 0) {
             this->setProgress (0);
             this->setPosition(0);
-            qDebug() << "Render progress unknown";
         } else {
             this->setPosition(cur_pos);
             this->setProgress ((double)cur_pos / duration);
-            qDebug() << "Render progress " << this->getProgress() * 100
-                 << "% (" << cur_pos << "/" << duration << ")";
         }
     }
 

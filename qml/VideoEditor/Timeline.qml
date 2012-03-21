@@ -62,8 +62,6 @@ Page {
         }
 
         onProgressChanged: {
-            console.debug("Position: " + position + " / " + duration)
-
             if(list.contentX + list.width >= list.listContentWidth) {
                 playhead.x = ((position / duration) * list.listContentWidth - list.contentX);
             } else if(playhead.x < (1-0.50) * list.width) {
@@ -462,7 +460,6 @@ Page {
                         }
                     }
                     onClicked: {
-                        console.log("Drag " + index + " deselected")
                         list.currentIndex = -1;
                     }
                     onDoubleClicked: {
@@ -477,7 +474,6 @@ Page {
                     anchors.fill: parent
                     enabled: delegateButton.ListView.isCurrentItem ? "false" : "true"
                     onClicked: {
-                        console.log("Item " + index + " selected")
                         list.currentIndex = index;
                     }
                     onDoubleClicked: {
