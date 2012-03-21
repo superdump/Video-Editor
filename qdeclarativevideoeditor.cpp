@@ -182,20 +182,20 @@ void QDeclarativeVideoEditor::move(int from, int to)
 
 void QDeclarativeVideoEditor::removeAt(int idx)
 {
+    beginRemoveRows(QModelIndex(), idx, idx);
     VideoEditorItem *item = m_items.takeAt(idx);
     ges_timeline_layer_remove_object(m_timelineLayer, (GESTimelineObject *)item->getTlfs());
     g_signal_handler_disconnect(item->getTlfs(), item->getDurHdlrID());
     delete item;
     m_size--;
     //updateDuration();
+    endRemoveRows();
 }
 
 void QDeclarativeVideoEditor::removeAll()
 {
-    beginRemoveRows(QModelIndex(), 0, rowCount());
     while(m_items.isEmpty() == false)
         removeAt(0);
-    endRemoveRows();
     updateDuration();
 }
 

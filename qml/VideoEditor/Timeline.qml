@@ -170,6 +170,27 @@ Page {
             }
             platformStyle: buttonStyle
         }
+
+        Button {
+            id: removeButton
+            text: "Remove"
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            anchors.bottomMargin: 16
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            visible: list.count > 0
+            onClicked: {
+                console.log("Removing item " + list.currentIndex);
+                if (videoeditor.isRendering())
+                    videoeditor.cancelRender();
+                if (videoeditor.isPlaying)
+                    videoeditor.pause();
+                videoeditor.removeAt(list.currentIndex);
+            }
+            platformStyle: buttonStyle
+        }
     }
 
     Dialog {
