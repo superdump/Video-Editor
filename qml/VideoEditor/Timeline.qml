@@ -507,5 +507,43 @@ Page {
         }
 
 
+        // The ListView does not clip items outside its own area. This looks a bit weird so
+        // these two rectangles are to cover up those overflows.
+        Rectangle {
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#000000"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#303030"
+                }
+            }
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: list.left
+        }
+
+        Rectangle {
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#000000"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#303030"
+                }
+            }
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.left: list.right
+            anchors.right: parent.right
+        }
+
     }
 }
