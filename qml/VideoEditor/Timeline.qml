@@ -277,6 +277,22 @@ Page {
             }
             platformStyle: buttonStyle
         }
+        Button {
+            id: fitButton
+            text: "Fit"
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            anchors.bottomMargin: 16
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            visible: list.count > 0
+            onClicked: {
+                listScale.calculatedScale = list.width / videoeditor.duration;
+                listScale.scale = 1.0;
+            }
+            platformStyle: buttonStyle
+        }
     }
 
     Item {
