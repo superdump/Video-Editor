@@ -62,12 +62,9 @@ Page {
         }
 
         onProgressChanged: {
-            if(list.contentX + list.width >= list.listContentWidth) {
-                playhead.x = ((position / duration) * list.listContentWidth - list.contentX);
-            } else if(playhead.x < (1-0.50) * list.width) {
-                playhead.x = ((position / duration) * list.listContentWidth - list.contentX);
-            } else {
-                list.contentX = ((position / duration) * list.listContentWidth - playhead.x);
+            var curPos = position * listScale.currentScale;
+            if (curPos > list.width / 2 && curPos < list.listContentWidth - list.width / 2) {
+                list.contentX = curPos - list.width / 2;
             }
         }
     }
@@ -118,19 +115,6 @@ Page {
                     console.log("Video preview: paused -> playing");
                     preview.isPlaying = true;
                     previewText.text = "";
-                    if (!playhead.visible) {
-                        // Try to centre on the playhead
-                        if (videoeditor.position * listScale.currentScale > list.listContentWidth - list.width / 2) {
-                            list.contentX = list.listContentWidth - list.width;
-                            console.log("Playhead near end, contentX: " + list.contentX)
-                        } else if (videoeditor.position * listScale.currentScale < list.width / 2) {
-                            list.contentX = 0;
-                            console.log("Playhead near beginning, contentX: " + list.contentX)
-                        } else {
-                            list.contentX = (videoeditor.position * listScale.currentScale - list.width / 2);
-                            console.log("Playhead in main body, contentX: " + list.contentX)
-                        }
-                    }
                     videoeditor.play();
                 }
             }
@@ -545,6 +529,7 @@ Page {
             }
             Rectangle {
                 id: playhead
+                x: videoeditor.position * listScale.currentScale - list.contentX
                 width: 2
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
