@@ -90,18 +90,6 @@ public:
 protected:
     GstEncodingProfile *createEncodingProfile();
 
-private:
-    gint64 m_duration;
-    gint64 m_position;
-    double m_progress;
-
-    QTimer m_positionTimer;
-
-    bool m_rendering;
-
-    uint m_winId;
-    QList<VideoEditorItem *> m_items;
-
 signals:
     /**
       * Emitted when an error occurred.
@@ -136,7 +124,18 @@ public slots:
     void objectUpdated(VideoEditorItem*);
     void updatePosition();
 
-protected:
+private:
+    gint64 m_duration;
+    gint64 m_position;
+    double m_progress;
+
+    QTimer m_positionTimer;
+
+    bool m_rendering;
+
+    uint m_winId;
+    QList<VideoEditorItem *> m_items;
+
     GESTimeline *m_timeline;
     GESTimelineLayer *m_timelineLayer;
     GESTimelinePipeline *m_pipeline;
