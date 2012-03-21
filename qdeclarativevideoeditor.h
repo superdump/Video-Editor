@@ -60,6 +60,7 @@ public:
     //videoeditor API
     Q_INVOKABLE void play();
     Q_INVOKABLE void pause();
+    Q_INVOKABLE void seek(qint64 position);
     Q_INVOKABLE bool render();
     Q_INVOKABLE void cancelRender();
 

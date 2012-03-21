@@ -287,6 +287,11 @@ QDeclarativeVideoEditor::handleBusMessage (GstBus *, GstMessage *msg)
         setProgress(-1.0);
         break;
     }
+    case GST_MESSAGE_ASYNC_DONE:
+    {
+        updatePosition();
+    }
+        break;
     default:
         break;
     }
@@ -480,6 +485,12 @@ void QDeclarativeVideoEditor::pause()
 {
     m_positionTimer.stop();
     gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PAUSED);
+}
+
+void QDeclarativeVideoEditor::seek(qint64 position)
+{
+    gst_element_seek_simple(GST_ELEMENT (m_pipeline), GST_FORMAT_TIME, (GstSeekFlags)
+                            (GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE), position);
 }
 
 bool QDeclarativeVideoEditor::isRendering() const
