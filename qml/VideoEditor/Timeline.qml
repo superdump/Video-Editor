@@ -329,9 +329,9 @@ Page {
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.margins: 8
+            anchors.margins: 16
 
-            height: 10
+            height: 7
 
             property real position: list.contentX / list.listContentWidth
             property real pageSize: list.width < list.listContentWidth ? (list.width / list.listContentWidth) : 1
@@ -342,7 +342,7 @@ Page {
                 anchors.fill: parent
                 radius: (height / 2 - 1)
                 color: "white"
-                opacity: 0.3
+                opacity: 0.2
             }
 
             Rectangle {
@@ -351,7 +351,7 @@ Page {
                 height: parent.height - 2
                 radius: height / 2 - 1
                 color: "white"
-                opacity: 0.7
+                opacity: 0.6
             }
         }
 
@@ -361,12 +361,14 @@ Page {
 
             property double listContentWidth: listScale.currentScale * videoeditor.duration
 
-            width: parent.width - 32
-            height: parent.height - 32
-            anchors.margins: 16
+            anchors.topMargin: 8
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            anchors.bottomMargin: 16
             anchors.top: scrollBar.bottom
             anchors.bottom: parent.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.left: parent.left
+            anchors.right: parent.right
 
             orientation: ListView.Horizontal
             boundsBehavior: Flickable.StopAtBounds
