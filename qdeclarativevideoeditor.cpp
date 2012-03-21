@@ -32,6 +32,17 @@ extern "C" {
 #define PLAYBACK_FAILED "Playback failed"
 #define NO_MEDIA "Add clips before exporting"
 
+#define MOVIES_DIR "file:///home/user/MyDocs/Movies/"
+
+#define PROGRESS_TIMEOUT (1000/30)
+
+enum {
+    URI_ROLE = 33,
+    FILENAME_ROLE = 34,
+    IN_POINT_ROLE = 35,
+    DURATION_ROLE = 36
+};
+
 static gboolean bus_call(GstBus * bus, GstMessage * msg, gpointer data);
 
 QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
@@ -39,10 +50,10 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     m_width(0), m_height(0), m_fpsn(0), m_fpsd(0)
 {
     QHash<int, QByteArray> roles;
-    roles.insert( 33 , "uri" );
-    roles.insert( 34 , "fileName" );
-    roles.insert( 35 , "inPoint" );
-    roles.insert( 36 , "duration" );
+    roles.insert( URI_ROLE , "uri" );
+    roles.insert( FILENAME_ROLE , "fileName" );
+    roles.insert( IN_POINT_ROLE , "inPoint" );
+    roles.insert( DURATION_ROLE , "duration" );
     setRoleNames(roles);
 
     connect(&m_positionTimer, SIGNAL(timeout()), SLOT(updatePosition()));
@@ -95,16 +106,16 @@ QVariant QDeclarativeVideoEditor::data(const QModelIndex &index, int role) const
         QVariant ret = NULL;
         const VideoEditorItem *item = m_items.at(index.row());
         switch (role) {
-        case 33:
+        case URI_ROLE:
             ret = QVariant(item->getUri());
             break;
-        case 34:
+        case FILENAME_ROLE:
             ret = QVariant(item->getFileName());
             break;
-        case 35:
+        case IN_POINT_ROLE:
             ret = QVariant(item->getInPoint());
             break;
-        case 36:
+        case DURATION_ROLE:
             ret = QVariant(item->getDuration());
             break;
         default:
@@ -164,9 +175,9 @@ bool QDeclarativeVideoEditor::append(const QString &value)
 QVariant QDeclarativeVideoEditor::getObjDuration(int idx)
 {
     if (idx >= 0 && idx < rowCount()) {
-        return data(index(idx), 36);
+        return data(index(idx), DURATION_ROLE);
     }
-    return 1000000000; // one second for safety
+    return GST_SECOND; // one second for safety
 }
 
 void QDeclarativeVideoEditor::move(int from, int to)
@@ -402,7 +413,7 @@ bool QDeclarativeVideoEditor::render()
 
     qDebug() << "Render preparations started";
 
-    QString output_uri = "file:///home/user/MyDocs/Movies/" + getDateTimeString() + ".mp4";
+    QString output_uri = MOVIES_DIR + getDateTimeString() + ".mp4";
 
     GstEncodingProfile *profile = createEncodingProfile();
     if (!ges_timeline_pipeline_set_render_settings (m_pipeline, output_uri.toUtf8().data(), profile)) {
@@ -425,8 +436,7 @@ bool QDeclarativeVideoEditor::render()
     setProgress(0.0);
     qDebug() << "Starting progress polling";
 
-    m_positionTimer.start(1000/30);
-    //g_timeout_add (1000/30, updateProgress, this);
+    m_positionTimer.start(PROGRESS_TIMEOUT);
 
     m_rendering = true;
     if(!gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PLAYING)) {
@@ -461,7 +471,7 @@ void QDeclarativeVideoEditor::setWinId(uint winId)
 
 void QDeclarativeVideoEditor::play()
 {
-    m_positionTimer.start(1000/30);
+    m_positionTimer.start(PROGRESS_TIMEOUT);
     gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PLAYING);
 }
 
