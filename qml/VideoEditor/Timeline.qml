@@ -63,7 +63,11 @@ Page {
 
         onProgressChanged: {
             var curPos = position * listScale.currentScale;
-            if (curPos > list.width / 2 && curPos < list.listContentWidth - list.width / 2) {
+            if (curPos < list.width / 2) {
+                list.contentX = 0;
+            } else if (curPos > list.listContentWidth - list.width / 2) {
+                list.contentX = list.listContentWidth - list.width;
+            } else {
                 list.contentX = curPos - list.width / 2;
             }
         }
