@@ -64,12 +64,12 @@ Page {
         onProgressChanged: {
             console.debug("Position: " + position + " / " + duration)
 
-            if(list.contentX + list.width >= list.contentWidth) {
-                playhead.x = ((position / duration) * list.contentWidth - list.contentX);
+            if(list.contentX + list.width >= list.listContentWidth) {
+                playhead.x = ((position / duration) * list.listContentWidth - list.contentX);
             } else if(playhead.x < (1-0.50) * list.width) {
-                playhead.x = ((position / duration) * list.contentWidth - list.contentX);
+                playhead.x = ((position / duration) * list.listContentWidth - list.contentX);
             } else {
-                list.contentX = ((position / duration) * list.contentWidth - playhead.x);
+                list.contentX = ((position / duration) * list.listContentWidth - playhead.x);
             }
         }
     }
@@ -333,8 +333,8 @@ Page {
 
             height: 10
 
-            property real position: videoeditor.position / videoeditor.duration
-            property real pageSize: list.width < list.contentWidth ? (list.width / list.contentWidth) : 1
+            property real position: list.contentX / list.listContentWidth
+            property real pageSize: list.width < list.listContentWidth ? (list.width / list.listContentWidth) : 1
 
             visible: pageSize < 1
 
@@ -358,6 +358,8 @@ Page {
         ListView {
             id: list
             model: videoeditor
+
+            property double listContentWidth: listScale.currentScale * videoeditor.duration
 
             width: parent.width - 32
             height: parent.height - 32
