@@ -453,8 +453,6 @@ Page {
                     anchors.fill: parent
                     property int positionStarted: 0
                     property int positionEnded: 0
-                    property int positionsMoved: Math.floor((positionEnded - positionStarted)/delegateButton.width)
-                    property int newPosition: index + positionsMoved
                     property bool held: false
                     drag.axis: Drag.XAxis
                     enabled: delegateButton.ListView.isCurrentItem
@@ -465,48 +463,25 @@ Page {
                         delegateButton.opacity = 0.5;
                         list.interactive = false;
                         held = true;
-                        drag.maximumX = (timelineBar.width - delegateButton.width - 1 + list.contentX);
                         drag.minimumX = 0;
+                        drag.maximumX = list.contentX + list.width - delegateButton.width;
                     }
                     onPositionChanged: {
                         positionEnded = delegateButton.x;
                     }
                     onReleased: {
-                        if (Math.abs(positionsMoved) < 1 && held == true) {
+                        if (held == true) {
                             delegateButton.x = positionStarted;
+                            delegateButton.z = 1;
                             delegateButton.opacity = 1;
+                            var newPosition = list.indexAt(positionEnded, 0);
+                            if (newPosition !== index) {
+                                videoeditor.move(index, newPosition);
+                                list.currentIndex = newPosition;
+                            }
                             list.interactive = true;
                             dragArea.drag.target = null;
                             held = false;
-                        } else {
-                            if (held == true) {
-                                if (newPosition < 1) {
-                                    delegateButton.z = 1;
-                                    videoeditor.move(index,0);
-                                    list.currentIndex = 0;
-                                    delegateButton.opacity = 1;
-                                    list.interactive = true;
-                                    dragArea.drag.target = null;
-                                    held = false;
-                                } else if (newPosition > list.count - 1) {
-                                    delegateButton.z = 1;
-                                    videoeditor.move(index, list.count - 1);
-                                    list.currentIndex = list.count - 1;
-                                    delegateButton.opacity = 1;
-                                    list.interactive = true;
-                                    dragArea.drag.target = null;
-                                    held = false;
-                                }
-                                else {
-                                    delegateButton.z = 1;
-                                    videoeditor.move(index,newPosition);
-                                    list.currentIndex = newPosition;
-                                    delegateButton.opacity = 1;
-                                    list.interactive = true;
-                                    dragArea.drag.target = null;
-                                    held = false;
-                                }
-                            }
                         }
                     }
                     onClicked: {
