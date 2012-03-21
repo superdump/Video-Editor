@@ -421,8 +421,8 @@ bool QDeclarativeVideoEditor::render()
     setProgress(0.0);
     qDebug() << "Starting progress polling";
 
-    m_positionTimer.start(500);
-    //g_timeout_add (500, updateProgress, this);
+    m_positionTimer.start(1000/30);
+    //g_timeout_add (1000/30, updateProgress, this);
 
     m_rendering = true;
     if(!gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PLAYING)) {
@@ -457,7 +457,7 @@ void QDeclarativeVideoEditor::setWinId(uint winId)
 
 void QDeclarativeVideoEditor::play()
 {
-    m_positionTimer.start(500);
+    m_positionTimer.start(1000/30);
     gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PLAYING);
 }
 
