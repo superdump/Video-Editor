@@ -217,7 +217,7 @@ void QDeclarativeVideoEditor::removeAll()
     updateDuration();
 }
 
-GstEncodingProfile *QDeclarativeVideoEditor::createEncodingProfile() {
+GstEncodingProfile *QDeclarativeVideoEditor::createEncodingProfile() const {
     GstEncodingProfile *profile = (GstEncodingProfile *)
             gst_encoding_container_profile_new("mp4", NULL, gst_caps_new_simple("video/quicktime",
                                                                                 "variant", G_TYPE_STRING, "iso",
@@ -307,7 +307,7 @@ QString getDateTimeString() {
     return current.toString("yyyyMMdd-hhmmss");
 }
 
-GESTimelinePipeline *QDeclarativeVideoEditor::getPipeline()
+GESTimelinePipeline *QDeclarativeVideoEditor::getPipeline() const
 {
     return m_pipeline;
 }
@@ -324,7 +324,7 @@ void QDeclarativeVideoEditor::updateDuration()
     emit durationChanged();
 }
 
-qint64 QDeclarativeVideoEditor::getDuration()
+qint64 QDeclarativeVideoEditor::getDuration() const
 {
     return m_duration;
 }
@@ -335,7 +335,7 @@ void QDeclarativeVideoEditor::setDuration(qint64 duration)
     m_duration = duration;
 }
 
-double QDeclarativeVideoEditor::getProgress()
+double QDeclarativeVideoEditor::getProgress() const
 {
     return m_progress;
 }
@@ -345,7 +345,7 @@ void QDeclarativeVideoEditor::setProgress(double progress)
     m_progress = progress;
 }
 
-qint64 QDeclarativeVideoEditor::getPosition()
+qint64 QDeclarativeVideoEditor::getPosition() const
 {
     return this->m_position;
 }
@@ -458,7 +458,7 @@ void QDeclarativeVideoEditor::cancelRender()
     ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_PREVIEW);
 }
 
-uint QDeclarativeVideoEditor::getWinId()
+uint QDeclarativeVideoEditor::getWinId() const
 {
     return m_winId;
 }

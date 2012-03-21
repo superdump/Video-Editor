@@ -70,11 +70,11 @@ public:
     gboolean handleBusMessage(GstBus * bus, GstMessage * msg);
 
     void updateDuration();
-    qint64 getDuration();
+    qint64 getDuration() const;
     void setDuration(qint64 duration);
-    double getProgress();
+    double getProgress() const;
     void setProgress(double progress);
-    qint64 getPosition();
+    qint64 getPosition() const;
     void setPosition(qint64 position);
 
     uint getRenderWidth() const;
@@ -82,13 +82,13 @@ public:
     uint getRenderFpsN() const;
     uint getRenderFpsD() const;
 
-    uint getWinId();
+    uint getWinId() const;
     Q_INVOKABLE void setWinId(uint winId);
 
-    GESTimelinePipeline *getPipeline ();
+    GESTimelinePipeline *getPipeline () const;
 
 protected:
-    GstEncodingProfile *createEncodingProfile();
+    GstEncodingProfile *createEncodingProfile() const;
 
 signals:
     /**
