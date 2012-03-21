@@ -531,17 +531,70 @@ Page {
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 22
             }
-            Rectangle {
+            Item {
                 id: playhead
-                x: videoeditor.position * listScale.currentScale - list.contentX
-                width: 2
+
+                x: if(dragMouseArea.drag.active) { x } else { videoeditor.position * listScale.currentScale - list.contentX }
+                z: 1000
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
-                color: "red"
-                z: 1000
-                visible: list.count &&
+                visible: dragMouseArea.drag.active || (list.count &&
                          (videoeditor.position * listScale.currentScale >= list.contentX) &&
-                         (videoeditor.position * listScale.currentScale <= list.contentX + list.width)
+                         (videoeditor.position * listScale.currentScale <= list.contentX + list.width))
+
+                Rectangle {
+                    id: seekBall
+
+                    width: 15
+                    height: 15
+                    radius: 0
+                    color: "red"
+                    anchors.bottom: parent.top
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                }
+
+                Rectangle {
+                    width: 3
+
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.horizontalCenter:  parent.horizontalCenter
+                    color: "red"
+                }
+
+                MouseArea {
+                    id: dragMouseArea
+
+                    anchors.fill : seekBall
+                    drag.axis: Drag.XAxis
+                    drag.target: parent
+                    drag.minimumX: 0
+                    drag.maximumX: Math.min(list.width, list.contentWidth)
+
+                    onPositionChanged: {
+                        timelineMoveTimer.start();
+                    }
+                }
+
+                Timer {
+                    id: timelineMoveTimer
+                    interval: 200
+                    repeat: true
+
+                    onTriggered: {
+                        if(dragMouseArea.drag.active) {
+                            if(playhead.x >= list.x + list.width * 0.8 && list.contentWidth - list.contentX > list.width) {
+                                list.contentX += 5
+                            } else if(playhead.x < list.x + list.width * 0.2 && list.contentX > 0) {
+                                list.contentX -= 5
+                            }
+                        } else {
+                            stop();
+                        }
+                    }
+                }
+
             }
         }
 
