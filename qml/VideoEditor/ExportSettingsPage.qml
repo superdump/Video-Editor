@@ -38,16 +38,13 @@ Page {
     Column {
         anchors.margins: 16
         anchors.top: titleField.bottom
-        anchors.bottom: buttonSave.top
+        anchors.bottom: toolBar.top
         anchors.left: parent.left
         anchors.right: parent.right
 
         ButtonRow {
             id: resolution
             checkedButton: buttonHD
-            platformStyle: ButtonStyle {
-                inverted: true
-            }
 
             Button {
                 id: buttonHD
@@ -64,44 +61,30 @@ Page {
         }
     }
 
-    ButtonStyle {
-        id: invertedStyle
-        inverted: true
-    }
-
-    Button {
-        id: buttonSave
-        text: "Save"
+    ToolBar {
+        id: toolBar
         anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.margins: 16
-        platformStyle: invertedStyle
-        onClicked: {
-            switch(resolution.checkedButton) {
-            case buttonVGA:
-                videoeditor.setRenderSettings(640, 480, 30, 1);
-                break;
-            case buttonWVGA:
-                videoeditor.setRenderSettings(848, 480, 30, 1);
-                break;
-            case buttonHD:
-                // fall through
-            default:
-                videoeditor.setRenderSettings(1280, 720, 30, 1);
-                break;
+        tools: ToolBarLayout {
+            ToolIcon {
+                iconId: "toolbar-back"
+                onClicked: {
+                    switch(resolution.checkedButton) {
+                    case buttonVGA:
+                        videoeditor.setRenderSettings(640, 480, 30, 1);
+                        break;
+                    case buttonWVGA:
+                        videoeditor.setRenderSettings(848, 480, 30, 1);
+                        break;
+                    case buttonHD:
+                        // fall through
+                    default:
+                        videoeditor.setRenderSettings(1280, 720, 30, 1);
+                        break;
+                    }
+
+                    pageStack.pop(this)
+                }
             }
-
-            pageStack.pop(this)
         }
-    }
-
-    Button {
-        id: buttonCancel
-        text: "Cancel"
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        anchors.margins: 16
-        platformStyle: invertedStyle
-        onClicked: pageStack.pop(this)
     }
 }

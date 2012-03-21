@@ -37,4 +37,8 @@ PageStackWindow {
         orientationLock: PageOrientation.LockLandscape
         id: gallery
     }
+
+    Component.onCompleted: {
+        theme.inverted = true;
+    }
 }

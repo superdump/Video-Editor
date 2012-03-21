@@ -125,11 +125,6 @@ Page {
         }
     }
 
-    ButtonStyle {
-        id: buttonStyle
-        inverted: true
-    }
-
     Item {
         id: leftButtons
         anchors.top: parent.top
@@ -150,7 +145,6 @@ Page {
                 var component = Qt.createComponent("VideoGallery.qml")
                 pageStack.push(component);
             }
-            platformStyle: buttonStyle
         }
 
         Button {
@@ -169,7 +163,6 @@ Page {
                     videoeditor.pause();
                 videoeditor.removeAll();
             }
-            platformStyle: buttonStyle
         }
 
         Button {
@@ -190,7 +183,6 @@ Page {
                     videoeditor.pause();
                 videoeditor.removeAt(list.currentIndex);
             }
-            platformStyle: buttonStyle
         }
     }
 
@@ -225,7 +217,6 @@ Page {
             text: "Cancel"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: progressDialog.reject()
-            platformStyle: buttonStyle
         }
 
         onRejected: videoeditor.cancelRender()
@@ -256,7 +247,6 @@ Page {
             text: "OK"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: messageDialog.close()
-            platformStyle: buttonStyle
         }
     }
 
@@ -281,7 +271,6 @@ Page {
                 progressDialog.open()
                 videoeditor.render()
             }
-            platformStyle: buttonStyle
         }
         Button {
             id: settingsButton
@@ -297,7 +286,6 @@ Page {
                 var component = Qt.createComponent("ExportSettingsPage.qml")
                 pageStack.push(component);
             }
-            platformStyle: buttonStyle
         }
         Button {
             id: fitButton
@@ -313,7 +301,6 @@ Page {
                 listScale.calculatedScale = list.width / videoeditor.duration;
                 listScale.scale = 1.0;
             }
-            platformStyle: buttonStyle
         }
     }
 

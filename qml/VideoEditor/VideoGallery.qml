@@ -79,11 +79,6 @@ Page {
         }
     }
 
-    ButtonStyle {
-        id: style
-        inverted: true
-    }
-
     Rectangle {
         anchors.top: toolBar.top
         anchors.topMargin: -16
@@ -97,16 +92,16 @@ Page {
         id: toolBar
         anchors.bottom: parent.bottom
         tools: ToolBarLayout {
-            ToolItem {
+            ToolIcon {
                 id: cancelButton
-                iconId: "icon-m-toolbar-back"
+                iconId: "toolbar-back"
                 onClicked: {
                     pageStack.pop(this)
                 }
             }
-            ToolItem {
+            ToolIcon {
                 id: addButton
-                iconId: "icon-m-toolbar-add"
+                iconId: "toolbar-add"
                 onClicked: {
                     console.log("Selected: " + docGalModel.get(listView.currentIndex).url  + "  " + listView.currentItem)
                     videoeditor.append(docGalModel.get(listView.currentIndex).url)
