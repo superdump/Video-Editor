@@ -499,6 +499,9 @@ Page {
                 anchors.bottom: parent.bottom
                 color: "red"
                 z: 1000
+                visible: list.count &&
+                         (videoeditor.position * listScale.currentScale >= list.contentX) &&
+                         (videoeditor.position * listScale.currentScale <= list.contentX + list.width)
             }
         }
 
