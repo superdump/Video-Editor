@@ -329,7 +329,7 @@ Page {
             anchors.right: parent.right
             anchors.margins: 16
 
-            height: 7
+            height: 8
 
             property real position: list.contentX / list.listContentWidth
             property real pageSize: list.width < list.listContentWidth ? (list.width / list.listContentWidth) : 1
@@ -344,6 +344,7 @@ Page {
             }
 
             Rectangle {
+                anchors.verticalCenter: parent.verticalCenter
                 x: scrollBar.position * (scrollBar.width - 2) + 1
                 width: scrollBar.pageSize * (scrollBar.width - 2)
                 height: parent.height - 2
