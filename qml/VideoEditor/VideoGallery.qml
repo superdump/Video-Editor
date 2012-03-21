@@ -38,7 +38,7 @@ Page {
             top: parent.top
             left: parent.left
             right: parent.right
-            bottom: addButton.top
+            bottom: toolBar.top
             margins: 16
         }
         focus:true
@@ -85,7 +85,7 @@ Page {
     }
 
     Rectangle {
-        anchors.top: addButton.top
+        anchors.top: toolBar.top
         anchors.topMargin: -16
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -93,35 +93,26 @@ Page {
         color: "black"
     }
 
-    Button {
-        id: addButton
-        platformStyle: style
-        anchors {
-            bottom: parent.bottom
-            left: parent.left
-            margins: 16
-        }
-
-        text: "Add"
-        onClicked: {
-            console.log("Selected: " + docGalModel.get(listView.currentIndex).url  + "  " + listView.currentItem)
-            videoeditor.append(docGalModel.get(listView.currentIndex).url)
-            pageStack.pop(this)
-        }
-    }
-
-    Button {
-        id: cancelButton
-        platformStyle: style
-        anchors {
-            bottom: parent.bottom
-            right: parent.right
-            margins: 16
-        }
-
-        text: "Cancel"
-        onClicked: {
-            pageStack.pop(this)
+    ToolBar {
+        id: toolBar
+        anchors.bottom: parent.bottom
+        tools: ToolBarLayout {
+            ToolItem {
+                id: cancelButton
+                iconId: "icon-m-toolbar-back"
+                onClicked: {
+                    pageStack.pop(this)
+                }
+            }
+            ToolItem {
+                id: addButton
+                iconId: "icon-m-toolbar-add"
+                onClicked: {
+                    console.log("Selected: " + docGalModel.get(listView.currentIndex).url  + "  " + listView.currentItem)
+                    videoeditor.append(docGalModel.get(listView.currentIndex).url)
+                    pageStack.pop(this)
+                }
+            }
         }
     }
 }
