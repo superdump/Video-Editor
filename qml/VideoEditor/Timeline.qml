@@ -118,6 +118,19 @@ Page {
                     console.log("Video preview: paused -> playing");
                     preview.isPlaying = true;
                     previewText.text = "";
+                    if (!playhead.visible) {
+                        // Try to centre on the playhead
+                        if (videoeditor.position * listScale.currentScale > list.listContentWidth - list.width / 2) {
+                            list.contentX = list.listContentWidth - list.width;
+                            console.log("Playhead near end, contentX: " + list.contentX)
+                        } else if (videoeditor.position * listScale.currentScale < list.width / 2) {
+                            list.contentX = 0;
+                            console.log("Playhead near beginning, contentX: " + list.contentX)
+                        } else {
+                            list.contentX = (videoeditor.position * listScale.currentScale - list.width / 2);
+                            console.log("Playhead in main body, contentX: " + list.contentX)
+                        }
+                    }
                     videoeditor.play();
                 }
             }
