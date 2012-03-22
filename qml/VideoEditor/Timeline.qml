@@ -459,6 +459,56 @@ Page {
                     text: fileName
                 }
 
+                Item {
+                    id: durationSelector
+
+                    x: if(durationDragMouseArea.drag.active) { x } else { parent.width }
+                    z: 1002
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    visible: durationDragMouseArea.drag.active || delegateButton.ListView.isCurrentItem
+
+                    Rectangle {
+                        id: durationDragger
+
+                        width: 15
+                        height: 30
+                        radius: 0
+                        color: "blue"
+                        anchors.verticalCenter: parent.top
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
+
+                    Rectangle {
+                        width: 3
+
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        anchors.horizontalCenter:  parent.horizontalCenter
+                        color: "blue"
+                    }
+
+                    MouseArea {
+                        id: durationDragMouseArea
+
+                        anchors.top: durationDragger.top
+                        anchors.horizontalCenter: durationDragger.horizontalCenter
+                        width: durationDragger.width*4
+                        height: durationDragger.height*2
+
+                        drag.axis: Drag.XAxis
+                        drag.target: parent
+                        drag.minimumX: 0
+                        drag.maximumX: delegateButton.maxDuration * listScale.currentScale - inPoint * listScale.currentScale
+
+                        onReleased: {
+                            var dur = durationSelector.x / listScale.currentScale
+                            console.debug("Setting duration to " + dur + " / " + delegateButton.maxDuration);
+                            setDuration(dur);
+                        }
+                    }
+                }
+
                 MouseArea {
                     id: dragArea
                     anchors.fill: parent
