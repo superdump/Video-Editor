@@ -60,10 +60,32 @@ QImage VideoEditorImageProviderRequest::getThumbnailImage() const
 
 void VideoEditorImageProviderRequest::setThumbnail(GstBuffer *buffer)
 {
-    GstCaps *outcaps;
+    GstCaps *outcaps = NULL;
+    GstVideoFormat *format = NULL;
+    int caps_width = -1, caps_height = -1, par_n = 1, par_d = 1;
 
-    m_width = m_requestedSize.width() > 0 ? m_requestedSize.width() : 100;
-    m_height = m_requestedSize.height() > 0 ? m_requestedSize.height() : 50;
+    gst_video_format_parse_caps(GST_BUFFER_CAPS (buffer), format, &caps_width, &caps_height);
+    gst_video_parse_caps_pixel_aspect_ratio(GST_BUFFER_CAPS (buffer), &par_n, &par_d);
+
+    double dar = -1.0;
+    if (caps_height && par_d)
+        dar = (par_n * caps_width) / (double)(par_d * caps_height);
+
+    m_width = m_requestedSize.width() > 0 ? m_requestedSize.width() : -1;
+    m_height = m_requestedSize.height() > 0 ? m_requestedSize.height() : -1;
+
+    if (m_width == -1) {
+        if (m_height == -1) {
+            m_width = 100;
+            m_height = 50;
+        } else {
+            // calc m_width = m_height * DAR
+            m_width = (int)(m_height * dar);
+        }
+    } else if (m_height == -1) {
+        // calc m_height = m_width / DAR
+        m_height = (int)(m_width / dar);
+    }
 
     outcaps = gst_video_format_new_caps(GST_VIDEO_FORMAT_RGB, m_width, m_height, 1, 1, 1, 1);
     if(m_thumbnail) {

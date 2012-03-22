@@ -429,22 +429,33 @@ Page {
                 Rectangle {
                     id: highlight
                     anchors.fill: parent
-                    color: delegateButton.ListView.isCurrentItem ? "white" : "transparent"
+                    color: delegateButton.ListView.isCurrentItem ? "#bfffffff" : "#4dffffff"
                     Image {
+                        id: image
                         source: "image://videoeditorimageprovider/" + uri + "#1000%"
-                        anchors.fill: parent
-                        anchors.margins: 2
+                        anchors.centerIn: parent
+                        width: parent.width - 4
+                        height: parent.height - 4
                         asynchronous: true
+                        fillMode: Image.PreserveAspectFit
+                        sourceSize.height: parent.height
+                        clip: true
+                    }
+                    Text {
+                        anchors.centerIn: parent
+                        text: image.status === Image.Loading ? "Loading..." : ""
+                        font.pixelSize: 20
                     }
                 }
 
                 Text {
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
+                    anchors.margins: 16
                     font.pixelSize: 20
-                    width: parent.width
+                    width: parent.width - 32
                     clip: true
-                    color: "#FFFFFF"
+                    color: "white"
                     text: fileName
                 }
 
