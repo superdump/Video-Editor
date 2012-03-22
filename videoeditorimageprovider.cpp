@@ -55,7 +55,7 @@ QImage VideoEditorImageProviderRequest::getThumbnailImage() const
         return image;
     }
 
-    return QImage(GST_BUFFER_DATA(m_thumbnail), m_width, m_height, QImage::Format_RGB888);
+    return QImage(GST_BUFFER_DATA(m_thumbnail), m_width, m_height, QImage::Format_RGB888).copy();
 }
 
 void VideoEditorImageProviderRequest::setThumbnail(GstBuffer *buffer)
