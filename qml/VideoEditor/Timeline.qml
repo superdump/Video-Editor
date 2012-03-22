@@ -569,7 +569,7 @@ Page {
                     drag.axis: Drag.XAxis
                     drag.target: parent
                     drag.minimumX: 0
-                    drag.maximumX: Math.min(list.width, list.contentWidth)
+                    drag.maximumX: Math.min(list.width, list.listContentWidth)
 
                     onPositionChanged: {
                         timelineMoveTimer.start();
