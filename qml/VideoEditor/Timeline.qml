@@ -542,9 +542,9 @@ Page {
                 Rectangle {
                     id: seekBall
 
-                    width: 15
-                    height: 30
-                    radius: 0
+                    width: 30
+                    height: width
+                    radius: width / 2
                     color: "red"
                     anchors.verticalCenter: parent.top
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -563,10 +563,8 @@ Page {
                 MouseArea {
                     id: dragMouseArea
 
-                    anchors.top: seekBall.top
-                    anchors.horizontalCenter: seekBall.horizontalCenter
-                    width: seekBall.width*4
-                    height: seekBall.height*2
+                    anchors.fill: seekBall
+                    anchors.centerIn: seekBall
 
                     drag.axis: Drag.XAxis
                     drag.target: parent
