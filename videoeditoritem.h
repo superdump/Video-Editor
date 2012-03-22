@@ -29,11 +29,11 @@ extern "C" {
 class VideoEditorItem : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString uri READ getUri NOTIFY uriChanged)
-    Q_PROPERTY(QString fileName READ getFileName NOTIFY fileNameChanged)
-    Q_PROPERTY(quint64 inPoint READ getInPoint NOTIFY inPointChanged)
-    Q_PROPERTY(quint64 maxDuration READ getMaxDuration NOTIFY maxDurationChanged)
-    Q_PROPERTY(quint64 duration READ getDuration NOTIFY durationChanged)
+    Q_PROPERTY(QString uri READ getUri WRITE setUri NOTIFY uriChanged)
+    Q_PROPERTY(QString fileName READ getFileName WRITE setFileName NOTIFY fileNameChanged)
+    Q_PROPERTY(quint64 inPoint READ getInPoint WRITE setInPoint NOTIFY inPointChanged)
+    Q_PROPERTY(quint64 maxDuration READ getMaxDuration WRITE setMaxDuration NOTIFY maxDurationChanged)
+    Q_PROPERTY(quint64 duration READ getDuration WRITE setDuration NOTIFY durationChanged)
 public:
     explicit VideoEditorItem(QObject *parent = 0);
     virtual ~VideoEditorItem();
