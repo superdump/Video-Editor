@@ -64,11 +64,12 @@ quint64 VideoEditorItem::getInPoint() const
 
 bool VideoEditorItem::setInPoint(quint64 inPoint)
 {
-    if (inPoint > m_maxDuration) {
+    if (inPoint > m_maxDuration && m_maxDuration != -1) {
         qWarning() << "Invalid inPoint: " << inPoint << " must be 0 <= inPoint <= " << m_maxDuration;
         return false;
     }
-    if (inPoint + m_duration > m_maxDuration) {
+    if (inPoint + m_duration > m_maxDuration &&
+            m_duration != -1 && m_maxDuration != -1) {
         qWarning() << "Invalid inPoint (due to duration): " << inPoint + m_duration << " > " << m_maxDuration;
         return false;
     }
@@ -84,7 +85,8 @@ quint64 VideoEditorItem::getMaxDuration() const
 
 bool VideoEditorItem::setMaxDuration(quint64 duration)
 {
-    if (m_inPoint + m_duration > duration) {
+    if (m_inPoint + m_duration > duration &&
+            m_inPoint != -1 && m_duration != -1) {
         qWarning() << "Invalid maxDuration : " << m_inPoint + m_duration << " > " << duration;
         return false;
     }
@@ -100,11 +102,12 @@ quint64 VideoEditorItem::getDuration() const
 
 bool VideoEditorItem::setDuration(quint64 duration)
 {
-    if (duration > m_maxDuration) {
+    if (duration > m_maxDuration && m_maxDuration != -1) {
         qWarning() << "Invalid duration: " << duration << " > " << m_maxDuration;
         return false;
     }
-    if (m_inPoint + duration > m_maxDuration) {
+    if (m_inPoint + duration > m_maxDuration &&
+            m_inPoint != -1 && m_maxDuration != -1) {
         qWarning() << "Invalid duration (due to inPoint): " << m_inPoint + duration << " > " << m_maxDuration;
         return false;
     }
