@@ -460,26 +460,28 @@ Page {
                 }
 
                 Item {
-                    id: durationSelector
+                    id: endPoint
 
-                    x: if(durationDragMouseArea.drag.active) { x } else { parent.width }
-                    z: 1002
+                    x: if(endPointDrag.drag.active) { x } else { parent.width }
+                    z: 1000
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
-                    visible: durationDragMouseArea.drag.active || delegateButton.ListView.isCurrentItem
+                    visible: endPointDrag.drag.active || delegateButton.ListView.isCurrentItem
 
                     Rectangle {
-                        id: durationDragger
+                        id: endBall
 
-                        width: 15
-                        height: 30
-                        radius: 0
+                        width: 30
+                        height: width
+                        radius: width / 2
                         color: "blue"
                         anchors.verticalCenter: parent.top
                         anchors.horizontalCenter: parent.horizontalCenter
+
                     }
 
                     Rectangle {
+                        id: endStick
                         width: 3
 
                         anchors.top: parent.top
@@ -489,22 +491,20 @@ Page {
                     }
 
                     MouseArea {
-                        id: durationDragMouseArea
+                        id: endPointDrag
 
-                        anchors.top: durationDragger.top
-                        anchors.horizontalCenter: durationDragger.horizontalCenter
-                        width: durationDragger.width*4
-                        height: durationDragger.height*2
+                        anchors.fill: endBall
+                        anchors.centerIn: endBall
 
                         drag.axis: Drag.XAxis
                         drag.target: parent
                         drag.minimumX: 0
-                        drag.maximumX: model.object.maxDuration * listScale.currentScale - model.object.inPoint * listScale.currentScale
+                        drag.maximumX: Math.min(list.width, list.listContentWidth)
 
                         onReleased: {
-                            var dur = durationSelector.x / listScale.currentScale
-                            console.debug("Setting duration to " + dur + " / " + model.object.maxDuration);
-                            model.object.duration = dur;
+                            console.log("es: " + endPoint.x + ", px: " + delegateButton.x)
+                            var pos = (endPoint.x - delegateButton.x) / listScale.currentScale;
+                            console.debug("Setting duration to " + pos + " / " + model.object.maxDuration);
                         }
                     }
                 }
@@ -529,6 +529,7 @@ Page {
                     }
                     onPositionChanged: {
                         positionEnded = delegateButton.x;
+                        console.log("posEnded: " + positionEnded);
                     }
                     onReleased: {
                         if (held == true) {
