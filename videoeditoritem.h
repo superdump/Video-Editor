@@ -32,6 +32,7 @@ class VideoEditorItem : public QObject
     Q_PROPERTY(QString uri READ getUri NOTIFY uriChanged)
     Q_PROPERTY(QString fileName READ getFileName NOTIFY fileNameChanged)
     Q_PROPERTY(quint64 inPoint READ getInPoint NOTIFY inPointChanged)
+    Q_PROPERTY(quint64 maxDuration READ getMaxDuration NOTIFY maxDurationChanged)
     Q_PROPERTY(quint64 duration READ getDuration NOTIFY durationChanged)
 public:
     explicit VideoEditorItem(QObject *parent = 0);
@@ -45,6 +46,8 @@ public:
     void setInPoint(quint64 inPoint);
     quint64 getDuration() const;
     void setDuration(quint64 duration);
+    quint64 getMaxDuration() const;
+    void setMaxDuration(quint64 duration);
     GESTimelineFileSource *getTlfs() const;
     void setTlfs(GESTimelineFileSource *tlfs);
     unsigned long getDurHdlrID() const;
@@ -54,8 +57,9 @@ signals:
 
     void uriChanged();
     void fileNameChanged();
-    void inPointChanged();
+    void inPointChanged(VideoEditorItem*);
     void durationChanged(VideoEditorItem*);
+    void maxDurationChanged(VideoEditorItem*);
 
 public slots:
 
@@ -64,6 +68,7 @@ private:
     QString m_uri;
     QString m_fileName;
     quint64 m_inPoint;
+    quint64 m_maxDuration;
     quint64 m_duration;
     unsigned long m_dur_hdlr_id;
 

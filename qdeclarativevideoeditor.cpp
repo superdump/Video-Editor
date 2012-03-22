@@ -40,7 +40,8 @@ enum {
     URI_ROLE = 33,
     FILENAME_ROLE = 34,
     IN_POINT_ROLE = 35,
-    DURATION_ROLE = 36
+    DURATION_ROLE = 36,
+    MAX_DURATION_ROLE = 37
 };
 
 static gboolean bus_call(GstBus * bus, GstMessage * msg, gpointer data);
@@ -54,6 +55,7 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     roles.insert( FILENAME_ROLE , "fileName" );
     roles.insert( IN_POINT_ROLE , "inPoint" );
     roles.insert( DURATION_ROLE , "duration" );
+    roles.insert( MAX_DURATION_ROLE , "maxDuration" );
     setRoleNames(roles);
 
     connect(&m_positionTimer, SIGNAL(timeout()), SLOT(updatePosition()));
@@ -118,6 +120,9 @@ QVariant QDeclarativeVideoEditor::data(const QModelIndex &index, int role) const
         case DURATION_ROLE:
             ret = QVariant(item->getDuration());
             break;
+        case MAX_DURATION_ROLE:
+            ret = QVariant(item->getMaxDuration());
+            break;
         default:
         {
             qDebug() << "Unknown role: " << role;
@@ -136,6 +141,8 @@ void timeline_filesource_maxduration_cb (GObject *, GParamSpec *, gpointer user_
 
     quint64 dur = GST_CLOCK_TIME_NONE;
     g_object_get (item->getTlfs(), "max-duration", &dur, NULL);
+    if (item->getMaxDuration() == -1)
+        item->setMaxDuration(dur);
     item->setDuration(dur);
 }
 
@@ -160,7 +167,13 @@ bool QDeclarativeVideoEditor::append(const QString &value)
     item->setFileName(file.fileName());
     item->setDurHdlrID(g_signal_connect(item->getTlfs(), "notify::max-duration",
                        G_CALLBACK(timeline_filesource_maxduration_cb), item));
+
+    /* if the inpoint, duration, or max-duration change, we need to update m_duration */
+    connect(item, SIGNAL(inPointChanged(VideoEditorItem*)),
+            SLOT(objectUpdated(VideoEditorItem*)));
     connect(item, SIGNAL(durationChanged(VideoEditorItem*)),
+            SLOT(objectUpdated(VideoEditorItem*)));
+    connect(item, SIGNAL(maxDurationChanged(VideoEditorItem*)),
             SLOT(objectUpdated(VideoEditorItem*)));
 
     m_items.append(item);
