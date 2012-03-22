@@ -37,11 +37,7 @@ extern "C" {
 #define PROGRESS_TIMEOUT (1000/30)
 
 enum {
-    URI_ROLE = 33,
-    FILENAME_ROLE = 34,
-    IN_POINT_ROLE = 35,
-    DURATION_ROLE = 36,
-    MAX_DURATION_ROLE = 37
+    OBJECT_ROLE = Qt::UserRole,
 };
 
 static gboolean bus_call(GstBus * bus, GstMessage * msg, gpointer data);
@@ -51,11 +47,7 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     m_width(0), m_height(0), m_fpsn(0), m_fpsd(0)
 {
     QHash<int, QByteArray> roles;
-    roles.insert( URI_ROLE , "uri" );
-    roles.insert( FILENAME_ROLE , "fileName" );
-    roles.insert( IN_POINT_ROLE , "inPoint" );
-    roles.insert( DURATION_ROLE , "duration" );
-    roles.insert( MAX_DURATION_ROLE , "maxDuration" );
+    roles.insert(OBJECT_ROLE, "object" );
     setRoleNames(roles);
 
     connect(&m_positionTimer, SIGNAL(timeout()), SLOT(updatePosition()));
@@ -106,22 +98,10 @@ QVariant QDeclarativeVideoEditor::data(const QModelIndex &index, int role) const
 {
     if (index.isValid() && index.row() < m_size) {
         QVariant ret = NULL;
-        const VideoEditorItem *item = m_items.at(index.row());
+        VideoEditorItem *item = m_items.at(index.row());
         switch (role) {
-        case URI_ROLE:
-            ret = QVariant(item->getUri());
-            break;
-        case FILENAME_ROLE:
-            ret = QVariant(item->getFileName());
-            break;
-        case IN_POINT_ROLE:
-            ret = QVariant(item->getInPoint());
-            break;
-        case DURATION_ROLE:
-            ret = QVariant(item->getDuration());
-            break;
-        case MAX_DURATION_ROLE:
-            ret = QVariant(item->getMaxDuration());
+        case OBJECT_ROLE:
+            ret = QVariant::fromValue<VideoEditorItem *>(item);
             break;
         default:
         {
@@ -133,40 +113,6 @@ QVariant QDeclarativeVideoEditor::data(const QModelIndex &index, int role) const
     } else {
         return QVariant();
     }
-}
-
-bool QDeclarativeVideoEditor::setData(const QModelIndex &idx, const QVariant &value,
-                                      int role)
-{
-    bool ret = false;
-    if (idx.isValid() && idx.row() < m_size) {
-        VideoEditorItem *item = m_items.at(idx.row());
-        switch (role) {
-        case URI_ROLE:
-            ret = item->setUri(value.toString());
-            break;
-        case FILENAME_ROLE:
-            ret = item->setFileName(value.toString());
-            break;
-        case IN_POINT_ROLE:
-            ret = item->setInPoint(value.toULongLong());
-            break;
-        case DURATION_ROLE:
-            ret = item->setDuration(value.toULongLong());
-            break;
-        case MAX_DURATION_ROLE:
-            ret = item->setMaxDuration(value.toULongLong());
-            break;
-        default:
-        {
-            qDebug() << "Unknown role: " << role;
-            break;
-        }
-        }
-    }
-    if (ret)
-        emit dataChanged(index(idx.row()), index(idx.row()));
-    return ret;
 }
 
 void timeline_filesource_maxduration_cb (GObject *, GParamSpec *, gpointer user_data)
@@ -222,7 +168,7 @@ bool QDeclarativeVideoEditor::append(const QString &value)
 QVariant QDeclarativeVideoEditor::getObjDuration(int idx)
 {
     if (idx >= 0 && idx < rowCount()) {
-        return data(index(idx), DURATION_ROLE);
+        return data(index(idx), OBJECT_ROLE).value<VideoEditorItem *>()->getDuration();
     }
     return GST_SECOND; // one second for safety
 }

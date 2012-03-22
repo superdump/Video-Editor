@@ -423,7 +423,7 @@ Page {
 
             delegate: Item {
                 id: delegateButton
-                width: duration * listScale.currentScale
+                width: model.object.duration * listScale.currentScale
                 height: list.height
 
                 Rectangle {
@@ -432,7 +432,7 @@ Page {
                     color: delegateButton.ListView.isCurrentItem ? "#bfffffff" : "#4dffffff"
                     Image {
                         id: image
-                        source: "image://videoeditorimageprovider/" + uri + "#1000%"
+                        source: "image://videoeditorimageprovider/" + model.object.uri + "#1000%"
                         anchors.centerIn: parent
                         width: parent.width - 4
                         height: parent.height - 4
@@ -456,7 +456,7 @@ Page {
                     width: parent.width - 32
                     clip: true
                     color: "white"
-                    text: fileName
+                    text: model.object.fileName
                 }
 
                 Item {
@@ -499,12 +499,12 @@ Page {
                         drag.axis: Drag.XAxis
                         drag.target: parent
                         drag.minimumX: 0
-                        drag.maximumX: maxDuration * listScale.currentScale - inPoint * listScale.currentScale
+                        drag.maximumX: model.object.maxDuration * listScale.currentScale - model.object.inPoint * listScale.currentScale
 
                         onReleased: {
                             var dur = durationSelector.x / listScale.currentScale
-                            console.debug("Setting duration to " + dur + " / " + maxDuration);
-                            duration = dur;
+                            console.debug("Setting duration to " + dur + " / " + model.object.maxDuration);
+                            model.object.duration = dur;
                         }
                     }
                 }
@@ -549,7 +549,7 @@ Page {
                         list.currentIndex = -1;
                     }
                     onDoubleClicked: {
-                        listScale.calculatedScale = list.width * timeline.zoomProportion / duration;
+                        listScale.calculatedScale = list.width * timeline.zoomProportion / model.object.duration;
                         listScale.scale = 1.0;
                     }
                 }
@@ -563,7 +563,7 @@ Page {
                         list.currentIndex = index;
                     }
                     onDoubleClicked: {
-                        listScale.calculatedScale = list.width * timeline.zoomProportion / duration;
+                        listScale.calculatedScale = list.width * timeline.zoomProportion / model.object.duration;
                         listScale.scale = 1.0;
                     }
                 }

@@ -29,6 +29,7 @@ extern "C" {
 #include "qmlapplicationviewer.h"
 #include "qdeclarativevideoeditor.h"
 #include "videoeditorimageprovider.h"
+#include "videoeditoritem.h"
 
 extern "C" {
     #include "gstcapstricks.h"
@@ -43,6 +44,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     gstcapstricks_init();
 
     qmlRegisterType<QDeclarativeVideoEditor>("VideoEditor", 1,0, "VideoEditor");
+    qmlRegisterUncreatableType<VideoEditorItem>("VideoEditor", 1, 0, "VideoEditorItem", "Managed by VideoEditor in C++");
 
     QmlApplicationViewer viewer;
 

@@ -76,4 +76,6 @@ private:
     Q_DISABLE_COPY(VideoEditorItem)
 };
 
+Q_DECLARE_METATYPE(VideoEditorItem *)
+
 #endif // VIDEOEDITORITEM_H
