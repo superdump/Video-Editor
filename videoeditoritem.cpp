@@ -38,10 +38,11 @@ QString VideoEditorItem::getUri() const
     return m_uri;
 }
 
-void VideoEditorItem::setUri(QString uri)
+bool VideoEditorItem::setUri(QString uri)
 {
     m_uri = uri;
     emit uriChanged();
+    return true;
 }
 
 QString VideoEditorItem::getFileName() const
@@ -49,10 +50,11 @@ QString VideoEditorItem::getFileName() const
     return m_fileName;
 }
 
-void VideoEditorItem::setFileName(QString fileName)
+bool VideoEditorItem::setFileName(QString fileName)
 {
     m_fileName = fileName;
     emit fileNameChanged();
+    return true;
 }
 
 quint64 VideoEditorItem::getInPoint() const
@@ -60,18 +62,19 @@ quint64 VideoEditorItem::getInPoint() const
     return m_inPoint;
 }
 
-void VideoEditorItem::setInPoint(quint64 inPoint)
+bool VideoEditorItem::setInPoint(quint64 inPoint)
 {
     if (inPoint > m_maxDuration) {
         qWarning() << "Invalid inPoint: " << inPoint << " must be 0 <= inPoint <= " << m_maxDuration;
-        return;
+        return false;
     }
     if (inPoint + m_duration > m_maxDuration) {
         qWarning() << "Invalid inPoint (due to duration): " << inPoint + m_duration << " > " << m_maxDuration;
-        return;
+        return false;
     }
     m_inPoint = inPoint;
     emit inPointChanged(this);
+    return true;
 }
 
 quint64 VideoEditorItem::getMaxDuration() const
@@ -79,14 +82,15 @@ quint64 VideoEditorItem::getMaxDuration() const
     return m_maxDuration;
 }
 
-void VideoEditorItem::setMaxDuration(quint64 duration)
+bool VideoEditorItem::setMaxDuration(quint64 duration)
 {
     if (m_inPoint + m_duration > duration) {
         qWarning() << "Invalid maxDuration : " << m_inPoint + m_duration << " > " << duration;
-        return;
+        return false;
     }
     m_maxDuration = duration;
     emit maxDurationChanged(this);
+    return true;
 }
 
 quint64 VideoEditorItem::getDuration() const
@@ -94,18 +98,19 @@ quint64 VideoEditorItem::getDuration() const
     return m_duration;
 }
 
-void VideoEditorItem::setDuration(quint64 duration)
+bool VideoEditorItem::setDuration(quint64 duration)
 {
     if (duration > m_maxDuration) {
         qWarning() << "Invalid duration: " << duration << " > " << m_maxDuration;
-        return;
+        return false;
     }
     if (m_inPoint + duration > m_maxDuration) {
         qWarning() << "Invalid duration (due to inPoint): " << m_inPoint + duration << " > " << m_maxDuration;
-        return;
+        return false;
     }
     m_duration = duration;
     emit durationChanged(this);
+    return true;
 }
 
 GESTimelineFileSource *VideoEditorItem::getTlfs() const

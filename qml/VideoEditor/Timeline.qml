@@ -499,12 +499,12 @@ Page {
                         drag.axis: Drag.XAxis
                         drag.target: parent
                         drag.minimumX: 0
-                        drag.maximumX: delegateButton.maxDuration * listScale.currentScale - inPoint * listScale.currentScale
+                        drag.maximumX: maxDuration * listScale.currentScale - inPoint * listScale.currentScale
 
                         onReleased: {
                             var dur = durationSelector.x / listScale.currentScale
-                            console.debug("Setting duration to " + dur + " / " + delegateButton.maxDuration);
-                            setDuration(dur);
+                            console.debug("Setting duration to " + dur + " / " + maxDuration);
+                            duration = dur;
                         }
                     }
                 }

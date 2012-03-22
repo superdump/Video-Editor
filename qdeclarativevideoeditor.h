@@ -49,6 +49,7 @@ public:
     //QAbstractListModel
     int rowCount(const QModelIndex &parent=QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role) const;
+    bool setData(const QModelIndex &index, const QVariant &value, int role);
 
     //List manipulation API (not using the usual listmodel API)
     Q_INVOKABLE bool append(const QString &value);

@@ -135,6 +135,40 @@ QVariant QDeclarativeVideoEditor::data(const QModelIndex &index, int role) const
     }
 }
 
+bool QDeclarativeVideoEditor::setData(const QModelIndex &idx, const QVariant &value,
+                                      int role)
+{
+    bool ret = false;
+    if (idx.isValid() && idx.row() < m_size) {
+        VideoEditorItem *item = m_items.at(idx.row());
+        switch (role) {
+        case URI_ROLE:
+            ret = item->setUri(value.toString());
+            break;
+        case FILENAME_ROLE:
+            ret = item->setFileName(value.toString());
+            break;
+        case IN_POINT_ROLE:
+            ret = item->setInPoint(value.toULongLong());
+            break;
+        case DURATION_ROLE:
+            ret = item->setDuration(value.toULongLong());
+            break;
+        case MAX_DURATION_ROLE:
+            ret = item->setMaxDuration(value.toULongLong());
+            break;
+        default:
+        {
+            qDebug() << "Unknown role: " << role;
+            break;
+        }
+        }
+    }
+    if (ret)
+        emit dataChanged(index(idx.row()), index(idx.row()));
+    return ret;
+}
+
 void timeline_filesource_maxduration_cb (GObject *, GParamSpec *, gpointer user_data)
 {
     VideoEditorItem *item = (VideoEditorItem *)user_data;

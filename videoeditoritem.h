@@ -21,6 +21,7 @@
 #define VIDEOEDITORITEM_H
 
 #include <QObject>
+#include <QVariant>
 
 extern "C" {
 #include <ges/ges.h>
@@ -39,15 +40,15 @@ public:
     virtual ~VideoEditorItem();
 
     QString getUri() const;
-    void setUri(QString uri);
+    bool setUri(QString uri);
     QString getFileName() const;
-    void setFileName(QString fileName);
+    bool setFileName(QString fileName);
     quint64 getInPoint() const;
-    void setInPoint(quint64 inPoint);
+    bool setInPoint(quint64 inPoint);
     quint64 getDuration() const;
-    void setDuration(quint64 duration);
+    bool setDuration(quint64 duration);
     quint64 getMaxDuration() const;
-    void setMaxDuration(quint64 duration);
+    bool setMaxDuration(quint64 duration);
     GESTimelineFileSource *getTlfs() const;
     void setTlfs(GESTimelineFileSource *tlfs);
     unsigned long getDurHdlrID() const;
