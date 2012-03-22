@@ -505,6 +505,7 @@ Page {
                             console.log("es: " + endPoint.x + ", px: " + delegateButton.x)
                             var pos = (endPoint.x - delegateButton.x) / listScale.currentScale;
                             console.debug("Setting duration to " + pos + " / " + model.object.maxDuration);
+                            model.object.duration = pos
                         }
                     }
                 }

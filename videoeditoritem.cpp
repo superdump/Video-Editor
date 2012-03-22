@@ -111,6 +111,8 @@ bool VideoEditorItem::setDuration(quint64 duration)
         qWarning() << "Invalid duration (due to inPoint): " << m_inPoint + duration << " > " << m_maxDuration;
         return false;
     }
+
+    g_object_set (m_tlfs, "duration", duration, NULL);
     m_duration = duration;
     emit durationChanged(this);
     return true;
