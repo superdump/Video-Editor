@@ -550,7 +550,7 @@ Page {
                         drag.axis: Drag.XAxis
                         drag.target: parent
                         drag.minimumX: 0
-                        drag.maximumX: Math.min(list.width, list.listContentWidth)
+                        drag.maximumX: listScale.currentScale * (model.object.maxDuration - model.object.inPoint)
 
                         onReleased: {
                             console.log("es: " + endPoint.x + ", px: " + delegateButton.x)
