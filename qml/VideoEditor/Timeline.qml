@@ -424,6 +424,7 @@ Page {
 
             delegate: Item {
                 id: delegateButton
+                z: 1
                 width: model.object.duration * listScale.currentScale
                 height: list.height
 
@@ -464,7 +465,6 @@ Page {
                     id: inPoint
 
                     x: if(inPointDrag.drag.active) { x } else { 0 }
-                    z: 1000
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     visible: inPointDrag.active || delegateButton.ListView.isCurrentItem
@@ -472,6 +472,7 @@ Page {
                     Rectangle {
                         id: inBall
 
+                        z: 1002
                         width: 30
                         height: width
                         radius: width / 2
@@ -484,6 +485,7 @@ Page {
                         id: inStick
                         width: 3
 
+                        z: 1000
                         anchors.top: parent.top
                         anchors.bottom: parent.bottom
                         anchors.horizontalCenter:  parent.horizontalCenter
@@ -492,20 +494,21 @@ Page {
 
                     MouseArea {
                         id: inPointDrag
+                        property double minInPoint: (-model.object.inPoint) * listScale.currentScale
+                        property double maxInPoint: (model.object.maxDuration - model.object.inPoint) * listScale.currentScale
 
                         anchors.fill: inBall
                         anchors.centerIn: inBall
 
                         drag.axis: Drag.XAxis
                         drag.target: parent
-                        drag.minimumX: (-model.object.inPoint) * listScale.currentScale;
-                        drag.maximumX: list.width;
+                        drag.minimumX: minInPoint
+                        drag.maximumX: maxInPoint;
 
                         onReleased: {
-                            console.log("ip: " + model.object.inPoint + " es: " + inPoint.x + ", scale: " + listScale.currentScale)
-
-                            var pos = model.object.inPoint + (inPoint.x / listScale.currentScale);
-                            console.debug("Setting inPoint to " + pos + " / " + model.object.maxDuration);
+                            var clipped = Math.min(Math.max(inPoint.x, minInPoint), maxInPoint);
+                            console.log("ip: " + inPoint.x + ", clipped: " + clipped + ", min: " + minInPoint + ", max: " + maxInPoint)
+                            var pos = model.object.inPoint + (clipped / listScale.currentScale);
                             model.object.inPoint = pos;
                         }
                     }
@@ -516,7 +519,6 @@ Page {
                     id: endPoint
 
                     x: if(endPointDrag.drag.active) { x } else { parent.width }
-                    z: 1000
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     visible: endPointDrag.drag.active || delegateButton.ListView.isCurrentItem
@@ -524,11 +526,12 @@ Page {
                     Rectangle {
                         id: endBall
 
+                        z: 1002
                         width: 30
                         height: width
                         radius: width / 2
                         color: "blue"
-                        anchors.verticalCenter: parent.top
+                        anchors.verticalCenter: parent.bottom
                         anchors.horizontalCenter: parent.horizontalCenter
 
                     }
@@ -537,6 +540,7 @@ Page {
                         id: endStick
                         width: 3
 
+                        z: 1000
                         anchors.top: parent.top
                         anchors.bottom: parent.bottom
                         anchors.horizontalCenter:  parent.horizontalCenter
@@ -545,6 +549,7 @@ Page {
 
                     MouseArea {
                         id: endPointDrag
+                        property double maxEndPoint: listScale.currentScale * (model.object.maxDuration - model.object.inPoint)
 
                         anchors.fill: endBall
                         anchors.centerIn: endBall
@@ -552,12 +557,12 @@ Page {
                         drag.axis: Drag.XAxis
                         drag.target: parent
                         drag.minimumX: 0
-                        drag.maximumX: listScale.currentScale * (model.object.maxDuration - model.object.inPoint)
+                        drag.maximumX: maxEndPoint
 
                         onReleased: {
-                            console.log("es: " + endPoint.x + ", px: " + delegateButton.x)
-                            var pos = (endPoint.x - delegateButton.x) / listScale.currentScale;
-                            console.debug("Setting duration to " + pos + " / " + model.object.maxDuration);
+                            var clipped = Math.min(endPoint.x, maxEndPoint)
+                            console.log("ep: " + endPoint.x + ", clipped: " + clipped + ", max: " + maxEndPoint)
+                            var pos = clipped / listScale.currentScale;
                             model.object.duration = pos
                         }
                     }
@@ -637,7 +642,6 @@ Page {
                 id: playhead
 
                 x: if(dragMouseArea.drag.active) { x } else { videoeditor.position * listScale.currentScale - list.contentX }
-                z: 1000
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 visible: dragMouseArea.drag.active || (list.count &&
@@ -647,11 +651,12 @@ Page {
                 Rectangle {
                     id: seekBall
 
+                    z: 1002
                     width: 30
                     height: width
                     radius: width / 2
                     color: "red"
-                    anchors.verticalCenter: parent.top
+                    anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
 
                 }
@@ -659,6 +664,7 @@ Page {
                 Rectangle {
                     width: 3
 
+                    z: 1001
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     anchors.horizontalCenter:  parent.horizontalCenter
