@@ -432,6 +432,8 @@ Page {
                     id: highlight
                     anchors.fill: parent
                     color: delegateButton.ListView.isCurrentItem ? "#bfffffff" : "#4dffffff"
+                    border.width: 1
+                    border.color: delegateButton.ListView.isCurrentItem ? "#bf000000" : "#4d000000"
                     Image {
                         id: image
                         source: "image://videoeditorimageprovider/" + model.object.uri + "#1000%"
