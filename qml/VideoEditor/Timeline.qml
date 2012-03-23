@@ -496,7 +496,7 @@ Page {
 
                         drag.axis: Drag.XAxis
                         drag.target: parent
-                        drag.minimumX: -model.object.inPoint;
+                        drag.minimumX: (-model.object.inPoint) * listScale.currentScale;
                         drag.maximumX: list.width;
 
                         onReleased: {
