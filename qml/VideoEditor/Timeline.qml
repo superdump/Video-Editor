@@ -505,11 +505,33 @@ Page {
                         drag.minimumX: minInPoint
                         drag.maximumX: maxInPoint;
 
+                        onPositionChanged: {
+                            inPointTimer.start();
+                        }
+
                         onReleased: {
                             var clipped = Math.min(Math.max(inPoint.x, minInPoint), maxInPoint);
                             console.log("ip: " + inPoint.x + ", clipped: " + clipped + ", min: " + minInPoint + ", max: " + maxInPoint)
                             var pos = model.object.inPoint + (clipped / listScale.currentScale);
                             model.object.inPoint = pos;
+                        }
+                    }
+
+                    Timer {
+                        id: inPointTimer
+                        interval: 200
+                        repeat: true
+
+                        onTriggered: {
+                            if(inPointDrag.drag.active) {
+                                if(inPoint.x >= list.x + list.width * 0.8 && list.listContentWidth - list.contentX > list.width) {
+                                    list.contentX += 5
+                                } else if(inPoint.x < list.x + list.width * 0.2 && list.contentX > 0) {
+                                    list.contentX -= 5
+                                }
+                            } else {
+                                stop();
+                            }
                         }
                     }
                 }
@@ -559,11 +581,33 @@ Page {
                         drag.minimumX: 0
                         drag.maximumX: maxEndPoint
 
+                        onPositionChanged: {
+                            endPointTimer.start();
+                        }
+
                         onReleased: {
                             var clipped = Math.min(endPoint.x, maxEndPoint)
                             console.log("ep: " + endPoint.x + ", clipped: " + clipped + ", max: " + maxEndPoint)
                             var pos = clipped / listScale.currentScale;
                             model.object.duration = pos
+                        }
+                    }
+
+                    Timer {
+                        id: endPointTimer
+                        interval: 200
+                        repeat: true
+
+                        onTriggered: {
+                            if(endPointDrag.drag.active) {
+                                if(endPoint.x >= list.x + list.width * 0.8 && list.listContentWidth - list.contentX > list.width) {
+                                    list.contentX += 5
+                                } else if(endPoint.x < list.x + list.width * 0.2 && list.contentX > 0) {
+                                    list.contentX -= 5
+                                }
+                            } else {
+                                stop();
+                            }
                         }
                     }
                 }
