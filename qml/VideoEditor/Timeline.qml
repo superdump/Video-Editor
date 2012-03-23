@@ -32,9 +32,14 @@ Page {
     property double maxGranularityNS: 1000000000.0 * 3.0 * 60.0 * 60.0
     property double screenHDPMM: screenWidthPx / screenWidthMM
     property double minUsableWidthPx: minUsableWidthMM * screenHDPMM
+
     orientationLock: PageOrientation.LockLandscape
     width: 854
     height: 480
+
+    property int autoScrollMargin: width * 0.2
+    property int autoScrollRate: 10
+    property int autoScrollPeriod: 100 // ms
 
     VideoEditor {
         id: videoeditor
@@ -741,15 +746,17 @@ Page {
 
                 Timer {
                     id: timelineMoveTimer
-                    interval: 200
+                    interval: autoScrollPeriod
                     repeat: true
 
                     onTriggered: {
                         if(dragMouseArea.drag.active) {
-                            if(playhead.x >= list.x + list.width * 0.8 && list.listContentWidth - list.contentX > list.width) {
-                                list.contentX += 5
-                            } else if(playhead.x < list.x + list.width * 0.2 && list.contentX > 0) {
-                                list.contentX -= 5
+                            if(playhead.x >= timeline.width - autoScrollMargin && list.listContentWidth - list.contentX > list.width) {
+                                list.contentX = Math.max(0, Math.min(list.contentX + autoScrollRate,
+                                                                     list.listContentWidth - list.width));
+                            } else if(playhead.x < autoScrollMargin && list.contentX > 0) {
+                                list.contentX = Math.min(Math.max(list.contentX - autoScrollRate, 0),
+                                                         list.listContentWidth - list.width);
                             }
                         } else {
                             stop();
