@@ -131,10 +131,6 @@ Page {
         rejectButtonText: "Cancel"
         message: "Clear all clips?"
         onAccepted: {
-            if (videoeditor.isRendering())
-                videoeditor.cancelRender();
-            if (videoeditor.isPlaying)
-                videoeditor.pause();
             videoeditor.removeAll();
             close();
         }
@@ -146,10 +142,6 @@ Page {
         message: "Remove the selected clip?"
         onAccepted: {
             console.log("Removing item " + list.currentIndex);
-            if (videoeditor.isRendering())
-                videoeditor.cancelRender();
-            if (videoeditor.isPlaying)
-                videoeditor.pause();
             videoeditor.removeAt(list.currentIndex);
             close();
         }
@@ -187,8 +179,13 @@ Page {
             anchors.right: parent.right
             anchors.top: addMediaButton.bottom
             onClicked: {
-                if (list.count > 0)
+                if (list.count > 0) {
+                    if (videoeditor.isRendering())
+                        videoeditor.cancelRender();
+                    if (videoeditor.isPlaying)
+                        videoeditor.pause();
                     removeAllDialog.open();
+                }
             }
         }
 
@@ -203,8 +200,13 @@ Page {
             anchors.bottom: parent.bottom
             visible: list.count > 0
             onClicked: {
-                if (list.count > 0)
+                if (list.count > 0) {
+                    if (videoeditor.isRendering())
+                        videoeditor.cancelRender();
+                    if (videoeditor.isPlaying)
+                        videoeditor.pause();
                     removeDialog.open();
+                }
             }
         }
     }
