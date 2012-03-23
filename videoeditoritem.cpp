@@ -73,7 +73,7 @@ bool VideoEditorItem::setInPoint(quint64 inPoint)
         return false;
     }
 
-    if(m_duration > 0 && (inPoint-m_inPoint) > m_duration) {
+    if(m_duration > 0 && ((qint64) (inPoint-m_inPoint)) > (qint64) m_duration) {
         qWarning() << "Invalid inPoint (due to duration): " << inPoint-m_inPoint << " > " << m_duration;
         return false;
 
@@ -81,8 +81,11 @@ bool VideoEditorItem::setInPoint(quint64 inPoint)
 
     g_object_set(m_tlfs, "in-point", inPoint, NULL);
     if(m_duration > 0) {
+        quint64 duration = m_duration + m_inPoint - inPoint;
         //reduce duration due to the new inpoint
-        g_object_set(m_tlfs, "duration", m_duration - (inPoint - m_inPoint), NULL);
+
+        g_object_set (m_tlfs, "duration", duration, NULL);
+        m_duration = duration;
         emit durationChanged(this);
     }
     m_inPoint = inPoint;
