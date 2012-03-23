@@ -78,7 +78,6 @@ Page {
         color: "black"
     }
 
-
     Item {
         id: preview
         property bool isPlaying: false
@@ -458,6 +457,58 @@ Page {
                     color: "white"
                     text: model.object.fileName
                 }
+
+                Item {
+                    id: inPoint
+
+                    x: if(inPointDrag.drag.active) { x } else { 0 }
+                    z: 1000
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    visible: inPoint.drag.active || delegateButton.ListView.isCurrentItem
+
+                    Rectangle {
+                        id: inBall
+
+                        width: 30
+                        height: width
+                        radius: width / 2
+                        color: "blue"
+                        anchors.verticalCenter: parent.top
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
+
+                    Rectangle {
+                        id: inStick
+                        width: 3
+
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        anchors.horizontalCenter:  parent.horizontalCenter
+                        color: "blue"
+                    }
+
+                    MouseArea {
+                        id: inPointDrag
+
+                        anchors.fill: inBall
+                        anchors.centerIn: inBall
+
+                        drag.axis: Drag.XAxis
+                        drag.target: parent
+                        drag.minimumX: -model.object.inPoint;
+                        drag.maximumX: list.width;
+
+                        onReleased: {
+                            console.log("ip: " + model.object.inPoint + " es: " + inPoint.x + ", scale: " + listScale.currentScale)
+
+                            var pos = model.object.inPoint + (inPoint.x / listScale.currentScale);
+                            console.debug("Setting inPoint to " + pos + " / " + model.object.maxDuration);
+                            model.object.inPoint = pos;
+                        }
+                    }
+                }
+
 
                 Item {
                     id: endPoint

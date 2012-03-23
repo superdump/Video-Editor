@@ -22,7 +22,7 @@
 #include <QDebug>
 
 VideoEditorItem::VideoEditorItem(QObject *parent) :
-    QObject(parent), m_tlfs(NULL), m_inPoint(-1), m_duration(-1), m_maxDuration(-1)
+    QObject(parent), m_tlfs(NULL), m_inPoint(0), m_duration(-1), m_maxDuration(-1)
 {
     // Nothing to init
 }
@@ -68,10 +68,22 @@ bool VideoEditorItem::setInPoint(quint64 inPoint)
         qWarning() << "Invalid inPoint: " << inPoint << " must be 0 <= inPoint <= " << m_maxDuration;
         return false;
     }
-    if (inPoint + m_duration > m_maxDuration &&
-            m_duration != -1 && m_maxDuration != -1) {
-        qWarning() << "Invalid inPoint (due to duration): " << inPoint + m_duration << " > " << m_maxDuration;
+    if (inPoint > m_maxDuration && m_maxDuration != -1) {
+        qWarning() << "Invalid inPoint (due to maxduration): " << inPoint << " > " << m_maxDuration;
         return false;
+    }
+
+    if(m_duration > 0 && (inPoint-m_inPoint) > m_duration) {
+        qWarning() << "Invalid inPoint (due to duration): " << inPoint-m_inPoint << " > " << m_duration;
+        return false;
+
+    }
+
+    g_object_set(m_tlfs, "in-point", inPoint, NULL);
+    if(m_duration > 0) {
+        //reduce duration due to the new inpoint
+        g_object_set(m_tlfs, "duration", m_duration - (inPoint - m_inPoint), NULL);
+        emit durationChanged(this);
     }
     m_inPoint = inPoint;
     emit inPointChanged(this);
