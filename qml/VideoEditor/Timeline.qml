@@ -465,7 +465,7 @@ Page {
                     z: 1000
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
-                    visible: inPoint.drag.active || delegateButton.ListView.isCurrentItem
+                    visible: inPointDrag.active || delegateButton.ListView.isCurrentItem
 
                     Rectangle {
                         id: inBall
