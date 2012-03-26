@@ -703,7 +703,7 @@ Page {
             Rectangle {
                 id: fakeDel
                 property variant curDragArea: null
-                x: curDragArea ? (curDragArea.mousePos - width/2) : 0
+                x: curDragArea ? (curDragArea.mousePos - list.x - width/2) : 0
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 visible: false
