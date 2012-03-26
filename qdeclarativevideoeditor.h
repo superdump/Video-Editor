@@ -69,6 +69,7 @@ public:
     Q_INVOKABLE bool isRendering() const;
 
     gboolean handleBusMessage(GstBus * bus, GstMessage * msg);
+    GstBusSyncReply handleSyncBusMessage(GstBus * bus, GstMessage * msg);
 
     void updateDuration();
     qint64 getDuration() const;

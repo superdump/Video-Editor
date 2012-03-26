@@ -41,6 +41,7 @@ enum {
 };
 
 static gboolean bus_call(GstBus * bus, GstMessage * msg, gpointer data);
+static GstBusSyncReply bus_sync_call(GstBus * bus, GstMessage * msg, gpointer data);
 
 QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     QAbstractListModel(parent), m_position(0), m_positionTimer(this), m_rendering(false), m_size(0),
@@ -59,6 +60,7 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
 
     GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE (m_pipeline));
     gst_bus_add_watch (bus, bus_call, this);
+    gst_bus_set_sync_handler(bus, bus_sync_call, this);
     gst_object_unref (bus);
 
     /*
@@ -292,11 +294,39 @@ QDeclarativeVideoEditor::handleBusMessage (GstBus *, GstMessage *msg)
     return TRUE;
 }
 
+GstBusSyncReply
+QDeclarativeVideoEditor::handleSyncBusMessage (GstBus *, GstMessage *msg)
+{
+    switch (GST_MESSAGE_TYPE (msg)) {
+
+    case GST_MESSAGE_ELEMENT:
+        if (msg->structure && gst_structure_has_name (msg->structure, "prepare-xwindow-id")) {
+            gst_x_overlay_set_window_handle (GST_X_OVERLAY (GST_MESSAGE_SRC (msg)),
+                 getWinId());
+            gst_message_unref (msg);
+            return GST_BUS_DROP;
+        }
+        break;
+    default:
+        break;
+    }
+
+    return GST_BUS_PASS;
+}
+
 static gboolean
 bus_call(GstBus * bus, GstMessage * msg, gpointer data)
 {
     QDeclarativeVideoEditor *self = (QDeclarativeVideoEditor*) data;
     return self->handleBusMessage(bus, msg);
+}
+
+
+static GstBusSyncReply
+bus_sync_call(GstBus * bus, GstMessage * msg, gpointer data)
+{
+    QDeclarativeVideoEditor *self = (QDeclarativeVideoEditor*) data;
+    return self->handleSyncBusMessage(bus, msg);
 }
 
 QString getDateTimeString() {
