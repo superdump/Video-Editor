@@ -477,7 +477,7 @@ Page {
                     x: if(inPointDrag.drag.active) { x } else { 0 }
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
-                    visible: inPointDrag.active || delegateButton.ListView.isCurrentItem
+                    visible: delegateButton.ListView.isCurrentItem && !inPointDrag.drag.active
 
                     Rectangle {
                         id: inBall
@@ -487,8 +487,9 @@ Page {
                         height: width
                         radius: width / 2
                         color: "blue"
-                        anchors.verticalCenter: parent.top
+                        anchors.top: parent.top
                         anchors.horizontalCenter: parent.horizontalCenter
+
                     }
 
                     Rectangle {
@@ -504,43 +505,56 @@ Page {
 
                     MouseArea {
                         id: inPointDrag
-                        property double minInPoint: (-model.object.inPoint) * listScale.currentScale
-                        property double maxInPoint: (model.object.maxDuration - model.object.inPoint) * listScale.currentScale
 
-                        anchors.fill: inBall
-                        anchors.centerIn: inBall
+                        width: minUsableWidthPx
+                        height: width
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: inBall.top
 
+                        property int positionEnded: 0
+                        property bool held: false
+                        property double initMousePos: width/2
+                        property double mousePosContent: mouseX - initMousePos
+                        property double mousePos: list.x + (delegateButton.x - list.contentX) + mousePosContent
+                        property double maxinPoint: listScale.currentScale * model.object.maxDuration
                         drag.axis: Drag.XAxis
-                        drag.target: parent
-                        drag.minimumX: minInPoint
-                        drag.maximumX: maxInPoint;
-
+                        enabled: delegateButton.ListView.isCurrentItem
+                        onPressed: {
+                            initMousePos = mouseX
+                            fakeinPoint.x = mousePos - list.x
+                            fakeinPoint.visible = true
+                            list.interactive = false;
+                            held = true;
+                        }
                         onPositionChanged: {
                             inPointTimer.start();
+                            fakeinPoint.x = mousePos - list.x
+                            positionEnded = mousePosContent;
                         }
-
                         onReleased: {
-                            var clipped = Math.min(Math.max(inPoint.x, minInPoint), maxInPoint);
-                            console.log("ip: " + inPoint.x + ", clipped: " + clipped + ", min: " + minInPoint + ", max: " + maxInPoint)
-                            var pos = model.object.inPoint + (clipped / listScale.currentScale);
-                            model.object.inPoint = pos;
+                            if (held == true) {
+                                inPointTimer.stop();
+                                var clipped = Math.max(0, Math.min(positionEnded, maxinPoint));
+                                model.object.inPoint = clipped / listScale.currentScale;
+                                fakeinPoint.visible = false
+                                list.interactive = true;
+                                held = false;
+                            }
                         }
                     }
-
                     Timer {
                         id: inPointTimer
-                        interval: 200
+                        interval: autoScrollPeriod
                         repeat: true
 
                         onTriggered: {
-                            if(inPointDrag.drag.active) {
-                                if(inPoint.x >= list.x + list.width * 0.8 && list.listContentWidth - list.contentX > list.width) {
-                                    list.contentX += 5
-                                } else if(inPoint.x < list.x + list.width * 0.2 && list.contentX > 0) {
-                                    list.contentX -= 5
-                                }
-                            } else {
-                                stop();
+                            if(inPointDrag.mousePos >= timeline.width - autoScrollMargin &&
+                                    list.listContentWidth - list.contentX > list.width) {
+                                list.contentX = Math.max(0, Math.min(list.contentX + autoScrollRate,
+                                                                     list.listContentWidth - list.width));
+                            } else if(inPointDrag.mousePos < autoScrollMargin && list.contentX > 0) {
+                                list.contentX = Math.min(Math.max(list.contentX - autoScrollRate, 0),
+                                                         list.listContentWidth - list.width);
                             }
                         }
                     }
@@ -720,6 +734,35 @@ Page {
 
 
             // Fake objects for drag and drop
+            Item {
+                id: fakeinPoint
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                visible: false
+                opacity: 0.5
+                Rectangle {
+                    id: fakeinBall
+
+                    z: 1002
+                    width: 30
+                    height: width
+                    radius: width / 2
+                    color: "blue"
+                    anchors.top: parent.top
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+
+                Rectangle {
+                    id: fakeinStick
+                    width: 3
+
+                    z: 1000
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.horizontalCenter:  parent.horizontalCenter
+                    color: "blue"
+                }
+            }
             Item {
                 id: fakeEndPoint
                 anchors.top: parent.top
