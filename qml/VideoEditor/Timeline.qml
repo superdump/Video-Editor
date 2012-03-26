@@ -625,21 +625,23 @@ Page {
                     property int positionStarted: 0
                     property int positionEnded: 0
                     property bool held: false
+                    property double mousePos: list.x + (delegateButton.x - list.contentX) + mouseX
+                    property double mousePosContent: positionStarted + mouseX
                     drag.axis: Drag.XAxis
                     enabled: delegateButton.ListView.isCurrentItem
                     onPressed: {
                         delegateButton.z = 2;
                         positionStarted = delegateButton.x;
-                        dragArea.drag.target = delegateButton;
+                        fakeDel.curDragArea = dragArea
+                        fakeDel.width = delegateButton.width
+                        fakeDel.visible = true
                         delegateButton.opacity = 0.5;
                         list.interactive = false;
                         held = true;
-                        drag.minimumX = 0;
-                        drag.maximumX = list.contentX + list.width - delegateButton.width;
                     }
                     onPositionChanged: {
-                        positionEnded = delegateButton.x;
-                        console.log("posEnded: " + positionEnded);
+                        dragTimer.start();
+                        positionEnded = mousePosContent;
                     }
                     onReleased: {
                         if (held == true) {
@@ -651,8 +653,10 @@ Page {
                                 videoeditor.move(index, newPosition);
                                 list.currentIndex = newPosition;
                             }
+                            dragTimer.stop();
+                            fakeDel.visible = false
+                            fakeDel.curDragArea = null
                             list.interactive = true;
-                            dragArea.drag.target = null;
                             held = false;
                         }
                     }
@@ -662,6 +666,22 @@ Page {
                     onDoubleClicked: {
                         listScale.calculatedScale = list.width * timeline.zoomProportion / model.object.duration;
                         listScale.scale = 1.0;
+                    }
+                }
+                Timer {
+                    id: dragTimer
+                    interval: autoScrollPeriod
+                    repeat: true
+
+                    onTriggered: {
+                        if(dragArea.mousePos >= timeline.width - autoScrollMargin &&
+                                list.listContentWidth - list.contentX > list.width) {
+                            list.contentX = Math.max(0, Math.min(list.contentX + autoScrollRate,
+                                                                 list.listContentWidth - list.width));
+                        } else if(dragArea.mousePos < autoScrollMargin && list.contentX > 0) {
+                            list.contentX = Math.min(Math.max(list.contentX - autoScrollRate, 0),
+                                                     list.listContentWidth - list.width);
+                        }
                     }
                 }
                 // This MouseArea is to workaround the button pressed state that causes
@@ -678,6 +698,17 @@ Page {
                         listScale.scale = 1.0;
                     }
                 }
+            }
+
+            Rectangle {
+                id: fakeDel
+                property variant curDragArea: null
+                x: curDragArea ? (curDragArea.mousePos - width/2) : 0
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                visible: false
+                opacity: 0.5
+                color: "white"
             }
 
             Text {
