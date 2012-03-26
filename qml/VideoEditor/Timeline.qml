@@ -377,38 +377,6 @@ Page {
             property double maximumScale: minUsableWidthPx / minGranularityNS
         }
 
-        Item {
-            id: scrollBar
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.margins: 16
-
-            height: 8
-
-            property real position: list.contentX / list.listContentWidth
-            property real pageSize: list.width < list.listContentWidth ? (list.width / list.listContentWidth) : 1
-
-            visible: pageSize < 1
-
-            Rectangle {
-                anchors.fill: parent
-                radius: (height / 2 - 1)
-                color: "white"
-                opacity: 0.2
-            }
-
-            Rectangle {
-                anchors.verticalCenter: parent.verticalCenter
-                x: scrollBar.position * (scrollBar.width - 2) + 1
-                width: scrollBar.pageSize * (scrollBar.width - 2)
-                height: parent.height - 2
-                radius: height / 2 - 1
-                color: "white"
-                opacity: 0.6
-            }
-        }
-
 
 
         ListView {
@@ -417,12 +385,9 @@ Page {
 
             property double listContentWidth: listScale.currentScale * videoeditor.duration
 
-            anchors.topMargin: 8
-            anchors.leftMargin: 16
-            anchors.rightMargin: 16
-            anchors.bottomMargin: 16
-            anchors.top: scrollBar.bottom
-            anchors.bottom: parent.bottom
+            anchors.margins: 16
+            anchors.top: parent.top
+            anchors.bottom: scrollBar.top
             anchors.left: parent.left
             anchors.right: parent.right
 
@@ -929,5 +894,36 @@ Page {
             anchors.right: parent.right
         }
 
+        Item {
+            id: scrollBar
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: 16
+
+            height: 8
+
+            property real position: list.contentX / list.listContentWidth
+            property real pageSize: list.width < list.listContentWidth ? (list.width / list.listContentWidth) : 1
+
+            visible: pageSize < 1
+
+            Rectangle {
+                anchors.fill: parent
+                radius: (height / 2 - 1)
+                color: "white"
+                opacity: 0.2
+            }
+
+            Rectangle {
+                anchors.verticalCenter: parent.verticalCenter
+                x: scrollBar.position * (scrollBar.width - 2) + 1
+                width: scrollBar.pageSize * (scrollBar.width - 2)
+                height: parent.height - 2
+                radius: height / 2 - 1
+                color: "white"
+                opacity: 0.6
+            }
+        }
     }
 }
