@@ -436,6 +436,72 @@ Page {
                     text: model.object.fileName
                 }
 
+                MouseArea {
+                    id: dragArea
+                    anchors.fill: parent
+                    property int positionStarted: 0
+                    property int positionEnded: 0
+                    property bool held: false
+                    property double mousePos: list.x + (delegateButton.x - list.contentX) + mouseX
+                    property double mousePosContent: positionStarted + mouseX
+                    drag.axis: Drag.XAxis
+                    enabled: delegateButton.ListView.isCurrentItem
+                    onPressed: {
+                        delegateButton.z = 2;
+                        positionStarted = delegateButton.x;
+                        fakeDel.curDragArea = dragArea
+                        fakeDel.width = delegateButton.width
+                        fakeDel.visible = true
+                        delegateButton.opacity = 0.5;
+                        list.interactive = false;
+                        held = true;
+                    }
+                    onPositionChanged: {
+                        dragTimer.start();
+                        positionEnded = mousePosContent;
+                    }
+                    onReleased: {
+                        if (held == true) {
+                            delegateButton.x = positionStarted;
+                            delegateButton.z = 1;
+                            delegateButton.opacity = 1;
+                            var newPosition = list.indexAt(positionEnded, 0);
+                            if (newPosition !== index) {
+                                videoeditor.move(index, newPosition);
+                                list.currentIndex = newPosition;
+                            }
+                            dragTimer.stop();
+                            fakeDel.visible = false
+                            fakeDel.curDragArea = null
+                            list.interactive = true;
+                            held = false;
+                        }
+                    }
+                    onClicked: {
+                        list.currentIndex = -1;
+                    }
+                    onDoubleClicked: {
+                        listScale.calculatedScale = list.width * timeline.zoomProportion / model.object.duration;
+                        listScale.scale = 1.0;
+                    }
+                }
+                Timer {
+                    id: dragTimer
+                    interval: autoScrollPeriod
+                    repeat: true
+
+                    onTriggered: {
+                        if(dragArea.mousePos >= timeline.width - autoScrollMargin &&
+                                list.listContentWidth - list.contentX > list.width) {
+                            list.contentX = Math.max(0, Math.min(list.contentX + autoScrollRate,
+                                                                 list.listContentWidth - list.width));
+                        } else if(dragArea.mousePos < autoScrollMargin && list.contentX > 0) {
+                            list.contentX = Math.min(Math.max(list.contentX - autoScrollRate, 0),
+                                                     list.listContentWidth - list.width);
+                        }
+                    }
+                }
+
                 Item {
                     id: inPoint
 
@@ -475,6 +541,7 @@ Page {
                         height: width
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.top: inBall.top
+                        preventStealing: true
 
                         property int positionEnded: 0
                         property bool held: false
@@ -565,6 +632,7 @@ Page {
                         height: width
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.bottom: endBall.bottom
+                        preventStealing: true
 
                         property int positionEnded: 0
                         property bool held: false
@@ -616,71 +684,6 @@ Page {
                     }
                 }
 
-                MouseArea {
-                    id: dragArea
-                    anchors.fill: parent
-                    property int positionStarted: 0
-                    property int positionEnded: 0
-                    property bool held: false
-                    property double mousePos: list.x + (delegateButton.x - list.contentX) + mouseX
-                    property double mousePosContent: positionStarted + mouseX
-                    drag.axis: Drag.XAxis
-                    enabled: delegateButton.ListView.isCurrentItem
-                    onPressed: {
-                        delegateButton.z = 2;
-                        positionStarted = delegateButton.x;
-                        fakeDel.curDragArea = dragArea
-                        fakeDel.width = delegateButton.width
-                        fakeDel.visible = true
-                        delegateButton.opacity = 0.5;
-                        list.interactive = false;
-                        held = true;
-                    }
-                    onPositionChanged: {
-                        dragTimer.start();
-                        positionEnded = mousePosContent;
-                    }
-                    onReleased: {
-                        if (held == true) {
-                            delegateButton.x = positionStarted;
-                            delegateButton.z = 1;
-                            delegateButton.opacity = 1;
-                            var newPosition = list.indexAt(positionEnded, 0);
-                            if (newPosition !== index) {
-                                videoeditor.move(index, newPosition);
-                                list.currentIndex = newPosition;
-                            }
-                            dragTimer.stop();
-                            fakeDel.visible = false
-                            fakeDel.curDragArea = null
-                            list.interactive = true;
-                            held = false;
-                        }
-                    }
-                    onClicked: {
-                        list.currentIndex = -1;
-                    }
-                    onDoubleClicked: {
-                        listScale.calculatedScale = list.width * timeline.zoomProportion / model.object.duration;
-                        listScale.scale = 1.0;
-                    }
-                }
-                Timer {
-                    id: dragTimer
-                    interval: autoScrollPeriod
-                    repeat: true
-
-                    onTriggered: {
-                        if(dragArea.mousePos >= timeline.width - autoScrollMargin &&
-                                list.listContentWidth - list.contentX > list.width) {
-                            list.contentX = Math.max(0, Math.min(list.contentX + autoScrollRate,
-                                                                 list.listContentWidth - list.width));
-                        } else if(dragArea.mousePos < autoScrollMargin && list.contentX > 0) {
-                            list.contentX = Math.min(Math.max(list.contentX - autoScrollRate, 0),
-                                                     list.listContentWidth - list.width);
-                        }
-                    }
-                }
                 // This MouseArea is to workaround the button pressed state that causes
                 // flicks and drags to momentarily flash the button as being selected
                 MouseArea {
@@ -777,6 +780,7 @@ Page {
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 22
             }
+
             Item {
                 id: playhead
 
@@ -851,9 +855,9 @@ Page {
                         }
                     }
                 }
-
             }
         }
+
 
 
         // The ListView does not clip items outside its own area. This looks a bit weird so
