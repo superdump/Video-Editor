@@ -409,6 +409,8 @@ Page {
             }
         }
 
+
+
         ListView {
             id: list
             model: videoeditor
@@ -426,6 +428,7 @@ Page {
 
             orientation: ListView.Horizontal
             boundsBehavior: Flickable.StopAtBounds
+
 
             delegate: Item {
                 id: delegateButton
