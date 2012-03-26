@@ -460,7 +460,7 @@ bool QDeclarativeVideoEditor::render()
     qDebug() << "Rendering to " << output_uri;
 
     // reset duration and progress
-    setDuration(GST_CLOCK_TIME_NONE);
+    updateDuration();
     setProgress(0.0);
     qDebug() << "Starting progress polling";
 
