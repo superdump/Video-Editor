@@ -553,7 +553,7 @@ Page {
                     x: if(endPointDrag.drag.active) { x } else { parent.width }
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
-                    visible: endPointDrag.drag.active || delegateButton.ListView.isCurrentItem
+                    visible: delegateButton.ListView.isCurrentItem && !endPointDrag.drag.active
 
                     Rectangle {
                         id: endBall
@@ -563,7 +563,7 @@ Page {
                         height: width
                         radius: width / 2
                         color: "blue"
-                        anchors.verticalCenter: parent.bottom
+                        anchors.bottom: parent.bottom
                         anchors.horizontalCenter: parent.horizontalCenter
 
                     }
@@ -581,42 +581,57 @@ Page {
 
                     MouseArea {
                         id: endPointDrag
+
+                        width: minUsableWidthPx
+                        height: width
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.bottom: endBall.bottom
+
+                        property int positionEnded: 0
+                        property bool held: false
+                        property double initMousePos: width/2
+                        property double mousePosContent: delegateButton.width + (mouseX - initMousePos)
+                        property double mousePos: list.x + (delegateButton.x - list.contentX) + mousePosContent
                         property double maxEndPoint: listScale.currentScale * (model.object.maxDuration - model.object.inPoint)
-
-                        anchors.fill: endBall
-                        anchors.centerIn: endBall
-
                         drag.axis: Drag.XAxis
-                        drag.target: parent
-                        drag.minimumX: 0
-                        drag.maximumX: maxEndPoint
-
+                        enabled: delegateButton.ListView.isCurrentItem
+                        onPressed: {
+                            initMousePos = mouseX
+                            fakeEndPoint.x = mousePos - list.x
+                            fakeEndPoint.visible = true
+                            list.interactive = false;
+                            held = true;
+                        }
                         onPositionChanged: {
                             endPointTimer.start();
+                            fakeEndPoint.x = mousePos - list.x
+                            positionEnded = mousePosContent;
                         }
-
                         onReleased: {
-                            var clipped = Math.min(endPoint.x, maxEndPoint)
-                            console.log("ep: " + endPoint.x + ", clipped: " + clipped + ", max: " + maxEndPoint)
-                            var pos = clipped / listScale.currentScale;
-                            model.object.duration = pos
+                            if (held == true) {
+                                endPointTimer.stop();
+                                var clipped = Math.max(0, Math.min(positionEnded, maxEndPoint));
+                                console.log((clipped / listScale.currentScale) + " / " + model.object.maxDuration + ", [" + clipped + " / " + delegateButton.width + "]");
+                                model.object.duration = clipped / listScale.currentScale;
+                                fakeEndPoint.visible = false
+                                list.interactive = true;
+                                held = false;
+                            }
                         }
                     }
-
                     Timer {
                         id: endPointTimer
-                        interval: 200
+                        interval: autoScrollPeriod
                         repeat: true
 
                         onTriggered: {
-                            if(endPointDrag.drag.active) {
-                                if(endPoint.x >= list.x + list.width * 0.8 && list.listContentWidth - list.contentX > list.width) {
-                                    list.contentX += 5
-                                } else if(endPoint.x < list.x + list.width * 0.2 && list.contentX > 0) {
-                                    list.contentX -= 5
-                                }
-                            } else {
-                                stop();
+                            if(endPointDrag.mousePos >= timeline.width - autoScrollMargin &&
+                                    list.listContentWidth - list.contentX > list.width) {
+                                list.contentX = Math.max(0, Math.min(list.contentX + autoScrollRate,
+                                                                     list.listContentWidth - list.width));
+                            } else if(endPointDrag.mousePos < autoScrollMargin && list.contentX > 0) {
+                                list.contentX = Math.min(Math.max(list.contentX - autoScrollRate, 0),
+                                                         list.listContentWidth - list.width);
                             }
                         }
                     }
@@ -703,6 +718,37 @@ Page {
                 }
             }
 
+
+            // Fake objects for drag and drop
+            Item {
+                id: fakeEndPoint
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                visible: false
+                opacity: 0.5
+                Rectangle {
+                    id: fakeEndBall
+
+                    z: 1002
+                    width: 30
+                    height: width
+                    radius: width / 2
+                    color: "blue"
+                    anchors.bottom: parent.bottom
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+
+                Rectangle {
+                    id: fakeEndStick
+                    width: 3
+
+                    z: 1000
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.horizontalCenter:  parent.horizontalCenter
+                    color: "blue"
+                }
+            }
             Rectangle {
                 id: fakeDel
                 property variant curDragArea: null
