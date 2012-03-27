@@ -666,8 +666,7 @@ Page {
                             if (held == true) {
                                 endPointTimer.stop();
                                 var clipped = Math.max(0, Math.min(positionEnded, maxEndPoint));
-                                console.log((clipped / listScale.currentScale) + " / " + model.object.maxDuration + ", [" + clipped + " / " + delegateButton.width + "]");
-                                model.object.duration = clipped / listScale.currentScale;
+                                model.object.duration = Math.max(0, (clipped / listScale.currentScale) - model.object.inPoint);
                                 fakeEndPoint.visible = false
                                 list.interactive = true;
                                 held = false;
