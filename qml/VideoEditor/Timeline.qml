@@ -792,12 +792,13 @@ Page {
             Item {
                 id: playhead
 
-                x: if(dragMouseArea.drag.active) { x } else { videoeditor.position * listScale.currentScale - list.contentX }
+                x: dragMouseArea.drag.active ? x : videoeditor.position * listScale.currentScale - list.contentX
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 visible: dragMouseArea.drag.active || (list.count &&
                          (videoeditor.position * listScale.currentScale >= list.contentX) &&
                          (videoeditor.position * listScale.currentScale <= list.contentX + list.width))
+
 
                 Rectangle {
                     id: seekBall
