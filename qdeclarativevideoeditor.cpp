@@ -214,8 +214,6 @@ void QDeclarativeVideoEditor::removeAll()
     setProgress(0);
     gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_READY);
     gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PAUSED);
-    emit progressChanged();
-    emit positionChanged();
     updateDuration();
 }
 
@@ -260,7 +258,6 @@ QDeclarativeVideoEditor::handleBusMessage (GstBus *, GstMessage *msg)
     case GST_MESSAGE_EOS:
         qDebug() << "End of stream";
         setProgress(1.0);
-        emit progressChanged();
         gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_PAUSED);
         if(isRendering()) {
             m_rendering = false;
@@ -378,6 +375,7 @@ double QDeclarativeVideoEditor::getProgress() const
 void QDeclarativeVideoEditor::setProgress(double progress)
 {
     m_progress = progress;
+    emit progressChanged();
 }
 
 qint64 QDeclarativeVideoEditor::getPosition() const
@@ -388,6 +386,7 @@ qint64 QDeclarativeVideoEditor::getPosition() const
 void QDeclarativeVideoEditor::setPosition(qint64 position)
 {
     this->m_position = position;
+    emit positionChanged();
 }
 
 void QDeclarativeVideoEditor::updatePosition()
@@ -425,9 +424,6 @@ void QDeclarativeVideoEditor::updatePosition()
         m_positionTimer.stop();
         return;
     }
-
-    emit progressChanged();
-    emit positionChanged();
 }
 
 void QDeclarativeVideoEditor::setRenderSettings(int width, int height, int fps_n, int fps_d)
