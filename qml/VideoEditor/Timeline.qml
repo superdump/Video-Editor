@@ -246,10 +246,18 @@ Page {
         buttons: Button {
             text: "Cancel"
             anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: progressDialog.reject()
+            onClicked: progressDialog.doReject()
         }
 
-        onRejected: videoeditor.cancelRender()
+        function reject() {
+            //Do nothing to prevent outside click rejecting our dialog
+        }
+
+        function doReject() {
+            videoeditor.cancelRender();
+            close();
+            rejected();
+        }
     }
 
     Dialog {
