@@ -209,6 +209,13 @@ void QDeclarativeVideoEditor::removeAll()
         m_size--;
     }
     endRemoveRows();
+
+    setPosition(0);
+    setProgress(0);
+    gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_READY);
+    gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PAUSED);
+    emit progressChanged();
+    emit positionChanged();
     updateDuration();
 }
 
@@ -420,6 +427,7 @@ void QDeclarativeVideoEditor::updatePosition()
     }
 
     emit progressChanged();
+    emit positionChanged();
 }
 
 void QDeclarativeVideoEditor::setRenderSettings(int width, int height, int fps_n, int fps_d)
