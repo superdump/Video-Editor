@@ -520,8 +520,10 @@ void QDeclarativeVideoEditor::pause()
 
 void QDeclarativeVideoEditor::seek(qint64 position)
 {
-    gst_element_seek_simple(GST_ELEMENT (m_pipeline), GST_FORMAT_TIME, (GstSeekFlags)
-                            (GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE), position);
+    if(!gst_element_seek_simple(GST_ELEMENT (m_pipeline), GST_FORMAT_TIME, (GstSeekFlags)
+                            (GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE), position)) {
+        qDebug() << "Seek failed";
+    }
 }
 
 bool QDeclarativeVideoEditor::isRendering() const
