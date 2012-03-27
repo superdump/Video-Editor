@@ -294,6 +294,7 @@ QDeclarativeVideoEditor::handleBusMessage (GstBus *, GstMessage *msg)
     }
     case GST_MESSAGE_ASYNC_DONE:
     {
+        qDebug() << "Async done, updating position";
         updatePosition();
     }
         break;
@@ -522,6 +523,7 @@ void QDeclarativeVideoEditor::pause()
 
 void QDeclarativeVideoEditor::seek(qint64 position)
 {
+    qDebug() << "Seeking to" << position;
     if(!gst_element_seek_simple(GST_ELEMENT (m_pipeline), GST_FORMAT_TIME, (GstSeekFlags)
                             (GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE), position)) {
         qDebug() << "Seek failed";
