@@ -476,7 +476,11 @@ Page {
                             var newPosition = list.indexAt(positionEnded, 0);
                             if (newPosition !== index) {
                                 videoeditor.move(index, newPosition);
-                                list.currentIndex = newPosition;
+                                if(newPosition === -1) {
+                                    list.currentIndex = list.count-1;
+                                } else {
+                                    list.currentIndex = newPosition;
+                                }
                             }
                             dragTimer.stop();
                             fakeDel.visible = false

@@ -176,13 +176,19 @@ QVariant QDeclarativeVideoEditor::getObjDuration(int idx)
 }
 
 void QDeclarativeVideoEditor::move(int from, int to)
-{
+{   
+    int qlist_to = to;
     qDebug() << "Moving media object from " << from << " to " << to;
+
+    if(to == -1) {
+        qlist_to = m_items.size()-1;
+    }
+
     beginResetModel();
     const VideoEditorItem *item = m_items.at(from);
     ges_simple_timeline_layer_move_object(GES_SIMPLE_TIMELINE_LAYER (m_timelineLayer),
                                           (GESTimelineObject *)item->getTlfs(), to);
-    m_items.move(from, to);
+    m_items.move(from, qlist_to);
     endResetModel();
 }
 
