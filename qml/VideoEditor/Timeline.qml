@@ -325,9 +325,8 @@ Page {
                 pageStack.push(component);
             }
         }
-        Button {
-            id: fitButton
-            text: "Fit"
+        ButtonColumn {
+            id: scaleButtons
             anchors.leftMargin: 16
             anchors.rightMargin: 16
             anchors.bottomMargin: 16
@@ -335,9 +334,39 @@ Page {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             visible: list.count > 0
-            onClicked: {
-                listScale.calculatedScale = list.width / videoeditor.duration;
-                listScale.scale = 1.0;
+
+            exclusive: false
+
+            ButtonRow {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                exclusive: false
+                Button {
+                    iconSource: "image://theme/icon-m-toolbar-up-white"
+                    checkable: false
+                    onClicked: {
+                        listScale.calculatedScale = listScale.currentScale * 1.1;
+                        listScale.scale = 1.0;
+                    }
+                }
+                Button {
+                    iconSource: "image://theme/icon-m-toolbar-down-white"
+                    checkable: false
+                    onClicked: {
+                        listScale.calculatedScale = listScale.currentScale / 1.1;
+                        listScale.scale = 1.0;
+                    }
+                }
+            }
+
+            Button {
+                id: fitButton
+                text: "Fit"
+                checkable: false
+                onClicked: {
+                    listScale.calculatedScale = list.width / videoeditor.duration;
+                    listScale.scale = 1.0;
+                }
             }
         }
     }
