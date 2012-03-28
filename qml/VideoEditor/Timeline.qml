@@ -91,6 +91,19 @@ Page {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
 
+        function pause() {
+            console.log("Video preview: playing -> paused");
+            preview.isPlaying = false;
+            videoeditor.pause();
+            previewText.text = "Video preview\nTap to play/pause";
+        }
+        function play() {
+            console.log("Video preview: paused -> playing");
+            preview.isPlaying = true;
+            previewText.text = "";
+            videoeditor.play();
+        }
+
         Rectangle {
             id: previewBackground
 
@@ -115,15 +128,9 @@ Page {
             anchors.fill: parent
             onClicked: {
                 if (preview.isPlaying) {
-                    console.log("Video preview: playing -> paused");
-                    preview.isPlaying = false;
-                    videoeditor.pause();
-                    previewText.text = "Video preview\nTap to play/pause";
+                    preview.pause();
                 } else {
-                    console.log("Video preview: paused -> playing");
-                    preview.isPlaying = true;
-                    previewText.text = "";
-                    videoeditor.play();
+                    preview.play();
                 }
             }
         }
@@ -169,6 +176,7 @@ Page {
             anchors.right: parent.right
             anchors.top: parent.top
             onClicked: {
+                preview.pause();
                 var component = Qt.createComponent("VideoGallery.qml")
                 pageStack.push(component);
             }
@@ -185,10 +193,7 @@ Page {
             anchors.top: addMediaButton.bottom
             onClicked: {
                 if (list.count > 0) {
-                    if (videoeditor.isRendering())
-                        videoeditor.cancelRender();
-                    if (videoeditor.isPlaying)
-                        videoeditor.pause();
+                    preview.pause();
                     removeAllDialog.open();
                 }
             }
@@ -206,10 +211,7 @@ Page {
             visible: list.count > 0
             onClicked: {
                 if (list.count > 0) {
-                    if (videoeditor.isRendering())
-                        videoeditor.cancelRender();
-                    if (videoeditor.isPlaying)
-                        videoeditor.pause();
+                    preview.pause();
                     removeDialog.open();
                 }
             }
@@ -306,6 +308,7 @@ Page {
             anchors.top: parent.top
 
             onClicked: {
+                preview.pause();
                 progressDialog.open()
                 videoeditor.render()
             }
@@ -321,6 +324,7 @@ Page {
             anchors.top: exportButton.bottom
 
             onClicked: {
+                preview.pause();
                 var component = Qt.createComponent("ExportSettingsPage.qml")
                 pageStack.push(component);
             }
