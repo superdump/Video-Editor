@@ -431,7 +431,10 @@ Page {
 
             property double listContentWidth: listScale.currentScale * videoeditor.duration
 
-            anchors.margins: 16
+            anchors.topMargin: 16
+            anchors.bottomMargin: 16
+            anchors.leftMargin: 32
+            anchors.rightMargin: 32
             anchors.top: parent.top
             anchors.bottom: scrollBar.top
             anchors.left: parent.left
