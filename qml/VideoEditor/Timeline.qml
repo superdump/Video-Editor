@@ -404,6 +404,15 @@ Page {
                 target: listScale
                 dragAxis: Pinch.NoDrag
             }
+            onPinchStarted: {
+                fakeDel.visible = false;
+            }
+            onPinchUpdated: {
+                fakeDel.visible = false;
+            }
+            onPinchFinished: {
+                fakeDel.visible = false;
+            }
         }
 
         Item {
