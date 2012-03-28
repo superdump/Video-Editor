@@ -867,7 +867,8 @@ Page {
                 MouseArea {
                     id: dragMouseArea
 
-                    anchors.fill: seekBall
+                    width: minUsableWidthPx
+                    height: width
                     anchors.centerIn: seekBall
 
                     drag.axis: Drag.XAxis
