@@ -502,9 +502,7 @@ Page {
                     onPressed: {
                         delegateButton.z = 2;
                         positionStarted = delegateButton.x;
-                        fakeDel.curDragArea = dragArea
-                        fakeDel.width = delegateButton.width
-                        fakeDel.visible = true
+                        fakeDel.displayObj(delegateButton.width, dragArea, "white");
                         delegateButton.opacity = 0.5;
                         list.interactive = false;
                         held = true;
@@ -612,6 +610,8 @@ Page {
                             initMousePos = mouseX
                             fakeinPoint.x = mousePos - list.x
                             fakeinPoint.visible = true
+                            fakeDel.x = delegateButton.x - list.contentX - model.object.inPoint * listScale.currentScale;
+                            fakeDel.displayObj(model.object.maxDuration * listScale.currentScale, null, "blue");
                             list.interactive = false;
                             held = true;
                         }
@@ -625,6 +625,8 @@ Page {
                                 inPointTimer.stop();
                                 var clipped = Math.max(0, Math.min(positionEnded, maxinPoint));
                                 model.object.inPoint = clipped / listScale.currentScale;
+                                fakeDel.visible = false;
+                                fakeDel.curDragArea = null;
                                 fakeinPoint.visible = false
                                 list.interactive = true;
                                 held = false;
@@ -645,6 +647,7 @@ Page {
                                 list.contentX = Math.min(Math.max(list.contentX - autoScrollRate, 0),
                                                          list.listContentWidth - list.width);
                             }
+                            fakeDel.x = delegateButton.x - list.contentX - model.object.inPoint * listScale.currentScale;
                         }
                     }
                 }
@@ -824,7 +827,22 @@ Page {
                 anchors.bottom: parent.bottom
                 visible: false
                 opacity: 0.5
-                color: "white"
+
+                function displayObj(displayWidth, inputArea, delColor) {
+                    width = displayWidth;
+
+                    if (typeof inputArea !== 'undefined') {
+                        curDragArea = inputArea;
+                    }
+
+                    if (typeof delColor !== 'undefined') {
+                        color = delColor;
+                    } else {
+                        color = "white";
+                    }
+
+                    visible = true;
+                }
             }
 
             Text {
