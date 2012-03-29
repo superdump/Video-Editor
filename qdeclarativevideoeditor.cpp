@@ -45,7 +45,7 @@ static GstBusSyncReply bus_sync_call(GstBus * bus, GstMessage * msg, gpointer da
 
 QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
     QAbstractListModel(parent), m_position(0), m_positionTimer(this), m_rendering(false), m_size(0),
-    m_width(0), m_height(0), m_fpsn(0), m_fpsd(0)
+    m_width(1280), m_height(720), m_fpsn(30), m_fpsd(1)
 {
     QHash<int, QByteArray> roles;
     roles.insert(OBJECT_ROLE, "object" );
