@@ -609,7 +609,7 @@ Page {
                         property double mousePosContent: mouseX - initMousePos
                         property double mousePos: list.x + (delegateButton.x - list.contentX) + mousePosContent
                         property double originPoint: model.object.inPoint * listScale.currentScale
-                        property double maxinPoint: listScale.currentScale * model.object.maxDuration
+                        property double maxinPoint: listScale.currentScale * model.object.maxDuration - originPoint
                         drag.axis: Drag.XAxis
                         enabled: delegateButton.ListView.isCurrentItem
                         onPressed: {
@@ -635,8 +635,8 @@ Page {
                         onReleased: {
                             if (held == true) {
                                 inPointTimer.stop();
-                                var clipped = Math.max(0, Math.min(positionEnded, maxinPoint));
-                                model.object.inPoint = clipped / listScale.currentScale;
+                                var clipped = Math.max(-originPoint, Math.min(positionEnded, maxinPoint));
+                                model.object.inPoint += clipped / listScale.currentScale;
                                 fakeDel.visible = false;
                                 fakeDel.curDragArea = null;
                                 fakeinPoint.visible = false
