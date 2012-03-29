@@ -737,7 +737,7 @@ Page {
                             if (held == true) {
                                 endPointTimer.stop();
                                 var clipped = Math.max(0, Math.min(positionEnded, maxEndPoint));
-                                model.object.duration = Math.max(0, (clipped / listScale.currentScale) - model.object.inPoint);
+                                model.object.duration = Math.max(0, clipped / listScale.currentScale);
                                 fakeDel.visible = false;
                                 fakeDel.curDragArea = null;
                                 fakeEndPoint.visible = false
