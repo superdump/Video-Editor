@@ -1,0 +1,32 @@
+VideoEditor
+-----------
+
+In order to develop VideoEditor, you will need the QtSDK and some additional
+packages that are included in the Harmattan Meego platform from PR1.2 and later
+but are not included in the SDK.
+
+The QtSDK can be obtained from:
+http://qt.nokia.com/downloads
+
+The additional packages are available here:
+http://harmattan-dev.nokia.com/pool/harmattan/free/g/gst-editing-services/
+
+Download at least the libges-0.10, libges-0.10-dev and libges-doc packages for ARM. At the time of
+writing these are but check above for updates:
+http://harmattan-dev.nokia.com/pool/harmattan/free/g/gst-editing-services/libges-0.10-0_0.10.1.1-0maemo1+0m6_armel.deb
+http://harmattan-dev.nokia.com/pool/harmattan/free/g/gst-editing-services/libges-0.10-dev_0.10.1.1-0maemo1+0m6_armel.deb
+http://harmattan-dev.nokia.com/pool/harmattan/free/g/gst-editing-services/libges-doc_0.10.1.1-0maemo1+0m6_all.deb
+
+After installing the QtSDK with all necessary Harmattan Meego components for
+QtQuick/Qt development, the libges packages can be installed as follows:
+
+- Check your target
+/path/to/QtSDK/Madde/bin/mad-admin list
+
+- Install the packages to the relevant target. For me currently:
+/path/to/QtSDK/Madde/bin/mad-admin -t harmattan_10.2011.34-1_rt1.2 xdpkg -i libges-0.10-0_0.10.1.1-0maemo1+0m6_armel.deb
+/path/to/QtSDK/Madde/bin/mad-admin -t harmattan_10.2011.34-1_rt1.2 xdpkg -i libges-dev-0.10-0_0.10.1.1-0maemo1+0m6_armel.deb
+/path/to/QtSDK/Madde/bin/mad-admin -t harmattan_10.2011.34-1_rt1.2 xdpkg -i libges-doc_0.10.1.1-0maemo1+0m6_all.deb
+
+After that, you should be good to go. Open up the VideoEditor.pro file in
+QtCreator and hack away! :)
