@@ -115,6 +115,43 @@ is_qtmux(GstElement * element) {
 }
 
 static gboolean
+is_playsink(GstElement * element) {
+    GstElementFactory *factory = gst_element_get_factory(element);
+    const char *name;
+    if(factory == NULL) {
+        name = GST_ELEMENT_NAME(element);
+    } else {
+        name = GST_PLUGIN_FEATURE_NAME (factory);
+    }
+
+    if (strstr(name, "playsink") != NULL) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+static gboolean
+play_sink_multiple_seeks_send_event (GstElement * element, GstEvent * event)
+{
+  GstElementClass *klass = GST_ELEMENT_GET_CLASS (element);
+
+  GST_DEBUG ("%s", GST_EVENT_TYPE_NAME (event));
+
+  return
+      GST_ELEMENT_CLASS (g_type_class_peek_parent (klass))->send_event (element,
+      event);
+}
+
+void
+gstcapstricks_set_playsink_sendevent(GstElement * playsink)
+{
+    GstElementClass* klass;
+
+    klass = GST_ELEMENT_GET_CLASS (playsink);
+    klass->send_event = play_sink_multiple_seeks_send_event;
+}
+
+static gboolean
 is_video_pad(GstPad * pad) {
     return strstr(GST_PAD_NAME(pad), "video") != NULL;
 }
@@ -349,6 +386,8 @@ gstcapstricks_pipeline_element_added(GstBin * bin, GstElement * element, gpointe
     if(is_encodebin(element)) {
         g_signal_connect(element, "element-added", (GCallback) gstcapstricks_add_get_caps, NULL);
         gstcapstricks_encodebin_find_elements(GST_BIN(element));
+    } else if(is_playsink(element)) {
+        gstcapstricks_set_playsink_sendevent(element);
     }
 }
 

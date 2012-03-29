@@ -25,4 +25,6 @@
 void gstcapstricks_init(void);
 void gstcapstricks_pipeline_element_added(GstBin * bin, GstElement * element, gpointer udata);
 
+void gstcapstricks_set_playsink_sendevent(GstElement * playsink);
+
 #endif // GSTCAPSTRICKS_H

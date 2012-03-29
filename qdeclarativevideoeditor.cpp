@@ -68,6 +68,15 @@ QDeclarativeVideoEditor::QDeclarativeVideoEditor(QObject *parent) :
      * GES fail to render some projects. We override the default getcaps on our own
      */
     g_signal_connect(m_pipeline, "element-added", (GCallback) gstcapstricks_pipeline_element_added, NULL);
+    {
+        GstElement *playsink = gst_bin_get_by_name(GST_BIN(m_pipeline), "internal-sinks");
+        if(playsink) {
+            gstcapstricks_set_playsink_sendevent(playsink);
+            gst_object_unref (playsink);
+        } else {
+            qDebug() << "No playsink found";
+        }
+    }
 
     ges_timeline_pipeline_add_timeline (m_pipeline, m_timeline);
 
