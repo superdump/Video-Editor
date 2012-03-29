@@ -603,6 +603,7 @@ Page {
                         property double initMousePos: width/2
                         property double mousePosContent: mouseX - initMousePos
                         property double mousePos: list.x + (delegateButton.x - list.contentX) + mousePosContent
+                        property double originPoint: model.object.inPoint * listScale.currentScale
                         property double maxinPoint: listScale.currentScale * model.object.maxDuration
                         drag.axis: Drag.XAxis
                         enabled: delegateButton.ListView.isCurrentItem
@@ -610,7 +611,7 @@ Page {
                             initMousePos = mouseX
                             fakeinPoint.x = mousePos - list.x
                             fakeinPoint.visible = true
-                            fakeDel.x = delegateButton.x - list.contentX - model.object.inPoint * listScale.currentScale;
+                            fakeDel.x = delegateButton.x - list.contentX - originPoint;
                             fakeDel.displayObj(model.object.maxDuration * listScale.currentScale, null, "blue");
                             list.interactive = false;
                             held = true;
@@ -619,6 +620,11 @@ Page {
                             inPointTimer.start();
                             fakeinPoint.x = mousePos - list.x
                             positionEnded = mousePosContent;
+                            if (fakeDel.x < 0 && positionEnded < originPoint) {
+                                model.object.duration += originPoint;
+                                model.object.inPoint = 0;
+                                fakeDel.x = delegateButton.x - list.contentX;
+                            }
                         }
                         onReleased: {
                             if (held == true) {
@@ -647,7 +653,7 @@ Page {
                                 list.contentX = Math.min(Math.max(list.contentX - autoScrollRate, 0),
                                                          list.listContentWidth - list.width);
                             }
-                            fakeDel.x = delegateButton.x - list.contentX - model.object.inPoint * listScale.currentScale;
+                            fakeDel.x = delegateButton.x - list.contentX - inPointDrag.originPoint;
                         }
                     }
                 }
