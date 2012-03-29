@@ -706,6 +706,8 @@ Page {
                             initMousePos = mouseX
                             fakeEndPoint.x = mousePos - list.x
                             fakeEndPoint.visible = true
+                            fakeDel.x = delegateButton.x - list.contentX - model.object.inPoint * listScale.currentScale;
+                            fakeDel.displayObj(model.object.maxDuration * listScale.currentScale, null, "blue");
                             list.interactive = false;
                             held = true;
                         }
@@ -719,6 +721,8 @@ Page {
                                 endPointTimer.stop();
                                 var clipped = Math.max(0, Math.min(positionEnded, maxEndPoint));
                                 model.object.duration = Math.max(0, (clipped / listScale.currentScale) - model.object.inPoint);
+                                fakeDel.visible = false;
+                                fakeDel.curDragArea = null;
                                 fakeEndPoint.visible = false
                                 list.interactive = true;
                                 held = false;
@@ -739,6 +743,7 @@ Page {
                                 list.contentX = Math.min(Math.max(list.contentX - autoScrollRate, 0),
                                                          list.listContentWidth - list.width);
                             }
+                            fakeDel.x = delegateButton.x - list.contentX - model.object.inPoint * listScale.currentScale;
                         }
                     }
                 }
