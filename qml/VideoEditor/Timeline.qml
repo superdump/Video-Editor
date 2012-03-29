@@ -705,6 +705,7 @@ Page {
                         property double initMousePos: width/2
                         property double mousePosContent: delegateButton.width + (mouseX - initMousePos)
                         property double mousePos: list.x + (delegateButton.x - list.contentX) + mousePosContent
+                        property double origendPoint: delegateButton.width
                         property double maxEndPoint: listScale.currentScale * (model.object.maxDuration - model.object.inPoint)
                         drag.axis: Drag.XAxis
                         enabled: delegateButton.ListView.isCurrentItem
@@ -721,6 +722,9 @@ Page {
                             endPointTimer.start();
                             fakeEndPoint.x = mousePos - list.x
                             positionEnded = mousePosContent;
+                            if (fakeDel.x + fakeDel.width > list.width && positionEnded > origendPoint) {
+                                model.object.duration = model.object.maxDuration - model.object.inPoint;
+                            }
                         }
                         onReleased: {
                             if (held == true) {
