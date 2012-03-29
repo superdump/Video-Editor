@@ -626,6 +626,7 @@ Page {
                             fakeinPoint.x = mousePos - list.x
                             positionEnded = mousePosContent;
                             if (fakeDel.x < 0 && positionEnded < originPoint) {
+                                console.log("HACK: Setting inpoint to 0 to allow setting any inpoint");
                                 model.object.duration += originPoint;
                                 model.object.inPoint = 0;
                                 fakeDel.x = delegateButton.x - list.contentX;
@@ -728,6 +729,7 @@ Page {
                             fakeEndPoint.x = mousePos - list.x
                             positionEnded = mousePosContent;
                             if (fakeDel.x + fakeDel.width > list.width && positionEnded > origendPoint) {
+                                console.log("HACK: Setting to full duration to allow setting endpoint");
                                 model.object.duration = model.object.maxDuration - model.object.inPoint;
                             }
                         }
