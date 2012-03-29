@@ -60,9 +60,10 @@ Page {
         }
 
         onDataChanged: {
-            if (list.count == 1) {
+            if (list.count == 1 && listScale.recalculateOnAdd && duration !== -1) {
                 listScale.calculatedScale = list.width * timeline.zoomProportion / videoeditor.getObjDuration(0);
                 listScale.scale = 1.0;
+                listScale.recalculateOnAdd = false;
             }
         }
 
@@ -177,6 +178,9 @@ Page {
             anchors.top: parent.top
             onClicked: {
                 preview.pause();
+                if (list.count == 0) {
+                    listScale.recalculateOnAdd = true;
+                }
                 var component = Qt.createComponent("VideoGallery.qml")
                 pageStack.push(component);
             }
@@ -421,6 +425,7 @@ Page {
 
         Item {
             id: listScale
+            property bool recalculateOnAdd: true
             property double calculatedScale: 1.0
             property double currentScale: calculatedScale * scale
             property double minimumScale: minUsableWidthPx / maxGranularityNS
