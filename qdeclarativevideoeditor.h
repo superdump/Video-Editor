@@ -42,6 +42,8 @@ class QDeclarativeVideoEditor : public QAbstractListModel
     Q_PROPERTY(uint renderFpsN READ getRenderFpsN NOTIFY renderResolutionChanged)
     Q_PROPERTY(uint renderFpsD READ getRenderFpsD NOTIFY renderResolutionChanged)
 
+    Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY playingStateChanged)
+
 public:
     explicit QDeclarativeVideoEditor(QObject *parent = 0);
     virtual ~QDeclarativeVideoEditor();
@@ -63,6 +65,7 @@ public:
     Q_INVOKABLE void seek(qint64 position);
     Q_INVOKABLE bool render();
     Q_INVOKABLE void cancelRender();
+    Q_INVOKABLE bool isPlaying() const;
 
     //render settings API
     Q_INVOKABLE void setRenderSettings(int width, int height, int fps_n, int fps_d);
@@ -120,6 +123,7 @@ signals:
 
     void durationChanged();
     void positionChanged();
+    void playingStateChanged();
 
     void renderResolutionChanged();
 

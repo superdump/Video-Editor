@@ -230,6 +230,7 @@ void QDeclarativeVideoEditor::removeAll()
     gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_READY);
     gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PAUSED);
     updateDuration();
+    emit playingStateChanged();
 }
 
 GstEncodingProfile *QDeclarativeVideoEditor::createEncodingProfile() const {
@@ -273,7 +274,7 @@ QDeclarativeVideoEditor::handleBusMessage (GstBus *, GstMessage *msg)
     case GST_MESSAGE_EOS:
         qDebug() << "End of stream";
         setProgress(1.0);
-        gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_PAUSED);
+        pause();
         if(isRendering()) {
             m_rendering = false;
             ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_PREVIEW);
@@ -297,6 +298,7 @@ QDeclarativeVideoEditor::handleBusMessage (GstBus *, GstMessage *msg)
             emit error(PLAYBACK_FAILED, gerror->message);
         }
         g_error_free (gerror);
+        pause();
         gst_element_set_state ((GstElement *) m_pipeline, GST_STATE_NULL);
         setProgress(-1.0);
         break;
@@ -494,6 +496,7 @@ bool QDeclarativeVideoEditor::render()
         emit error(RENDERING_FAILED, "Failed to set pipeline to playing state");
         return false;
     }
+    emit playingStateChanged();
     return true;
 }
 
@@ -504,6 +507,7 @@ void QDeclarativeVideoEditor::cancelRender()
     setProgress(-1.0);
     m_rendering = false;
     ges_timeline_pipeline_set_mode (m_pipeline, TIMELINE_MODE_PREVIEW);
+    emit playingStateChanged();
 }
 
 uint QDeclarativeVideoEditor::getWinId() const
@@ -521,6 +525,7 @@ void QDeclarativeVideoEditor::play()
 {
     m_positionTimer.start(PROGRESS_TIMEOUT);
     gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PLAYING);
+    emit playingStateChanged();
 }
 
 
@@ -528,6 +533,8 @@ void QDeclarativeVideoEditor::pause()
 {
     m_positionTimer.stop();
     gst_element_set_state (GST_ELEMENT (m_pipeline), GST_STATE_PAUSED);
+
+    emit playingStateChanged();
 }
 
 void QDeclarativeVideoEditor::seek(qint64 position)
@@ -562,4 +569,14 @@ uint QDeclarativeVideoEditor::getRenderFpsN() const
 uint QDeclarativeVideoEditor::getRenderFpsD() const
 {
     return m_fpsd;
+}
+
+bool QDeclarativeVideoEditor::isPlaying() const
+{
+    GstState state;
+    GstState pending;
+
+    gst_element_get_state(GST_ELEMENT(m_pipeline), &state, &pending, 0);
+
+    return state == GST_STATE_PLAYING && pending == GST_STATE_VOID_PENDING && !m_rendering;
 }

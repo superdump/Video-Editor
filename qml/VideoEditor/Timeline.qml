@@ -86,7 +86,6 @@ Page {
 
     Item {
         id: preview
-        property bool isPlaying: false
         width: 512
         height: 288
         anchors.horizontalCenter: parent.horizontalCenter
@@ -94,14 +93,10 @@ Page {
 
         function pause() {
             console.log("Video preview: playing -> paused");
-            preview.isPlaying = false;
             videoeditor.pause();
-            previewText.text = "Video preview\nTap to play/pause";
         }
         function play() {
             console.log("Video preview: paused -> playing");
-            preview.isPlaying = true;
-            previewText.text = "";
             videoeditor.play();
         }
 
@@ -119,6 +114,7 @@ Page {
             width: parent.width
             horizontalAlignment: Text.AlignHCenter
             anchors.verticalCenter: parent.verticalCenter
+            visible: !videoeditor.isPlaying
             text: "Video preview\nTap to play/pause"
             color: "white"
             font.bold: true
@@ -128,7 +124,7 @@ Page {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                if (preview.isPlaying) {
+                if (videoeditor.isPlaying) {
                     preview.pause();
                 } else {
                     preview.play();
