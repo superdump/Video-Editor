@@ -329,6 +329,22 @@ Page {
                 pageStack.push(component);
             }
         }
+        Button {
+            id: aboutButton
+            text: "About"
+            anchors.topMargin: 16
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: settingsButton.bottom
+
+            onClicked: {
+                preview.pause();
+                var component = Qt.createComponent("About.qml")
+                pageStack.push(component);
+            }
+        }
         ButtonColumn {
             id: scaleButtons
             anchors.leftMargin: 16
