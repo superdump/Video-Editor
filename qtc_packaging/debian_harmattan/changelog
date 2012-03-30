@@ -1,6 +1,22 @@
+videoeditor (1.5.0) unstable; urgency=low
+
+  * Video preview
+  * Export settings
+  * Remove single clip/all clips
+  * Drag and drop reordering
+  * Drag-able inpoint/endpoint marker trimming with ghost source object to
+    indicate bounds
+  * Flick to scroll
+  * Pinch to zoom
+  * Tap, double-tap, drag, flick and pinch gestures used for navigation and
+    manipulation
+  * Many fixes and improvements
+
+ -- Robert Swain <robert.swain@collabora.co.uk>  Mon, 30 Mar 2012 11:10:50 +0200
+
 videoeditor (0.0.1) unstable; urgency=low
 
-  * Initial Release.
+  * Unreleased.
   * Can concatenate clips and export to a file named yyMMdd-hhmmss.mp4 in
     /home/user/MyDocs/Movies
   * No video preview
