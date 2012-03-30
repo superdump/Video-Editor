@@ -314,8 +314,8 @@ Page {
             }
         }
         Button {
-            id: settingsButton
-            text: "Settings"
+            id: menuButton
+            iconSource: "image://theme/icon-m-toolbar-view-menu-white"
             anchors.topMargin: 16
             anchors.leftMargin: 16
             anchors.rightMargin: 16
@@ -325,24 +325,7 @@ Page {
 
             onClicked: {
                 preview.pause();
-                var component = Qt.createComponent("ExportSettingsPage.qml")
-                pageStack.push(component);
-            }
-        }
-        Button {
-            id: aboutButton
-            text: "About"
-            anchors.topMargin: 16
-            anchors.leftMargin: 16
-            anchors.rightMargin: 16
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: settingsButton.bottom
-
-            onClicked: {
-                preview.pause();
-                var component = Qt.createComponent("About.qml")
-                pageStack.push(component);
+                menu.open();
             }
         }
         ButtonColumn {
@@ -1037,6 +1020,27 @@ Page {
                 radius: height / 2 - 1
                 color: "white"
                 opacity: 0.6
+            }
+        }
+    }
+
+    Menu {
+        id: menu
+        visualParent: timeline
+        content: MenuLayout {
+            MenuItem {
+                text: "Export Settings"
+                onClicked: {
+                    var component = Qt.createComponent("ExportSettingsPage.qml")
+                    pageStack.push(component);
+                }
+            }
+            MenuItem {
+                text: "About"
+                onClicked: {
+                    var component = Qt.createComponent("About.qml")
+                    pageStack.push(component);
+                }
             }
         }
     }
