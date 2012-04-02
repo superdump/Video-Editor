@@ -357,6 +357,20 @@ QString getDateTimeString() {
     return current.toString("yyyyMMdd-hhmmss");
 }
 
+QString getFileName() {
+    QString timeString = getDateTimeString();
+
+    for(int i = 1; i < 10000; i++){
+        QString filename = QString(MOVIES_DIR + timeString + "-%1.mp4").arg(i, 4, 10, QLatin1Char('0'));
+
+        if(!QFile(filename).exists()) {
+            return filename;
+        }
+    }
+
+    return QString();
+}
+
 GESTimelinePipeline *QDeclarativeVideoEditor::getPipeline() const
 {
     return m_pipeline;
@@ -463,7 +477,11 @@ bool QDeclarativeVideoEditor::render()
 
     qDebug() << "Render preparations started";
 
-    QString output_uri = MOVIES_DIR + getDateTimeString() + ".mp4";
+    QString output_uri = getFileName();
+    if(output_uri.isEmpty()) {
+        emit error(RENDERING_FAILED, "No filename available");
+        return false;
+    }
 
     GstEncodingProfile *profile = createEncodingProfile();
     if (!ges_timeline_pipeline_set_render_settings (m_pipeline, output_uri.toUtf8().data(), profile)) {
