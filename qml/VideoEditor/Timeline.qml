@@ -522,9 +522,9 @@ Page {
                         delegateButton.opacity = 0.5;
                         list.interactive = false;
                         held = true;
+                        dragTimer.start();
                     }
                     onPositionChanged: {
-                        dragTimer.start();
                         positionEnded = mousePosContent;
                     }
                     onReleased: {
