@@ -427,13 +427,13 @@ Page {
             property double maximumScale: minUsableWidthPx / minGranularityNS
         }
 
-
-
         ListView {
             id: list
             model: videoeditor
 
             property double listContentWidth: listScale.currentScale * videoeditor.duration
+            property double oldContentX: 0;
+            property double olderContentX: 0;
 
             anchors.topMargin: 16
             anchors.bottomMargin: 16
@@ -447,6 +447,17 @@ Page {
             orientation: ListView.Horizontal
             boundsBehavior: Flickable.StopAtBounds
 
+            onContentXChanged: {
+                olderContentX = oldContentX;
+                oldContentX = contentX;
+            }
+
+            onCurrentItemChanged: {
+                if(currentIndex >= 0) {
+                    oldContentX = olderContentX;
+                    contentX = olderContentX;
+                }
+            }
 
             delegate: Item {
                 id: delegateButton
