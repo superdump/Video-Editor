@@ -510,6 +510,11 @@ Page {
                     property double mousePosContent: positionStarted + mouseX
                     drag.axis: Drag.XAxis
                     enabled: delegateButton.ListView.isCurrentItem
+
+                    onMousePosChanged: {
+                        fakeDel.x = mousePos - list.x - width/2;
+                    }
+
                     onPressed: {
                         delegateButton.z = 2;
                         positionStarted = delegateButton.x;
