@@ -610,8 +610,7 @@ Page {
 
                         width: minUsableWidthPx
                         height: width
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.top: inBall.top
+                        anchors.centerIn: inBall
                         preventStealing: true
 
                         property int positionEnded: 0
@@ -713,8 +712,7 @@ Page {
 
                         width: minUsableWidthPx
                         height: width
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.bottom: endBall.bottom
+                        anchors.centerIn: endBall
                         preventStealing: true
 
                         property int positionEnded: 0
