@@ -1008,10 +1008,10 @@ Page {
         Item {
             id: scrollBar
             anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.margins: 16
-
+            anchors.left: list.left
+            anchors.right: list.right
+            anchors.topMargin: 16
+            anchors.bottomMargin: 16
             height: 8
 
             property real position: list.contentX / list.listContentWidth
