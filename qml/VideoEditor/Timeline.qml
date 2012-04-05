@@ -591,7 +591,7 @@ Page {
                         width: 30
                         height: width
                         radius: width / 2
-                        color: "blue"
+                        color: "#3465a4"
                         anchors.top: parent.top
                         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -605,7 +605,7 @@ Page {
                         anchors.top: inBall.bottom
                         anchors.bottom: parent.bottom
                         anchors.horizontalCenter:  parent.horizontalCenter
-                        color: "blue"
+                        color: "#3465a4"
                     }
 
                     MouseArea {
@@ -630,7 +630,7 @@ Page {
                             fakeinPoint.x = mousePos - list.x
                             fakeinPoint.visible = true
                             fakeDel.x = delegateButton.x - list.contentX - originPoint;
-                            fakeDel.displayObj(model.object.maxDuration * listScale.currentScale, null, "blue");
+                            fakeDel.displayObj(model.object.maxDuration * listScale.currentScale, null, "#3465a4");
                             list.interactive = false;
                             held = true;
                         }
@@ -693,7 +693,7 @@ Page {
                         width: 30
                         height: width
                         radius: width / 2
-                        color: "blue"
+                        color: "#3465a4"
                         anchors.bottom: parent.bottom
                         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -707,7 +707,7 @@ Page {
                         anchors.top: parent.top
                         anchors.bottom: endBall.top
                         anchors.horizontalCenter:  parent.horizontalCenter
-                        color: "blue"
+                        color: "#3465a4"
                     }
 
                     MouseArea {
@@ -732,7 +732,7 @@ Page {
                             fakeEndPoint.x = mousePos - list.x
                             fakeEndPoint.visible = true
                             fakeDel.x = delegateButton.x - list.contentX - model.object.inPoint * listScale.currentScale;
-                            fakeDel.displayObj(model.object.maxDuration * listScale.currentScale, null, "blue");
+                            fakeDel.displayObj(model.object.maxDuration * listScale.currentScale, null, "#3465a4");
                             list.interactive = false;
                             held = true;
                         }
@@ -808,7 +808,7 @@ Page {
                     width: 30
                     height: width
                     radius: width / 2
-                    color: "blue"
+                    color: "#3465a4"
                     anchors.top: parent.top
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
@@ -821,7 +821,7 @@ Page {
                     anchors.top: fakeinBall.bottom
                     anchors.bottom: parent.bottom
                     anchors.horizontalCenter:  parent.horizontalCenter
-                    color: "blue"
+                    color: "#3465a4"
                 }
             }
             Item {
@@ -837,7 +837,7 @@ Page {
                     width: 30
                     height: width
                     radius: width / 2
-                    color: "blue"
+                    color: "#3465a4"
                     anchors.bottom: parent.bottom
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
@@ -850,7 +850,7 @@ Page {
                     anchors.top: parent.top
                     anchors.bottom: fakeEndBall.top
                     anchors.horizontalCenter:  parent.horizontalCenter
-                    color: "blue"
+                    color: "#3465a4"
                 }
             }
             Rectangle {
@@ -907,7 +907,7 @@ Page {
                     width: 30
                     height: width
                     radius: width / 2
-                    color: "red"
+                    color: "#cc0000"
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
 
@@ -920,7 +920,7 @@ Page {
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     anchors.horizontalCenter:  parent.horizontalCenter
-                    color: "red"
+                    color: "#cc0000"
                 }
 
                 MouseArea {
