@@ -27,7 +27,7 @@ Page {
 
     Text {
         id: titleField
-        text: "Export settings"
+        text: "Settings"
         font.bold: true
         font.pixelSize: 40
         color: "white"
@@ -41,22 +41,51 @@ Page {
         anchors.bottom: toolBar.top
         anchors.left: parent.left
         anchors.right: parent.right
+        spacing: 16
 
-        ButtonRow {
-            id: resolution
-            checkedButton: buttonHD
+        Item {
+            height: resolutionLabel.height + resolution.height + 8
+            anchors.left: parent.left
+            anchors.right: parent.right
 
-            Button {
-                id: buttonHD
-                text: "HD"
+            Text {
+                id: resolutionLabel
+                anchors.top: parent.top
+                text: "Export format:"
+                color: "white"
+                font.pixelSize: 23
             }
-            Button {
-                id: buttonWVGA
-                text: "WVGA"
+
+            ButtonRow {
+                id: resolution
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 8
+                anchors.rightMargin: 8
+                checkedButton: buttonHD
+
+                Button {
+                    id: buttonHD
+                    text: "HD"
+                }
+                Button {
+                    id: buttonWVGA
+                    text: "WVGA"
+                }
+                Button {
+                    id: buttonVGA
+                    text: "VGA"
+                }
             }
-            Button {
-                id: buttonVGA
-                text: "VGA"
+        }
+
+        CheckBox {
+            id: thumbnails
+            checked: videoeditor.showThumbnails
+            text: "Show thumbnails of video clips"
+            onClicked: {
+                videoeditor.showThumbnails = !videoeditor.showThumbnails;
             }
         }
     }

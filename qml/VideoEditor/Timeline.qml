@@ -43,6 +43,7 @@ Page {
 
     VideoEditor {
         id: videoeditor
+        property bool showThumbnails: true
 
         winId: XWinId;
 
@@ -473,7 +474,8 @@ Page {
                     border.color: delegateButton.ListView.isCurrentItem ? "#bf000000" : "#4d000000"
                     Image {
                         id: image
-                        source: "image://videoeditorimageprovider/" + model.object.uri + "#1000%"
+                        visible: videoeditor.showThumbnails
+                        source: videoeditor.showThumbnails ? "image://videoeditorimageprovider/" + model.object.uri + "#1000%" : ""
                         anchors.centerIn: parent
                         width: parent.width - 4
                         height: parent.height - 4
@@ -483,6 +485,7 @@ Page {
                         clip: true
                     }
                     Text {
+                        visible: videoeditor.showThumbnails
                         anchors.centerIn: parent
                         text: image.status === Image.Loading ? "Loading..." : ""
                         font.pixelSize: 20
@@ -1043,9 +1046,9 @@ Page {
         visualParent: timeline
         content: MenuLayout {
             MenuItem {
-                text: "Export Settings"
+                text: "Settings"
                 onClicked: {
-                    var component = Qt.createComponent("ExportSettingsPage.qml")
+                    var component = Qt.createComponent("SettingsPage.qml")
                     pageStack.push(component);
                 }
             }
