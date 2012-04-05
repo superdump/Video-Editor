@@ -602,7 +602,7 @@ Page {
                         width: 3
 
                         z: 1000
-                        anchors.top: parent.top
+                        anchors.top: inBall.bottom
                         anchors.bottom: parent.bottom
                         anchors.horizontalCenter:  parent.horizontalCenter
                         color: "blue"
@@ -705,7 +705,7 @@ Page {
 
                         z: 1000
                         anchors.top: parent.top
-                        anchors.bottom: parent.bottom
+                        anchors.bottom: endBall.top
                         anchors.horizontalCenter:  parent.horizontalCenter
                         color: "blue"
                     }
@@ -818,7 +818,7 @@ Page {
                     width: 3
 
                     z: 1000
-                    anchors.top: parent.top
+                    anchors.top: fakeinBall.bottom
                     anchors.bottom: parent.bottom
                     anchors.horizontalCenter:  parent.horizontalCenter
                     color: "blue"
@@ -848,7 +848,7 @@ Page {
 
                     z: 1000
                     anchors.top: parent.top
-                    anchors.bottom: parent.bottom
+                    anchors.bottom: fakeEndBall.top
                     anchors.horizontalCenter:  parent.horizontalCenter
                     color: "blue"
                 }
