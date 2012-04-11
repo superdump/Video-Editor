@@ -208,9 +208,9 @@ Page {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            visible: list.count > 0
+            visible: list.count > 0 && list.currentIndex >= 0
             onClicked: {
-                if (list.count > 0) {
+                if (list.count > 0 && list.currentIndex >= 0) {
                     preview.pause();
                     removeDialog.open();
                 }
