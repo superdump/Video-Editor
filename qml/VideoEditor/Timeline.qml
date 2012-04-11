@@ -309,8 +309,9 @@ Page {
 
             onClicked: {
                 preview.pause();
-                progressDialog.open()
-                videoeditor.render()
+                if(videoeditor.render()) {
+                    progressDialog.open()
+                }
             }
         }
         Button {
