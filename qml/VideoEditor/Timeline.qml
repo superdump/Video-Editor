@@ -56,8 +56,7 @@ Page {
 
         onRenderComplete: {
             progressDialog.close();
-            messageTitleField.text = "Export complete";
-            messageDialog.open();
+            renderCompleteDialog.open();
         }
 
         onDataChanged: {
@@ -78,6 +77,10 @@ Page {
                 list.contentX = curPos - list.width / 2;
             }
         }
+    }
+
+    RenderCompleteDialog {
+        id: renderCompleteDialog;
     }
 
     Rectangle {
