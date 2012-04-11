@@ -62,8 +62,8 @@ Page {
 
         onDataChanged: {
             if (list.count == 1 && listScale.recalculateOnAdd && duration !== -1) {
-                listScale.calculatedScale = list.width * timeline.zoomProportion / videoeditor.getObjDuration(0);
-                listScale.scale = 1.0;
+                listScale.setCalculatedScale(list.width * timeline.zoomProportion / videoeditor.getObjDuration(0));
+                listScale.setScale(1.0, listScale.scale, list.contentX);
                 listScale.recalculateOnAdd = false;
             }
         }
@@ -133,7 +133,6 @@ Page {
             }
         }
     }
-
 
     QueryDialog {
         id: removeAllDialog
@@ -349,16 +348,16 @@ Page {
                     iconSource: "image://theme/icon-m-toolbar-up-white"
                     checkable: false
                     onClicked: {
-                        listScale.calculatedScale = listScale.currentScale * 1.1;
-                        listScale.scale = 1.0;
+                        listScale.setCalculatedScale(listScale.currentScale * 1.1);
+
                     }
                 }
                 Button {
                     iconSource: "image://theme/icon-m-toolbar-down-white"
                     checkable: false
                     onClicked: {
-                        listScale.calculatedScale = listScale.currentScale / 1.1;
-                        listScale.scale = 1.0;
+                        listScale.setCalculatedScale(listScale.currentScale / 1.1);
+                        listScale.setScale(1.0, listScale.scale, list.contentX);
                     }
                 }
             }
@@ -368,8 +367,8 @@ Page {
                 text: "Fit"
                 checkable: false
                 onClicked: {
-                    listScale.calculatedScale = list.width / videoeditor.duration;
-                    listScale.scale = 1.0;
+                    listScale.setCalculatedScale(list.width / videoeditor.duration);
+                    listScale.setScale(1.0, listScale.scale, list.contentX);
                 }
             }
         }
@@ -402,17 +401,23 @@ Page {
         PinchArea {
             id: timelinePinch
             anchors.fill: parent
+            property double oldScale;
+            property double oldX;
+
             pinch {
                 minimumScale: minUsableWidthPx / (list.width * zoomProportion)
                 maximumScale: 1 / zoomProportion
-                target: listScale
+                //target: listScale
                 dragAxis: Pinch.NoDrag
             }
             onPinchStarted: {
                 fakeDel.visible = false;
+                oldScale = listScale.scale;
+                oldX = list.contentX;
             }
             onPinchUpdated: {
                 fakeDel.visible = false;
+                listScale.setScale(pinch.scale, oldScale, oldX);
             }
             onPinchFinished: {
                 fakeDel.visible = false;
@@ -426,6 +431,21 @@ Page {
             property double currentScale: calculatedScale * scale
             property double minimumScale: minUsableWidthPx / maxGranularityNS
             property double maximumScale: minUsableWidthPx / minGranularityNS
+
+            function setCalculatedScale(cScale) {
+                list.contentX = 0;
+                calculatedScale = cScale;
+            }
+
+            function setScale(newscale, oldscale, oldX) {
+                list.contentX = 0;
+                scale = newscale * oldscale;
+
+                //TODO this seems to break the contentX placement, disable it for now
+                //Will make the scaling always take the timeline to 0 position
+//                var newX = oldX * (scale / oldscale);
+//                list.contentX = newX;
+            }
         }
 
         ListView {
@@ -555,8 +575,8 @@ Page {
                         list.currentIndex = -1;
                     }
                     onDoubleClicked: {
-                        listScale.calculatedScale = list.width * timeline.zoomProportion / model.object.duration;
-                        listScale.scale = 1.0;
+                        listScale.setCalculatedScale(list.width * timeline.zoomProportion / model.object.duration);
+                        listScale.setScale(1.0, listScale.scale, list.contentX);
                     }
                 }
                 Timer {
@@ -787,8 +807,8 @@ Page {
                         list.currentIndex = index;
                     }
                     onDoubleClicked: {
-                        listScale.calculatedScale = list.width * timeline.zoomProportion / model.object.duration;
-                        listScale.scale = 1.0;
+                        listScale.setCalculatedScale(list.width * timeline.zoomProportion / model.object.duration);
+                        listScale.setScale(1.0, listScale.scale, list.contentX);
                     }
                 }
             }
