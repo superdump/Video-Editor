@@ -70,11 +70,11 @@ Page {
         onProgressChanged: {
             var curPos = position * listScale.currentScale;
             if (list.listContentWidth <= list.width || curPos < list.width / 2) {
-                list.contentX = 0;
+                list.updateContentX(0);
             } else if (curPos > list.listContentWidth - list.width / 2) {
-                list.contentX = list.listContentWidth - list.width;
+                list.updateContentX(list.listContentWidth - list.width);
             } else {
-                list.contentX = curPos - list.width / 2;
+                list.updateContentX(curPos - list.width / 2);
             }
         }
     }
@@ -439,12 +439,12 @@ Page {
             property double maximumScale: minUsableWidthPx / minGranularityNS
 
             function setCalculatedScale(cScale) {
-                list.contentX = 0;
+                list.updateContentX(0);
                 calculatedScale = cScale;
             }
 
             function setScale(newscale, oldscale, oldX) {
-                list.contentX = 0;
+                list.updateContentX(0);
                 scale = newscale * oldscale;
 
                 //TODO this seems to break the contentX placement, disable it for now
@@ -460,7 +460,6 @@ Page {
 
             property double listContentWidth: listScale.currentScale * videoeditor.duration
             property double oldContentX: 0;
-            property double olderContentX: 0;
 
             anchors.topMargin: 16
             anchors.bottomMargin: 16
@@ -474,16 +473,19 @@ Page {
             orientation: ListView.Horizontal
             boundsBehavior: Flickable.StopAtBounds
 
-            onContentXChanged: {
-                olderContentX = oldContentX;
-                oldContentX = contentX;
+            function updateContentX(cx) {
+                oldContentX = cx;
+                contentX = cx;
             }
 
             onCurrentItemChanged: {
                 if(currentIndex >= 0 && list.listContentWidth > list.width) {
-                    oldContentX = olderContentX;
-                    contentX = olderContentX;
+                    contentX = oldContentX;
                 }
+            }
+
+            onMovementEnded: {
+                oldContentX = contentX;
             }
 
             delegate: Item {
@@ -593,11 +595,11 @@ Page {
                     onTriggered: {
                         if(dragArea.mousePos >= timeline.width - autoScrollMargin &&
                                 list.listContentWidth - list.contentX > list.width) {
-                            list.contentX = Math.max(0, Math.min(list.contentX + autoScrollRate,
-                                                                 list.listContentWidth - list.width));
+                            list.updateContentX(Math.max(0, Math.min(list.contentX + autoScrollRate,
+                                                                 list.listContentWidth - list.width)));
                         } else if(dragArea.mousePos < autoScrollMargin && list.contentX > 0) {
-                            list.contentX = Math.min(Math.max(list.contentX - autoScrollRate, 0),
-                                                     list.listContentWidth - list.width);
+                            list.updateContentX(Math.min(Math.max(list.contentX - autoScrollRate, 0),
+                                                     list.listContentWidth - list.width));
                         }
                     }
                 }
@@ -692,11 +694,11 @@ Page {
                         onTriggered: {
                             if(inPointDrag.mousePos >= timeline.width - autoScrollMargin &&
                                     list.listContentWidth - list.contentX > list.width) {
-                                list.contentX = Math.max(0, Math.min(list.contentX + autoScrollRate,
-                                                                     list.listContentWidth - list.width));
+                                list.updateContentX(Math.max(0, Math.min(list.contentX + autoScrollRate,
+                                                                     list.listContentWidth - list.width)));
                             } else if(inPointDrag.mousePos < autoScrollMargin && list.contentX > 0) {
-                                list.contentX = Math.min(Math.max(list.contentX - autoScrollRate, 0),
-                                                         list.listContentWidth - list.width);
+                                list.updateContentX(Math.min(Math.max(list.contentX - autoScrollRate, 0),
+                                                             list.listContentWidth - list.width));
                             }
                             fakeDel.x = delegateButton.x - list.contentX - inPointDrag.originPoint;
                         }
@@ -792,11 +794,11 @@ Page {
                         onTriggered: {
                             if(endPointDrag.mousePos >= timeline.width - autoScrollMargin &&
                                     list.listContentWidth - list.contentX > list.width) {
-                                list.contentX = Math.max(0, Math.min(list.contentX + autoScrollRate,
-                                                                     list.listContentWidth - list.width));
+                                list.updateContentX(Math.max(0, Math.min(list.contentX + autoScrollRate,
+                                                                     list.listContentWidth - list.width)));
                             } else if(endPointDrag.mousePos < autoScrollMargin && list.contentX > 0) {
-                                list.contentX = Math.min(Math.max(list.contentX - autoScrollRate, 0),
-                                                         list.listContentWidth - list.width);
+                                list.updateContentX(Math.min(Math.max(list.contentX - autoScrollRate, 0),
+                                                         list.listContentWidth - list.width));
                             }
                             fakeDel.x = delegateButton.x - list.contentX - model.object.inPoint * listScale.currentScale;
                         }
@@ -980,11 +982,11 @@ Page {
                     onTriggered: {
                         if(dragMouseArea.drag.active) {
                             if(playhead.x >= timeline.width - autoScrollMargin && list.listContentWidth - list.contentX > list.width) {
-                                list.contentX = Math.max(0, Math.min(list.contentX + autoScrollRate,
-                                                                     list.listContentWidth - list.width));
+                                list.updateContentX(Math.max(0, Math.min(list.contentX + autoScrollRate,
+                                                                     list.listContentWidth - list.width)));
                             } else if(playhead.x < autoScrollMargin && list.contentX > 0) {
-                                list.contentX = Math.min(Math.max(list.contentX - autoScrollRate, 0),
-                                                         list.listContentWidth - list.width);
+                                list.updateContentX(Math.min(Math.max(list.contentX - autoScrollRate, 0),
+                                                         list.listContentWidth - list.width));
                             }
                         } else {
                             stop();
