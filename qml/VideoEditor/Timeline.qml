@@ -480,7 +480,7 @@ Page {
             }
 
             onCurrentItemChanged: {
-                if(currentIndex >= 0) {
+                if(currentIndex >= 0 && list.listContentWidth > list.width) {
                     oldContentX = olderContentX;
                     contentX = olderContentX;
                 }
