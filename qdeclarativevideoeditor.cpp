@@ -32,7 +32,7 @@ extern "C" {
 #define PLAYBACK_FAILED "Playback failed"
 #define NO_MEDIA "Add clips before exporting"
 
-#define MOVIES_DIR "file:///home/user/MyDocs/Movies/"
+#define MOVIES_DIR "/home/user/MyDocs/Movies/"
 
 #define PROGRESS_TIMEOUT (1000/30)
 
@@ -483,6 +483,10 @@ bool QDeclarativeVideoEditor::render()
         return false;
     }
 
+    m_filename = output_uri;
+    emit filenameChanged();
+    output_uri = "file://" + output_uri;
+
     GstEncodingProfile *profile = createEncodingProfile();
     if (!ges_timeline_pipeline_set_render_settings (m_pipeline, output_uri.toUtf8().data(), profile)) {
         emit error(RENDERING_FAILED, "Failed setting rendering options");
@@ -587,6 +591,11 @@ uint QDeclarativeVideoEditor::getRenderFpsN() const
 uint QDeclarativeVideoEditor::getRenderFpsD() const
 {
     return m_fpsd;
+}
+
+QString QDeclarativeVideoEditor::getFilename() const
+{
+    return m_filename;
 }
 
 bool QDeclarativeVideoEditor::isPlaying() const

@@ -44,6 +44,8 @@ class QDeclarativeVideoEditor : public QAbstractListModel
 
     Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY playingStateChanged)
 
+    Q_PROPERTY(QString filename READ getFilename NOTIFY filenameChanged)
+
 public:
     explicit QDeclarativeVideoEditor(QObject *parent = 0);
     virtual ~QDeclarativeVideoEditor();
@@ -87,6 +89,8 @@ public:
     uint getRenderFpsN() const;
     uint getRenderFpsD() const;
 
+    QString getFilename() const;
+
     uint getWinId() const;
     Q_INVOKABLE void setWinId(uint winId);
 
@@ -126,6 +130,7 @@ signals:
     void playingStateChanged();
 
     void renderResolutionChanged();
+    void filenameChanged();
 
 public slots:
     void objectUpdated(VideoEditorItem*);
@@ -152,6 +157,8 @@ private:
 
     int m_width, m_height;
     int m_fpsn, m_fpsd;
+
+    QString m_filename;
 
     Q_DISABLE_COPY(QDeclarativeVideoEditor)
 };

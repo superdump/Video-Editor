@@ -81,6 +81,8 @@ Page {
 
     RenderCompleteDialog {
         id: renderCompleteDialog;
+
+        filename: videoeditor.filename;
     }
 
     Rectangle {

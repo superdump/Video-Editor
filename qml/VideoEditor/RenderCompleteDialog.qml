@@ -28,6 +28,8 @@ Dialog {
     status: DialogStatus.Closed
     visualParent: timeline
 
+    property string filename: "";
+
     title: Text {
         width: parent.width
         color: "white";
@@ -40,9 +42,24 @@ Dialog {
         height: 8
     }
 
-    buttons: Button {
-        text: "OK"
+    buttons: Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
-        onClicked: close()
+        Button {
+            anchors.right: parent.right
+            anchors.margins: 5
+            text: "OK"
+            onClicked: close()
+        }
+        Button {
+            anchors.left: parent.left
+            anchors.margins: 5
+            text: "Play"
+            visible: filename != "";
+            onClicked: {
+                if(filename != "") {
+                    Qt.openUrlExternally("file://" + filename);
+                }
+            }
+        }
     }
 }
