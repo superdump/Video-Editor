@@ -1081,6 +1081,12 @@ Page {
                 }
             }
             MenuItem {
+                text: "Report an issue"
+                onClicked: {
+                    Qt.openUrlExternally("https://github.com/superdump/Video-Editor/issues/new");
+                }
+            }
+            MenuItem {
                 text: "About"
                 onClicked: {
                     var component = Qt.createComponent("About.qml")
