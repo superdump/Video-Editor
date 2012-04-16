@@ -23,8 +23,10 @@
 #include <QDeclarativeComponent>
 #include <QDeclarativeContext>
 #include <QDebug>
+#include <QFile>
+
 extern "C" {
-    #include <ges/ges.h>
+#include <ges/ges.h>
 }
 #include "qmlapplicationviewer.h"
 #include "qdeclarativevideoeditor.h"
@@ -32,7 +34,44 @@ extern "C" {
 #include "videoeditoritem.h"
 
 extern "C" {
-    #include "gstcapstricks.h"
+#include "gstcapstricks.h"
+}
+
+/*
+ * Need to check if we are in PR1.2 or before, if so we need to disable thumbnails as
+ * something in the qml Image loading crashes. PR1.3 onwards should be fine.
+ */
+bool check_show_thumbnails() {
+
+    /*
+     * It seems the only way to get the current PR version is to look at the PR version
+     * it to check the value hardcoded into the about applet binaries.
+     */
+    QFile file("/usr/lib/duicontrolpanel/applets/libaboutapplet.so");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return true;
+
+    QTextStream in(&file);
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        int index = line.indexOf("PR");
+        if(index >= 0 && line.size() > index + 5 &&
+                line.at(index+2).isDigit() && line.at(index+4).isDigit()) { //PRX.Y
+            int major = line.at(index+2).digitValue();
+            int minor = line.at(index+4).digitValue();
+            if(major == 1) {
+                if(minor <= 2) {
+                    return false;
+                }
+                return true;
+            } else if(major < 1) {
+                return false;
+            }
+            break;
+        }
+    }
+
+    return true;
 }
 
 Q_DECL_EXPORT int main(int argc, char *argv[])
@@ -53,6 +92,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     QDeclarativeContext *context = viewer.rootContext();
     uint XWinId = viewer.winId();
     context->setContextProperty("XWinId", XWinId);
+    context->setContextProperty("showThumbnails", check_show_thumbnails());
 
     viewer.setOrientation(QmlApplicationViewer::ScreenOrientationLockLandscape);
     viewer.setMainQmlFile(QLatin1String("qml/VideoEditor/main.qml"));
