@@ -41,6 +41,17 @@ Page {
     property int autoScrollRate: 10
     property int autoScrollPeriod: 100 // ms
 
+    Connections {
+        target: Qt.application
+        onActiveChanged: {
+            if (!Qt.application.active) {
+                if(videoeditor.isPlaying) {
+                    videoeditor.pause();
+                }
+            }
+        }
+    }
+
     VideoEditor {
         id: videoeditor
 
@@ -448,8 +459,8 @@ Page {
 
                 //TODO this seems to break the contentX placement, disable it for now
                 //Will make the scaling always take the timeline to 0 position
-//                var newX = oldX * (scale / oldscale);
-//                list.contentX = newX;
+                //                var newX = oldX * (scale / oldscale);
+                //                list.contentX = newX;
             }
         }
 
@@ -595,10 +606,10 @@ Page {
                         if(dragArea.mousePos >= timeline.width - autoScrollMargin &&
                                 list.listContentWidth - list.contentX > list.width) {
                             list.updateContentX(Math.max(0, Math.min(list.contentX + autoScrollRate,
-                                                                 list.listContentWidth - list.width)));
+                                                                     list.listContentWidth - list.width)));
                         } else if(dragArea.mousePos < autoScrollMargin && list.contentX > 0) {
                             list.updateContentX(Math.min(Math.max(list.contentX - autoScrollRate, 0),
-                                                     list.listContentWidth - list.width));
+                                                         list.listContentWidth - list.width));
                         }
                     }
                 }
@@ -694,7 +705,7 @@ Page {
                             if(inPointDrag.mousePos >= timeline.width - autoScrollMargin &&
                                     list.listContentWidth - list.contentX > list.width) {
                                 list.updateContentX(Math.max(0, Math.min(list.contentX + autoScrollRate,
-                                                                     list.listContentWidth - list.width)));
+                                                                         list.listContentWidth - list.width)));
                             } else if(inPointDrag.mousePos < autoScrollMargin && list.contentX > 0) {
                                 list.updateContentX(Math.min(Math.max(list.contentX - autoScrollRate, 0),
                                                              list.listContentWidth - list.width));
@@ -794,10 +805,10 @@ Page {
                             if(endPointDrag.mousePos >= timeline.width - autoScrollMargin &&
                                     list.listContentWidth - list.contentX > list.width) {
                                 list.updateContentX(Math.max(0, Math.min(list.contentX + autoScrollRate,
-                                                                     list.listContentWidth - list.width)));
+                                                                         list.listContentWidth - list.width)));
                             } else if(endPointDrag.mousePos < autoScrollMargin && list.contentX > 0) {
                                 list.updateContentX(Math.min(Math.max(list.contentX - autoScrollRate, 0),
-                                                         list.listContentWidth - list.width));
+                                                             list.listContentWidth - list.width));
                             }
                             fakeDel.x = delegateButton.x - list.contentX - model.object.inPoint * listScale.currentScale;
                         }
@@ -923,8 +934,8 @@ Page {
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 visible: dragMouseArea.drag.active || (list.count &&
-                         (videoeditor.position * listScale.currentScale >= list.contentX) &&
-                         (videoeditor.position * listScale.currentScale <= list.contentX + list.width))
+                                                       (videoeditor.position * listScale.currentScale >= list.contentX) &&
+                                                       (videoeditor.position * listScale.currentScale <= list.contentX + list.width))
 
 
                 Rectangle {
@@ -982,10 +993,10 @@ Page {
                         if(dragMouseArea.drag.active) {
                             if(playhead.x >= timeline.width - autoScrollMargin && list.listContentWidth - list.contentX > list.width) {
                                 list.updateContentX(Math.max(0, Math.min(list.contentX + autoScrollRate,
-                                                                     list.listContentWidth - list.width)));
+                                                                         list.listContentWidth - list.width)));
                             } else if(playhead.x < autoScrollMargin && list.contentX > 0) {
                                 list.updateContentX(Math.min(Math.max(list.contentX - autoScrollRate, 0),
-                                                         list.listContentWidth - list.width));
+                                                             list.listContentWidth - list.width));
                             }
                         } else {
                             stop();
