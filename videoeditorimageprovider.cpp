@@ -147,7 +147,7 @@ bool VideoEditorImageProviderRequest::handleBusMessage(GstBus *, GstMessage *msg
                         if(m_perc) {
                             qDebug() << "Percentage seek";
                             if(gst_element_query_duration(GST_ELEMENT(m_pipeline), &format, &dur)) {
-                                seek_ts = (m_timestamp/10000.0) * dur;
+                                seek_ts = m_timestamp * (dur / 100.0);
                             } else {
                                 qDebug() << "Duration query failed";
                                 fail();
@@ -157,7 +157,7 @@ bool VideoEditorImageProviderRequest::handleBusMessage(GstBus *, GstMessage *msg
                         if(ret) {
                             qDebug() << "Sending seek to " << seek_ts << "/" << dur;
                             bool seek = gst_element_seek_simple(GST_ELEMENT(m_pipeline), format,
-                                                                GST_SEEK_FLAG_FLUSH, m_timestamp);
+                                                                GST_SEEK_FLAG_FLUSH, seek_ts);
                             if(!seek) {
                                 qDebug() << "Seek failed";
                                 //Failed

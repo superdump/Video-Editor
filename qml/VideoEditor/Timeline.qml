@@ -513,7 +513,7 @@ Page {
                     Image {
                         id: image
                         visible: showThumbnails
-                        source: showThumbnails ? "image://videoeditorimageprovider/" + model.object.uri + "#1000%" : ""
+                        source: showThumbnails ? "image://videoeditorimageprovider/" + model.object.uri + "#33%" : ""
                         anchors.centerIn: parent
                         width: parent.width - 4
                         height: parent.height - 4
