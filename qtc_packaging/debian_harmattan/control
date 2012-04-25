@@ -2,14 +2,14 @@ Source: videoeditor
 Section: user/multimedia
 Priority: optional
 Maintainer: Robert Swain <robert.swain@collabora.co.uk>
-Build-Depends: debhelper (>= 5), libqt4-dev, libges-0.10-dev, libgstreamer0.10-dev, libgstreamer-plugins-base0.10-dev
+Build-Depends: debhelper (>= 5), libqt4-dev, libgstreamer0.10-dev, libgstreamer-plugins-base0.10-dev
 Standards-Version: 3.7.3
 Homepage: http://github.com/superdump/Video-Editor/
 
 Package: videoeditor
 Version: 1.5.0
 Architecture: armel
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, gstreamer0.10-plugins-bad (>= 0.10.22-0maemo18)
 Description: Video editing in the palm of your hand
  VideoEditor is a video editing application using GStreamer Editing Services
  and GStreamer.
