@@ -79,15 +79,6 @@ Page {
                 }
             }
         }
-
-        CheckBox {
-            id: thumbnails
-            checked: videoeditor.showThumbnails
-            text: "Show thumbnails of video clips"
-            onClicked: {
-                videoeditor.showThumbnails = !videoeditor.showThumbnails;
-            }
-        }
     }
 
     ToolBar {
