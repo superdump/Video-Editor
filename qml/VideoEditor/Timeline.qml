@@ -546,6 +546,7 @@ Page {
                     anchors.fill: parent
                     property int positionStarted: 0
                     property int positionEnded: 0
+                    property double pressPosition: 0
                     property bool held: false
                     property double mousePos: list.x + (delegateButton.x - list.contentX) + mouseX
                     property double mousePosContent: positionStarted + mouseX
@@ -553,12 +554,14 @@ Page {
                     enabled: delegateButton.ListView.isCurrentItem
 
                     onMousePosChanged: {
-                        fakeDel.x = mousePos - list.x - width/2;
+                        fakeDel.x = mousePos - list.x - pressPosition;
                     }
 
                     onPressed: {
                         delegateButton.z = 2;
                         positionStarted = delegateButton.x;
+                        positionEnded = delegateButton.x + mouseX;
+                        pressPosition = mouseX;
                         fakeDel.displayObj(delegateButton.width, dragArea, "white");
                         delegateButton.opacity = 0.5;
                         list.interactive = false;
@@ -664,9 +667,10 @@ Page {
                         drag.axis: Drag.XAxis
                         enabled: delegateButton.ListView.isCurrentItem
                         onPressed: {
-                            initMousePos = mouseX
-                            fakeinPoint.x = mousePos - list.x
-                            fakeinPoint.visible = true
+                            initMousePos = mouseX;
+                            positionEnded = 0;
+                            fakeinPoint.x = mousePos - list.x;
+                            fakeinPoint.visible = true;
                             fakeDel.x = delegateButton.x - list.contentX - originPoint;
                             fakeDel.displayObj(model.object.maxDuration * listScale.currentScale, null, "#3465a4");
                             list.interactive = false;
@@ -674,7 +678,7 @@ Page {
                         }
                         onPositionChanged: {
                             inPointTimer.start();
-                            fakeinPoint.x = mousePos - list.x
+                            fakeinPoint.x = mousePos - list.x;
                             positionEnded = mousePosContent;
                             if (fakeDel.x < 0 && positionEnded < originPoint) {
                                 console.log("HACK: Setting inpoint to 0 to allow setting any inpoint");
@@ -766,9 +770,10 @@ Page {
                         drag.axis: Drag.XAxis
                         enabled: delegateButton.ListView.isCurrentItem
                         onPressed: {
-                            initMousePos = mouseX
-                            fakeEndPoint.x = mousePos - list.x
-                            fakeEndPoint.visible = true
+                            initMousePos = mouseX;
+                            positionEnded = delegateButton.width;
+                            fakeEndPoint.x = mousePos - list.x;
+                            fakeEndPoint.visible = true;
                             fakeDel.x = delegateButton.x - list.contentX - model.object.inPoint * listScale.currentScale;
                             fakeDel.displayObj(model.object.maxDuration * listScale.currentScale, null, "#3465a4");
                             list.interactive = false;
@@ -894,7 +899,7 @@ Page {
             Rectangle {
                 id: fakeDel
                 property variant curDragArea: null
-                x: curDragArea ? (curDragArea.mousePos - list.x - width/2) : 0
+                x: curDragArea ? (curDragArea.mousePos - curDragArea.pressPosition - list.x) : 0
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 visible: false
