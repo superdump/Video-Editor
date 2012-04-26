@@ -380,8 +380,10 @@ void QDeclarativeVideoEditor::updateDuration()
 {
     quint64 list_duration = 0;
     QList<VideoEditorItem*>::iterator i;
-    for (i = m_items.begin(); i != m_items.end(); ++i)
-        list_duration += (*i)->getDuration();
+    for (i = m_items.begin(); i != m_items.end(); ++i) {
+        if ((*i)->getDuration() != -1)
+            list_duration += (*i)->getDuration();
+    }
 
     qDebug() << "List duration: " << list_duration;
     m_duration = list_duration;

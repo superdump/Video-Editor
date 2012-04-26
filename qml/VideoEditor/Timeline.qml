@@ -70,7 +70,7 @@ Page {
         }
 
         onDataChanged: {
-            if (list.count == 1 && listScale.recalculateOnAdd && duration !== -1) {
+            if (list.count == 1 && listScale.recalculateOnAdd && duration > 0) {
                 listScale.setCalculatedScale(list.width * timeline.zoomProportion / videoeditor.getObjDuration(0));
                 listScale.setScale(1.0, listScale.scale, list.contentX);
                 listScale.recalculateOnAdd = false;
