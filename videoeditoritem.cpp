@@ -112,6 +112,8 @@ bool VideoEditorItem::setMaxDuration(quint64 duration)
 
 quint64 VideoEditorItem::getDuration() const
 {
+    if (m_duration == -1)
+        return 0;
     return m_duration;
 }
 
