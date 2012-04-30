@@ -9,7 +9,7 @@ Homepage: http://github.com/superdump/Video-Editor/
 Package: videoeditor
 Version: 1.5.0
 Architecture: armel
-Depends: ${shlibs:Depends}, ${misc:Depends}, gstreamer0.10-plugins-bad (>= 0.10.22-0maemo18)
+Depends: ${shlibs:Depends}, ${misc:Depends}, gstreamer0.10-plugins-bad (>= 0.10.22-0maemo18), libges-0.10-0 (>= 0.10.1.1-0maemo3.1+0m7)
 Description: Video editing in the palm of your hand
  VideoEditor is a video editing application using GStreamer Editing Services
  and GStreamer.
